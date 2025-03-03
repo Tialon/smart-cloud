@@ -3,7 +3,7 @@
 
     <conversionRule conversionWord="mm" converterClass="io.github.smart.cloud.starter.logback.pattern.MaskMessageConverter"/>
 
-    <property name="log_format" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%X{X-B3-SpanId}|%X{X-B3-ParentSpanId}|%X{X-B3-TraceId}] %thread [%logger{36} %method %line] %mm%n"/>
+    <property name="log_format" value="%d{MM-dd HH:mm:ss.SSS} %level [%X{X-B3-SpanId}|%X{X-B3-ParentSpanId}|%X{X-B3-TraceId}] %thread [%logger{36} %method %line] %mm%n"/>
 
     <!-- 开发环境使用 打印在控制台-->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
