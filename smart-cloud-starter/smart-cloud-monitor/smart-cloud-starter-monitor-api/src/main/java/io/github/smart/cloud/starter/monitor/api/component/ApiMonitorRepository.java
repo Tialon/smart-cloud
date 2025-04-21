@@ -55,8 +55,8 @@ public class ApiMonitorRepository implements InitializingBean, DisposableBean, A
     /**
      * 接口成功失败记录统计
      */
-    private ConcurrentMap<String, ApiHealthCacheDTO> apiStatusStatistics = new ConcurrentHashMap<>();
-    private CreateApiHealthCacheDtoFunction createApiHealthCacheDtoFunction = new CreateApiHealthCacheDtoFunction();
+    private final ConcurrentMap<String, ApiHealthCacheDTO> apiStatusStatistics = new ConcurrentHashMap<>();
+    private final CreateApiHealthCacheDtoFunction createApiHealthCacheDtoFunction = new CreateApiHealthCacheDtoFunction();
     private ScheduledExecutorService cleanSchedule;
     private Set<String> needAlertExceptionClassNames;
 
@@ -65,9 +65,9 @@ public class ApiMonitorRepository implements InitializingBean, DisposableBean, A
      *
      * @param name
      * @param success
-     * @param throwable
+     * @param e
      */
-    public void add(String name, boolean success, Throwable throwable) {
+    public void add(String name, boolean success, Throwable e) {
         try {
             if (apiMonitorProperties.getApiWhiteList().contains(name)) {
                 return;
@@ -78,12 +78,23 @@ public class ApiMonitorRepository implements InitializingBean, DisposableBean, A
                 apiHealthCacheDTO.getSuccessCount().increment();
             } else {
                 apiHealthCacheDTO.getFailCount().increment();
-                if (throwable != null) {
-                    apiHealthCacheDTO.setThrowable(throwable);
+                if (e != null) {
+                    Throwable throwable = apiHealthCacheDTO.getThrowable();
+                    synchronized (apiHealthCacheDTO) {
+                        if (throwable == null) {
+                            apiHealthCacheDTO.setThrowable(e);
+                        } else {
+                            // 如果当前异常为需要提醒的基础，则不更新
+                            Set<String> needAlertExceptionClassNames = apiMonitorProperties.getNeedAlertExceptionClassNames();
+                            if (!needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
+                                apiHealthCacheDTO.setThrowable(e);
+                            }
+                        }
+                    }
                 }
             }
-        } catch (Throwable e) {
-            log.error("api health info add error|name={}", name, e);
+        } catch (Throwable ex) {
+            log.error("api health info add error|name={}", name, ex);
         }
     }
 
