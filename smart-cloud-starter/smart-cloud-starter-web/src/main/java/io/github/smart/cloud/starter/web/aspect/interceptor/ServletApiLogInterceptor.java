@@ -30,16 +30,14 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -87,14 +85,17 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
                 if (cost >= apiLogProperties.getSlowApiMinCost()) {
                     log.warn(LogUtil.truncate(SLOW_LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
                 } else {
-                    ApiLog apiLog = invocation.getMethod().getAnnotation(ApiLog.class);
-                    String logLevel = LogLevel.getFinalLevel((apiLog == null ? null : apiLog.level()), apiLogProperties.getLevel());
-                    if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
-                        log.debug(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
-                    } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
-                        log.info(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
-                    } else if (LogLevel.WARN.equals(logLevel)) {
-                        log.warn(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                    Set<String> ignoreUrls = apiLogProperties.getIgnoreUrls();
+                    if (ignoreUrls == null || !ignoreUrls.contains(WebServletUtil.getHttpServletRequest().getPathInfo())) {
+                        ApiLog apiLog = invocation.getMethod().getAnnotation(ApiLog.class);
+                        String logLevel = LogLevel.getFinalLevel((apiLog == null ? null : apiLog.level()), apiLogProperties.getLevel());
+                        if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
+                            log.debug(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                        } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
+                            log.info(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                        } else if (LogLevel.WARN.equals(logLevel)) {
+                            log.warn(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                        }
                     }
                 }
             }

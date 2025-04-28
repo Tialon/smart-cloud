@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * api日志切面配置
@@ -52,8 +53,12 @@ public class ApiLogProperties implements Serializable {
      */
     private int slowApiMinCost = 3000;
     /**
-     * feign切面日志打印最大长度
+     * 切面日志打印最大长度
      */
     private Integer logMaxLength;
+    /**
+     * 忽略的接口地址（不打印日志）
+     */
+    private Set<String> ignoreUrls;
 
 }
