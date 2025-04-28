@@ -60,10 +60,12 @@ public class Config {
     public static final String ENTITY_CLASS_SUFFIX = "Entity";
     public static final String MAPPER_CLASS_SUFFIX = "BaseMapper";
     public static final String BASE_RESPVO_CLASS_SUFFIX = "BaseRespVO";
+    public static final String REPOSITORY_CLASS_SUFFIX = "Repository";
 
     public static final String ENTITY_PACKAGE_SUFFIX = ".entity";
     public static final String MAPPER_PACKAGE_SUFFIX = ".mapper.base";
     public static final String BASE_RESPVO_PACKAGE_SUFFIX = ".response.base";
+    public static final String EPOSITORY_PACKAGE_SUFFIX = ".repository";
 
     private Config() {
     }
@@ -84,6 +86,10 @@ public class Config {
          * entity
          */
         public static final String ENTITY = "Entity.ftl";
+        /**
+         * Repository
+         */
+        public static final String REPOSITORY = "Repository.ftl";
 
         private Template() {
         }

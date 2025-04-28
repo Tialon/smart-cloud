@@ -19,7 +19,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.RpcLogEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.mapper.RpcLogBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.utility.NonceUtil;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -35,7 +35,7 @@ import java.util.Date;
  */
 @Repository
 @DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
-public class RpcLogBiz extends BaseBiz<RpcLogBaseMapper, RpcLogEntity> {
+public class RpcLogRepository extends BaseRepository<RpcLogBaseMapper, RpcLogEntity> {
 
     public RpcLogEntity insert(String apiDesc) {
         RpcLogEntity rpcLogEntity = new RpcLogEntity();

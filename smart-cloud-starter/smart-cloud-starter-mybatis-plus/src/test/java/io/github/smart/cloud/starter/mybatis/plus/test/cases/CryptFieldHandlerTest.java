@@ -21,7 +21,7 @@ import io.github.smart.cloud.starter.mybatis.plus.common.CryptField;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.CryptFieldApp;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.biz.DescCryptField;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.biz.ProductInfoOmsBiz;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.biz.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.util.FieldCryptUtil;
 import io.github.smart.cloud.utility.NonceUtil;
@@ -43,7 +43,7 @@ import java.util.Date;
 class CryptFieldHandlerTest {
 
     @Autowired
-    private ProductInfoOmsBiz productInfoOmsBiz;
+    private ProductInfoOmsRepository productInfoOmsBiz;
     @Autowired
     private DynamicRoutingDataSource dynamicRoutingDataSource;
     private static final String ORIGINAL_VALUE = "phone6";

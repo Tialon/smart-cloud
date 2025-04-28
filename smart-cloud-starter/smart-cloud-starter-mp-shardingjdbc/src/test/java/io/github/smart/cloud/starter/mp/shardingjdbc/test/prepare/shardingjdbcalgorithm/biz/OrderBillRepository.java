@@ -18,7 +18,7 @@ package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbca
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.mapper.OrderBillBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Repository;
  * @date 2019-04-08
  */
 @Repository
-public class OrderBillBiz extends BaseBiz<OrderBillBaseMapper, OrderBillEntity> {
+public class OrderBillRepository extends BaseRepository<OrderBillBaseMapper, OrderBillEntity> {
 
     public OrderBillEntity getByOrderNo(String orderNo) {
         LambdaQueryWrapper<OrderBillEntity> queryWrapper = new LambdaQueryWrapper<>();

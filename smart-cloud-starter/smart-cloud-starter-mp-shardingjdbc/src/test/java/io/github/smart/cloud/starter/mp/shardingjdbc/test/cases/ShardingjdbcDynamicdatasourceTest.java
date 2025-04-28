@@ -16,10 +16,10 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.ShardingJdbcDynamicDatasourceApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.ApiLogBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.OrderBillBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.ProductInfoBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.RpcLogBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.ApiLogRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.OrderBillRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.ProductInfoRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.RpcLogRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ApiLogEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ProductInfoEntity;
@@ -44,13 +44,13 @@ import java.util.Date;
 class ShardingjdbcDynamicdatasourceTest {
 
     @Autowired
-    private ApiLogBiz apiLogBiz;
+    private ApiLogRepository apiLogBiz;
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillBiz;
     @Autowired
-    private RpcLogBiz rpcLogBiz;
+    private RpcLogRepository rpcLogBiz;
     @Autowired
-    private ProductInfoBiz productInfoBiz;
+    private ProductInfoRepository productInfoBiz;
 
     /**
      * 普通数据源

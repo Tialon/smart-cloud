@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz;
 
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.OrderBillEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.mapper.OrderBillBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import com.baomidou.dynamic.datasource.annotation.DS;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.constants.DatasourceName;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ApiLogEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.mapper.ApiLogBaseMapper;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * 订单信息api biz
+ * 日志api biz
  *
  * @author collin
  * @date 2019-04-08
  */
 @Repository
-public class OrderBillBiz extends BaseBiz<OrderBillBaseMapper, OrderBillEntity> {
+@DS(DatasourceName.LOG)
+public class ApiLogRepository extends BaseRepository<ApiLogBaseMapper, ApiLogEntity> {
 
 }

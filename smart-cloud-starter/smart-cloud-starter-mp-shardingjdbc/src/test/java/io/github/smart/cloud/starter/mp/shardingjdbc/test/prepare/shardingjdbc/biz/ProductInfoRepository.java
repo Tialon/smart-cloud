@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.biz;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.constants.DatasourceNames;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.entity.RoleInfoEntity;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.mapper.RoleInfoBaseMapper;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.ProductInfoEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.mapper.ProductInfoBaseMapper;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * 商品信息oms biz
+ *
+ * @author collin
+ * @date 2019-03-31
+ */
 @Repository
-@DS(DatasourceNames.AUTH)
-public class RoleInfoOmsBiz extends BaseBiz<RoleInfoBaseMapper, RoleInfoEntity> {
-
+public class ProductInfoRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
 }

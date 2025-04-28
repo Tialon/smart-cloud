@@ -13,20 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.biz;
+package io.github.smart.cloud.code.generate.bo.template;
 
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.ProductInfoEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.mapper.ProductInfoBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * 商品信息oms biz
+ * Repository类参数信息
  *
  * @author collin
- * @date 2019-03-31
+ * @date 2025-04-28
  */
-@Repository
-public class ProductInfoBiz extends BaseBiz<ProductInfoBaseMapper, ProductInfoEntity> {
+@Getter
+@Setter
+@ToString
+public class RepositoryBO extends CommonBO {
+
+    /**
+     * entity类名
+     */
+    private String entityClassName;
+    /**
+     * mapper类名
+     */
+    private String mapperClassName;
 
 }

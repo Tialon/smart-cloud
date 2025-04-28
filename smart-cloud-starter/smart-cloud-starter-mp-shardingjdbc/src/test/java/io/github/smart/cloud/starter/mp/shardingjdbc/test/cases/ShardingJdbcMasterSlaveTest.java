@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.ShardingJdbcMasterSlaveApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.biz.OrderBillBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.biz.OrderBillRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.utility.NonceUtil;
@@ -40,7 +40,7 @@ import java.util.Date;
 class ShardingJdbcMasterSlaveTest {
 
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillBiz;
 
     @BeforeEach
     void cleanData() {

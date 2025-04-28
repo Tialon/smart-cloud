@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.DynamicDatasourceMasterSlaveApp;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.biz.ProductInfoOmsBiz;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.biz.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.PageProductReqVO;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoBaseRespVO;
@@ -41,7 +41,7 @@ import java.util.List;
 class DynamicDatasourceMasterSlaveTest {
 
     @Autowired
-    private ProductInfoOmsBiz productInfoOmsBiz;
+    private ProductInfoOmsRepository productInfoOmsBiz;
 
     @BeforeEach
     void cleanData() {

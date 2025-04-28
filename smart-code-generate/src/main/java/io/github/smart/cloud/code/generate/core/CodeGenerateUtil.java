@@ -17,10 +17,7 @@ package io.github.smart.cloud.code.generate.core;
 
 import io.github.smart.cloud.code.generate.bo.ColumnMetaDataBO;
 import io.github.smart.cloud.code.generate.bo.TableMetaDataBO;
-import io.github.smart.cloud.code.generate.bo.template.BaseMapperBO;
-import io.github.smart.cloud.code.generate.bo.template.BaseRespBO;
-import io.github.smart.cloud.code.generate.bo.template.ClassCommentBO;
-import io.github.smart.cloud.code.generate.bo.template.EntityBO;
+import io.github.smart.cloud.code.generate.bo.template.*;
 import io.github.smart.cloud.code.generate.properties.CodeProperties;
 import io.github.smart.cloud.code.generate.properties.PathProperties;
 import io.github.smart.cloud.code.generate.properties.YamlProperties;
@@ -92,16 +89,27 @@ public class CodeGenerateUtil {
         String servicePath = pathProperties.getService();
         Set<String> encryptFields = TableUtil.getEncryptFields(tableMetaData.getName(), code);
 
+        // 生成entity
         EntityBO entityBO = TemplateUtil.getEntityBO(tableMetaData, columnMetaDatas, classComment, mainClassPackage,
                 code.getMask(), encryptFields);
         CodeFileGenerateUtil.generateEntity(entityBO, servicePath);
 
+        // 生成base response
         BaseRespBO baseResp = TemplateUtil.getBaseRespBodyBO(tableMetaData, columnMetaDatas, classComment, mainClassPackage,
                 entityBO.getImportPackages(), code.getMask());
         CodeFileGenerateUtil.generateBaseRespVO(baseResp, rpcPath);
 
+        // 生成mapper
         BaseMapperBO baseMapperBO = TemplateUtil.getBaseMapperBO(tableMetaData, entityBO, classComment, mainClassPackage);
         CodeFileGenerateUtil.generateBaseMapper(baseMapperBO, servicePath);
+
+        // 生成mapper
+        String mapperPackage = baseMapperBO.getPackageName();
+        String mapperClassName = baseMapperBO.getClassName();
+
+        // 生成repository
+        RepositoryBO repositoryBO = TemplateUtil.getRepositoryBO(tableMetaData, entityBO, classComment, mainClassPackage, mapperPackage, mapperClassName);
+        CodeFileGenerateUtil.generateRepository(repositoryBO, servicePath);
     }
 
 }

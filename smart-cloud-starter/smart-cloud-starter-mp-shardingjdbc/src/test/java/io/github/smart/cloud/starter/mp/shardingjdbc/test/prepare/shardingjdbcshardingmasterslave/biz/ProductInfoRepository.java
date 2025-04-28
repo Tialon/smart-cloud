@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.biz;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
-import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ProductInfoEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.mapper.ProductInfoBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.entity.ProductInfoEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.mapper.ProductInfoBaseMapper;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.utility.NonceUtil;
 import io.github.smart.cloud.utility.RandomUtil;
@@ -34,8 +32,7 @@ import java.util.Date;
  * @date 2019-03-31
  */
 @Repository
-@DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
-public class ProductInfoBiz extends BaseBiz<ProductInfoBaseMapper, ProductInfoEntity> {
+public class ProductInfoRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
     public Long create() {
         ProductInfoEntity entity = new ProductInfoEntity();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mybatis.plus.common.biz;
+package io.github.smart.cloud.starter.mybatis.plus.common.repository;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -33,12 +33,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * biz基类
+ * Repository基类
  *
  * @author collin
  * @date 2021-10-31
  */
-public class BaseBiz<M extends SmartMapper<T>, T extends BaseEntity> extends ServiceImpl<M, T> {
+public class BaseRepository<M extends SmartMapper<T>, T extends BaseEntity> extends ServiceImpl<M, T> {
 
     /**
      * in-line式批量插入

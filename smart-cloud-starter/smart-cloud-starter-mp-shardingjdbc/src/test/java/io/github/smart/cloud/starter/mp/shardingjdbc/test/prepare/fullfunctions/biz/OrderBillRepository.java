@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz;
 
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.entity.OrderBillEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.mapper.OrderBillBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import com.baomidou.dynamic.datasource.annotation.DS;
+import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.OrderBillEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.mapper.OrderBillBaseMapper;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Repository;
  * @date 2019-04-08
  */
 @Repository
-public class OrderBillBiz extends BaseBiz<OrderBillBaseMapper, OrderBillEntity> {
+@DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
+public class OrderBillRepository extends BaseRepository<OrderBillBaseMapper, OrderBillEntity> {
 
 }

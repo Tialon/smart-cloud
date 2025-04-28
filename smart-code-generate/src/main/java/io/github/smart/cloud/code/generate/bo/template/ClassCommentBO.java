@@ -21,7 +21,7 @@ import lombok.ToString;
 
 /**
  * 类注释信息
- * 
+ *
  * @author collin
  * @date 2019-07-16
  */
@@ -30,9 +30,13 @@ import lombok.ToString;
 @ToString
 public class ClassCommentBO {
 
-	/** 创建人 */
-	private String author;
-	/** 生成时间(yyyy-MM-dd) */
-	private String createDate;
-	
+    /**
+     * 创建人
+     */
+    private String author;
+    /**
+     * 生成时间(yyyy-MM-dd)
+     */
+    private String createDate;
+
 }

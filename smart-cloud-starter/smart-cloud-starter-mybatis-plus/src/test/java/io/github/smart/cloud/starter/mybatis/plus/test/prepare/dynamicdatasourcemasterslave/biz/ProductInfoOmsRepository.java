@@ -18,7 +18,7 @@ package io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourc
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.constants.DatasourceNames;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.entity.ProductInfoEntity;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Repository;
  * @date 2019-03-31
  */
 @Repository
-public class ProductInfoOmsBiz extends BaseBiz<ProductInfoBaseMapper, ProductInfoEntity> {
+public class ProductInfoOmsRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
     @DS(DatasourceNames.PRODUCT_SLAVE)
     public BasePageResponse<ProductInfoBaseRespVO> selectPage(PageProductReqVO reqVO) {

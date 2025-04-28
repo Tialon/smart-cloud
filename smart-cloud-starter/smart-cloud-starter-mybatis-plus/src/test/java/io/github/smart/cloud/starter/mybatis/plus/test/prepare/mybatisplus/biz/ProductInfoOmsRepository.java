@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.biz;
 
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.mapper.ProductInfoBaseMapper;
 import org.springframework.stereotype.Repository;
@@ -27,6 +27,6 @@ import org.springframework.stereotype.Repository;
  * @date 2019-03-31
  */
 @Repository
-public class ProductInfoOmsBiz extends BaseBiz<ProductInfoBaseMapper, ProductInfoEntity> {
+public class ProductInfoOmsRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
 }

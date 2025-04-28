@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ProductInfoEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.mapper.ProductInfoBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.constants.DatasourceName;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ApiLogEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.mapper.ApiLogBaseMapper;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * 商品信息oms biz
+ * 日志api biz
  *
  * @author collin
- * @date 2019-03-31
+ * @date 2019-04-08
  */
 @Repository
-@DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
-public class ProductInfoBiz extends BaseBiz<ProductInfoBaseMapper, ProductInfoEntity> {
+@DS(DatasourceName.LOG)
+public class ApiLogRepository extends BaseRepository<ApiLogBaseMapper, ApiLogEntity> {
 
 }

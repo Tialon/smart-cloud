@@ -17,19 +17,19 @@ package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcd
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.OrderBillEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.mapper.OrderBillBaseMapper;
-import io.github.smart.cloud.starter.mybatis.plus.common.biz.BaseBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ProductInfoEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.mapper.ProductInfoBaseMapper;
+import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * 订单信息api biz
+ * 商品信息oms biz
  *
  * @author collin
- * @date 2019-04-08
+ * @date 2019-03-31
  */
 @Repository
 @DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
-public class OrderBillBiz extends BaseBiz<OrderBillBaseMapper, OrderBillEntity> {
+public class ProductInfoRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
 }

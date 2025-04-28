@@ -15,12 +15,9 @@
  */
 package io.github.smart.cloud.code.generate.util;
 
-import io.github.smart.cloud.code.generate.bo.template.BaseMapperBO;
+import io.github.smart.cloud.code.generate.bo.template.*;
 import io.github.smart.cloud.code.generate.config.Config;
 import org.apache.commons.io.FileUtils;
-import io.github.smart.cloud.code.generate.bo.template.BaseRespBO;
-import io.github.smart.cloud.code.generate.bo.template.CommonBO;
-import io.github.smart.cloud.code.generate.bo.template.EntityBO;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +45,17 @@ public class CodeFileGenerateUtil {
     private static final String DATE_ANNOTATION_TAG = "@date";
 
     private CodeFileGenerateUtil() {
+    }
+
+    /**
+     * 生成repository
+     *
+     * @param repositoryBO
+     * @param basePath
+     * @throws IOException
+     */
+    public static void generateRepository(RepositoryBO repositoryBO, String basePath) throws Exception {
+        generateCodeFile(repositoryBO, basePath, Config.Template.REPOSITORY);
     }
 
     /**

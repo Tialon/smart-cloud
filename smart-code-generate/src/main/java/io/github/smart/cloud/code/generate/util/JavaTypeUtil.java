@@ -100,6 +100,15 @@ public class JavaTypeUtil {
     public static String getMapperName(String tableName) {
         return TableUtil.getEntityClassName(tableName) + Config.MAPPER_CLASS_SUFFIX;
     }
+    /**
+     * 获取repository名
+     *
+     * @param tableName
+     * @return
+     */
+    public static String getRepositoryName(String tableName) {
+        return TableUtil.getEntityClassName(tableName) + Config.REPOSITORY_CLASS_SUFFIX;
+    }
 
     /**
      * 获取RespBody名

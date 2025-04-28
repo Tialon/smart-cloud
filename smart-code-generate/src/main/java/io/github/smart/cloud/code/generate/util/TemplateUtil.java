@@ -187,13 +187,42 @@ public class TemplateUtil {
         baseMapperBO.setPackageName(mainClassPackage + Config.MAPPER_PACKAGE_SUFFIX);
         baseMapperBO.setClassName(JavaTypeUtil.getMapperName(tableMetaData.getName()));
 
-        Set<String> importPackages = new HashSet<>(2);
+        Set<String> importPackages = new HashSet<>(1);
         // entity package
         importPackages.add(entityBO.getPackageName() + "." + entityBO.getClassName());
         baseMapperBO.setImportPackages(importPackages);
 
         baseMapperBO.setEntityClassName(entityBO.getClassName());
         return baseMapperBO;
+    }
+
+    /**
+     * 获取生成Repository所需的参数信息
+     *
+     * @param tableMetaData
+     * @param entityBO
+     * @param classComment
+     * @param mainClassPackage
+     * @return
+     */
+    public static RepositoryBO getRepositoryBO(TableMetaDataBO tableMetaData, EntityBO entityBO, ClassCommentBO classComment,
+                                               String mainClassPackage, String mapperPackage, String mapperClassName) {
+        RepositoryBO repositoryBO = new RepositoryBO();
+        repositoryBO.setClassComment(classComment);
+        repositoryBO.setTableComment(tableMetaData.getComment());
+        repositoryBO.setPackageName(mainClassPackage + Config.EPOSITORY_PACKAGE_SUFFIX);
+        repositoryBO.setClassName(JavaTypeUtil.getRepositoryName(tableMetaData.getName()));
+
+        Set<String> importPackages = new HashSet<>(2);
+        // entity package
+        importPackages.add(entityBO.getPackageName() + "." + entityBO.getClassName());
+        // mapper package
+        importPackages.add(mapperPackage + "." + mapperClassName);
+        repositoryBO.setImportPackages(importPackages);
+
+        repositoryBO.setEntityClassName(entityBO.getClassName());
+        repositoryBO.setMapperClassName(mapperClassName);
+        return repositoryBO;
     }
 
 }

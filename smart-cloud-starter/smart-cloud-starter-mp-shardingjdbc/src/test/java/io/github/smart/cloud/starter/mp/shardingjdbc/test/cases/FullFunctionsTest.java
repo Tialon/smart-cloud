@@ -16,10 +16,10 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.ShardingJdbcFullFunctionsApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.ApiLogBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.OrderBillBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.ProductInfoBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.RpcLogBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.ApiLogRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.OrderBillRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.ProductInfoRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.RpcLogRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ApiLogEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ProductInfoEntity;
@@ -45,13 +45,13 @@ import java.util.Date;
 class FullFunctionsTest {
 
     @Autowired
-    private ApiLogBiz apiLogBiz;
+    private ApiLogRepository apiLogBiz;
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillBiz;
     @Autowired
-    private RpcLogBiz rpcLogBiz;
+    private RpcLogRepository rpcLogBiz;
     @Autowired
-    private ProductInfoBiz productInfoBiz;
+    private ProductInfoRepository productInfoBiz;
 
     /**
      * 普通数据源
