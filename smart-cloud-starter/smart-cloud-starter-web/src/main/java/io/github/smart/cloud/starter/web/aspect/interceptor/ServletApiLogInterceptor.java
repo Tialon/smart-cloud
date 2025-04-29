@@ -30,7 +30,6 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -80,6 +79,13 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
         Object result = null;
         try {
             result = invocation.proceed();
+        } catch (Exception e) {
+            long cost = System.currentTimeMillis() - startTime;
+            log.error(LogUtil.truncate(ERROR_LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)), e);
+            throw e;
+        }
+
+        try {
             if (log.isWarnEnabled()) {
                 long cost = System.currentTimeMillis() - startTime;
                 if (cost >= apiLogProperties.getSlowApiMinCost()) {
@@ -93,18 +99,17 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
                             log.debug(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
                         } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
                             log.info(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
-                        } else if (LogLevel.WARN.equals(logLevel)) {
+                        } else if (LogLevel.WARN.equals(logLevel) && log.isWarnEnabled()) {
                             log.warn(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
                         }
                     }
                 }
             }
-            return result;
         } catch (Exception e) {
-            long cost = System.currentTimeMillis() - startTime;
-            log.error(LogUtil.truncate(ERROR_LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)), e);
-            throw e;
+            log.warn("print api log error", e);
         }
+
+        return result;
     }
 
     private LogAspectDO buildLogAspectDO(Object[] args, Object result, long cost) {
