@@ -36,13 +36,13 @@ import java.util.Map;
  *
  * @author collin
  * @date 2025-04-29
- * @see FileType#BASE_RESP_VO
+ * @see FileType#ENTITY_RESP_VO
  */
-public class BaseRespVOSourceFileGenerateStrategy extends AbstractSourceFileGenerateStrategy<BaseRespBO> {
+public class EntityRespVoSourceFileGenerateStrategy extends AbstractSourceFileGenerateStrategy<BaseRespBO> {
 
     @Override
     public FileType getFileType() {
-        return FileType.BASE_RESP_VO;
+        return FileType.ENTITY_RESP_VO;
     }
 
     @Override

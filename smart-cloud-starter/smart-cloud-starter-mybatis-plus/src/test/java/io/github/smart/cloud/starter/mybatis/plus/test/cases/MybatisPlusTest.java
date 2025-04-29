@@ -22,7 +22,7 @@ import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.Mybat
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.biz.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.vo.PageProductReqVO;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.vo.ProductInfoBaseRespVO;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.vo.ProductInfoRespVO;
 import io.github.smart.cloud.utility.NonceUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,7 +113,7 @@ class MybatisPlusTest {
         wrapper.like(ProductInfoEntity::getName, reqVO.getName());
         wrapper.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
         wrapper.orderByDesc(ProductInfoEntity::getInsertTime);
-        BasePageResponse<ProductInfoBaseRespVO> response = productInfoOmsBiz.page(reqVO, wrapper, ProductInfoBaseRespVO.class);
+        BasePageResponse<ProductInfoRespVO> response = productInfoOmsBiz.page(reqVO, wrapper, ProductInfoRespVO.class);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getDatas()).isNotEmpty();

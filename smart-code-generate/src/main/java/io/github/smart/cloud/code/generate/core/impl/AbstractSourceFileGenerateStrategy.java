@@ -53,12 +53,12 @@ public abstract class AbstractSourceFileGenerateStrategy<T extends CommonBO> imp
 
     @Override
     public void generateSourceFile(TemplateBuildParamContext context) throws Exception {
-        T TemplateParams = buildTemplateParams(context);
+        T templateParams = buildTemplateParams(context);
         String basePath = getBasePath(context);
         FileType fileType = getFileType();
 
-        String newCode = FreeMarkerUtil.freeMarkerRender(TemplateParams, fileType.getTemplateFilename());
-        String filePath = getClassFilePath(basePath, TemplateParams.getPackageName(), TemplateParams.getClassName());
+        String newCode = FreeMarkerUtil.freeMarkerRender(templateParams, fileType.getTemplateFilename());
+        String filePath = getClassFilePath(basePath, templateParams.getPackageName(), templateParams.getClassName());
 
         File codeFile = new File(filePath);
         boolean override = isOverride(codeFile, newCode);

@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.github.smart.cloud.common.pojo.BaseEntityResponse;
+import io.github.smart.cloud.common.pojo.EntityResponse;
 import io.github.smart.cloud.common.pojo.BasePageRequest;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
 import io.github.smart.cloud.starter.mybatis.plus.common.entity.BaseEntity;
@@ -95,7 +95,7 @@ public class BaseRepository<M extends SmartMapper<T>, T extends BaseEntity> exte
      * @param <Q>
      * @return
      */
-    public <R extends BaseEntityResponse, Q extends BasePageRequest> BasePageResponse<R> page(Q q, Wrapper<T> wrapper, Class<R> pageItemClass) {
+    public <R extends EntityResponse, Q extends BasePageRequest> BasePageResponse<R> page(Q q, Wrapper<T> wrapper, Class<R> pageItemClass) {
         IPage<T> page = super.page(new Page<>(q.getPageNum(), q.getPageSize(), true), wrapper);
         List<T> entityDatas = page.getRecords();
         if (CollectionUtils.isEmpty(entityDatas)) {

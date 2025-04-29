@@ -29,13 +29,13 @@ import java.util.Set;
  *
  * @author collin
  * @date 2025-04-29
- * @see FileType#BASE_MAPPER
+ * @see FileType#MAPPER
  */
-public class BaseMapperSourceFileGenerateStrategy extends AbstractSourceFileGenerateStrategy<BaseMapperBO> {
+public class MapperSourceFileGenerateStrategy extends AbstractSourceFileGenerateStrategy<BaseMapperBO> {
 
     @Override
     public FileType getFileType() {
-        return FileType.BASE_MAPPER;
+        return FileType.MAPPER;
     }
 
     @Override

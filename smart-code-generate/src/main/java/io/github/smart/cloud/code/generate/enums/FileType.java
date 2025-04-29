@@ -36,11 +36,11 @@ public enum FileType {
     /**
      * 实体对象对应的response对象
      */
-    BASE_RESP_VO("BaseRespVO.ftl", "BaseRespVO", ".response.base"),
+    ENTITY_RESP_VO("EntityRespVO.ftl", "EntityRespVO", ".response.entity"),
     /**
      * mapper
      */
-    BASE_MAPPER("BaseMapper.ftl", "BaseMapper", ".mapper.base"),
+    MAPPER("Mapper.ftl", "Mapper", ".mapper"),
     /**
      * repository对象（对应mybatis-plus的service实现类）
      */

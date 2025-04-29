@@ -18,7 +18,7 @@ package ${packageName};
 <#list importPackages as package>
 import ${package};
 </#list>
-import io.github.smart.cloud.common.pojo.BaseEntityResponse;
+import io.github.smart.cloud.common.pojo.EntityResponse;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +35,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @SuperBuilder
-public class ${className} extends BaseEntityResponse {
+public class ${className} extends EntityResponse {
 
 	private static final long serialVersionUID = 1L;
 

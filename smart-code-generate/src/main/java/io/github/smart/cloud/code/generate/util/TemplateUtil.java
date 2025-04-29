@@ -84,7 +84,7 @@ public class TemplateUtil {
      * @return
      */
     public static String buildMapperClassName(String tableName) {
-        return TableUtil.getEntityClassName(tableName) + FileType.BASE_MAPPER.getClassSuffix();
+        return TableUtil.getEntityClassName(tableName) + FileType.MAPPER.getClassSuffix();
     }
 
     /**
@@ -95,7 +95,7 @@ public class TemplateUtil {
      * @return
      */
     public static String buildImportMapperClassPackage(String mainClassPackage, String mapperClassName) {
-        return mainClassPackage + FileType.BASE_MAPPER.getPackageSuffix() + "." + mapperClassName;
+        return mainClassPackage + FileType.MAPPER.getPackageSuffix() + "." + mapperClassName;
     }
 
     /**
@@ -115,7 +115,7 @@ public class TemplateUtil {
      * @return
      */
     public static String buildBaseRespBodyClassName(String tableName) {
-        return TableUtil.getEntityClassName(tableName) + FileType.BASE_RESP_VO.getClassSuffix();
+        return TableUtil.getEntityClassName(tableName) + FileType.ENTITY_RESP_VO.getClassSuffix();
     }
 
 }

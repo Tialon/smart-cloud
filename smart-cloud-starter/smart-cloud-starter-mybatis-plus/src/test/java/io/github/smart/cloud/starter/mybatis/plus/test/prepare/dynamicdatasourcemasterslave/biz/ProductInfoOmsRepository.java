@@ -24,7 +24,7 @@ import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.mapper.ProductInfoBaseMapper;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.PageProductReqVO;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoBaseRespVO;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoRespVO;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -37,12 +37,12 @@ import org.springframework.stereotype.Repository;
 public class ProductInfoOmsRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
     @DS(DatasourceNames.PRODUCT_SLAVE)
-    public BasePageResponse<ProductInfoBaseRespVO> selectPage(PageProductReqVO reqVO) {
+    public BasePageResponse<ProductInfoRespVO> selectPage(PageProductReqVO reqVO) {
         LambdaQueryWrapper<ProductInfoEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(ProductInfoEntity::getName, reqVO.getName());
         wrapper.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
         wrapper.orderByDesc(ProductInfoEntity::getInsertTime);
-        return super.page(reqVO, wrapper, ProductInfoBaseRespVO.class);
+        return super.page(reqVO, wrapper, ProductInfoRespVO.class);
     }
 
 }

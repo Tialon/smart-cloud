@@ -22,7 +22,7 @@ import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.biz.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.PageProductReqVO;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoBaseRespVO;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoRespVO;
 import io.github.smart.cloud.utility.NonceUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +100,7 @@ class DynamicDatasourceMasterSlaveTest {
         wrapperFromMaster.like(ProductInfoEntity::getName, reqVO.getName());
         wrapperFromMaster.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
         wrapperFromMaster.orderByDesc(ProductInfoEntity::getInsertTime);
-        BasePageResponse<ProductInfoBaseRespVO> responseOfMaster = productInfoOmsBiz.page(reqVO, wrapperFromMaster, ProductInfoBaseRespVO.class);
+        BasePageResponse<ProductInfoRespVO> responseOfMaster = productInfoOmsBiz.page(reqVO, wrapperFromMaster, ProductInfoRespVO.class);
 
         Assertions.assertThat(responseOfMaster).isNotNull();
         Assertions.assertThat(responseOfMaster.getDatas()).isNotEmpty();
@@ -110,7 +110,7 @@ class DynamicDatasourceMasterSlaveTest {
         // master--end
 
         // master--start
-        BasePageResponse<ProductInfoBaseRespVO> responseOfSlave = productInfoOmsBiz.selectPage(reqVO);
+        BasePageResponse<ProductInfoRespVO> responseOfSlave = productInfoOmsBiz.selectPage(reqVO);
 
         Assertions.assertThat(responseOfSlave).isNotNull();
         Assertions.assertThat(responseOfSlave.getDatas()).isEmpty();

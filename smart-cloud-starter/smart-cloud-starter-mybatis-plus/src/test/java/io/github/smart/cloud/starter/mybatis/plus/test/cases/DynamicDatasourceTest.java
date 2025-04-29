@@ -24,7 +24,7 @@ import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.entity.RoleInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.vo.PageProductReqVO;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.vo.ProductInfoBaseRespVO;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.vo.ProductInfoRespVO;
 import io.github.smart.cloud.utility.NonceUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,7 +97,7 @@ public class DynamicDatasourceTest {
             wrapper.like(ProductInfoEntity::getName, reqVO.getName());
             wrapper.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
             wrapper.orderByDesc(ProductInfoEntity::getInsertTime);
-            BasePageResponse<ProductInfoBaseRespVO> response = productInfoOmsBiz.page(reqVO, wrapper, ProductInfoBaseRespVO.class);
+            BasePageResponse<ProductInfoRespVO> response = productInfoOmsBiz.page(reqVO, wrapper, ProductInfoRespVO.class);
 
             Assertions.assertThat(response).isNotNull();
             Assertions.assertThat(response.getDatas()).isNotEmpty();

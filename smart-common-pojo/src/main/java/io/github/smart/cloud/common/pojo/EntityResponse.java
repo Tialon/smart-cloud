@@ -37,7 +37,7 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @SuperBuilder
-public class BaseEntityResponse implements Serializable {
+public class EntityResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

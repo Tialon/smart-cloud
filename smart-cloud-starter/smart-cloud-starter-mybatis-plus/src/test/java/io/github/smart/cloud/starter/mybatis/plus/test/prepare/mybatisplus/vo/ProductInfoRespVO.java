@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.vo;
+package io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.vo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import io.github.smart.cloud.common.pojo.BaseEntityResponse;
+import io.github.smart.cloud.common.pojo.EntityResponse;
 
 /**
  * 商品信息
@@ -31,7 +31,7 @@ import io.github.smart.cloud.common.pojo.BaseEntityResponse;
 @Getter
 @NoArgsConstructor
 @SuperBuilder
-public class ProductInfoBaseRespVO extends BaseEntityResponse {
+public class ProductInfoRespVO extends EntityResponse {
 
 	private static final long serialVersionUID = 1L;
 
