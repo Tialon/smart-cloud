@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.code.generate.bo.template;
+package io.github.smart.cloud.code.generate.bo.template.param;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Set;
-
 /**
- * 公共信息
+ * entity属性信息
  *
  * @author collin
  * @date 2019-07-13
@@ -30,17 +28,31 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-public class CommonBO {
+public class FieldAttributeBO {
 
-	/** 包名 */
-	private String packageName;
-	/** 需要导入的包名 */
-	private Set<String> importPackages;
-	/** 类名 */
-	private String className;
-	/** 表备注 */
-	private String tableComment;
-	/** 类注释信息 */
-	private ClassCommentBO classComment;
+    /**
+     * 是否为主键
+     */
+    private Boolean primaryKey;
+    /**
+     * 表字段对应的java属性名
+     */
+    private String name;
+    /**
+     * 表字段名称
+     */
+    private String columnName;
+    /**
+     * 类型
+     */
+    private String javaType;
+    /**
+     * 备注
+     */
+    private String comment;
+    /**
+     * mask规则
+     */
+    private String maskRule;
 
 }

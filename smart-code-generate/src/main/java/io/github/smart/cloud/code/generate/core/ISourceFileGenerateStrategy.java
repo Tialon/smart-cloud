@@ -13,46 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.code.generate.bo.template;
+package io.github.smart.cloud.code.generate.core;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import io.github.smart.cloud.code.generate.bo.template.buildparam.TemplateBuildParamContext;
+import io.github.smart.cloud.code.generate.enums.FileType;
 
 /**
- * entity属性信息
+ * 源代码文件生成策略接口定义
  *
  * @author collin
- * @date 2019-07-13
+ * @date 2025-04-29
  */
-@Getter
-@Setter
-@ToString
-public class FieldAttributeBO {
+public interface ISourceFileGenerateStrategy {
 
     /**
-     * 是否为主键
+     * 源代码文件类型
+     *
+     * @return
      */
-    private Boolean primaryKey;
+    FileType getFileType();
+
     /**
-     * 表字段对应的java属性名
+     * 生成源代码文件
+     *
+     * @param context
+     * @throws Exception
      */
-    private String name;
-    /**
-     * 表字段名称
-     */
-    private String columnName;
-    /**
-     * 类型
-     */
-    private String javaType;
-    /**
-     * 备注
-     */
-    private String comment;
-    /**
-     * mask规则
-     */
-    private String maskRule;
+    void generateSourceFile(TemplateBuildParamContext context) throws Exception;
 
 }

@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.code.generate.bo.template;
+package io.github.smart.cloud.code.generate.bo.template.param;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Repository类参数信息
+ * 类注释信息
  *
  * @author collin
- * @date 2025-04-28
+ * @date 2019-07-16
  */
 @Getter
 @Setter
 @ToString
-public class RepositoryBO extends CommonBO {
+public class ClassCommentBO {
 
     /**
-     * entity类名
+     * 创建人
      */
-    private String entityClassName;
+    private String author;
     /**
-     * mapper类名
+     * 生成时间(yyyy-MM-dd)
      */
-    private String mapperClassName;
+    private String createDate;
 
 }

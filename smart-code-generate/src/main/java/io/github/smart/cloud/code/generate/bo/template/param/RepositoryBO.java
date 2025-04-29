@@ -13,38 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.code.generate.enums;
+package io.github.smart.cloud.code.generate.bo.template.param;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * 表生成类型（1、数据库整个表全部生成；2、只生成指定的表；3、除了指定的表，全部生成）
+ * Repository类参数信息
  *
  * @author collin
- * @date 2019-07-14
+ * @date 2025-04-28
  */
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum GenerateTypeEnum {
+@Setter
+@ToString
+public class RepositoryBO extends CommonBO {
 
     /**
-     * 数据库整个表全部生成
+     * entity类名
      */
-    ALL(1),
+    private String entityClassName;
     /**
-     * 只生成指定的表
+     * mapper类名
      */
-    INCLUDE(2),
-    /**
-     * 除了指定的表，全部生成
-     */
-    EXCLUDE(3);
-
-    /**
-     * 生成类型
-     */
-    private Integer type;
+    private String mapperClassName;
 
 }

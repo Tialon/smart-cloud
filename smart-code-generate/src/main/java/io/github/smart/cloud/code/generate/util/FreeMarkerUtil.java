@@ -47,7 +47,7 @@ public class FreeMarkerUtil {
      * @return
      */
     public static String freeMarkerRender(Object data, String templateName) throws Exception {
-        try (Writer out = new StringWriter();) {
+        try (Writer out = new StringWriter()) {
             Template template = freemarkerCfg.getTemplate(templateName, Config.DEFAULT_ENCODING);
             template.process(data, out);
             out.flush();

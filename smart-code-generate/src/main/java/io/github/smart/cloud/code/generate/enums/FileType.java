@@ -20,31 +20,43 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 表生成类型（1、数据库整个表全部生成；2、只生成指定的表；3、除了指定的表，全部生成）
+ * 待生成的文件类型
  *
  * @author collin
- * @date 2019-07-14
+ * @date 2025-04-29
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum GenerateTypeEnum {
+public enum FileType {
 
     /**
-     * 数据库整个表全部生成
+     * 实体对象
      */
-    ALL(1),
+    ENTITY("Entity.ftl", "Entity", ".entity"),
     /**
-     * 只生成指定的表
+     * 实体对象对应的response对象
      */
-    INCLUDE(2),
+    BASE_RESP_VO("BaseRespVO.ftl", "BaseRespVO", ".response.base"),
     /**
-     * 除了指定的表，全部生成
+     * mapper
      */
-    EXCLUDE(3);
+    BASE_MAPPER("BaseMapper.ftl", "BaseMapper", ".mapper.base"),
+    /**
+     * repository对象（对应mybatis-plus的service实现类）
+     */
+    REPOSITORY("Repository.ftl", "Repository", ".repository");
 
     /**
-     * 生成类型
+     * 模板文件名
      */
-    private Integer type;
+    private String templateFilename;
+    /**
+     * 类名后缀
+     */
+    private String classSuffix;
+    /**
+     * 包名后缀
+     */
+    private String packageSuffix;
 
 }

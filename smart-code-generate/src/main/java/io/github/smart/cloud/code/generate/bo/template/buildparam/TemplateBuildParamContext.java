@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.code.generate.bo.template;
+package io.github.smart.cloud.code.generate.bo.template.buildparam;
 
+import io.github.smart.cloud.code.generate.bo.ColumnMetaDataBO;
+import io.github.smart.cloud.code.generate.bo.TableMetaDataBO;
+import io.github.smart.cloud.code.generate.bo.template.param.ClassCommentBO;
+import io.github.smart.cloud.code.generate.properties.CodeProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,19 +26,32 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * BaseRespVO参数信息
+ * 生成源代码文件策略类请求参数
  *
  * @author collin
- * @date 2021-11-04
+ * @date 2025-04-29
  */
 @Getter
 @Setter
 @ToString
-public class BaseRespBO extends CommonBO {
+public class TemplateBuildParamContext {
 
     /**
-     * 表字段对应的java属性信息
+     * 数据库表元数据信息
      */
-    private List<FieldAttributeBO> attributes;
+    private TableMetaDataBO tableMetaData;
+    /**
+     * 表字段元数据信息
+     */
+    private List<ColumnMetaDataBO> columnMetaDatas;
+    /**
+     * 类注释信息
+     */
+    private ClassCommentBO classComment;
+
+    /**
+     * 配置属性
+     */
+    private CodeProperties code;
 
 }
