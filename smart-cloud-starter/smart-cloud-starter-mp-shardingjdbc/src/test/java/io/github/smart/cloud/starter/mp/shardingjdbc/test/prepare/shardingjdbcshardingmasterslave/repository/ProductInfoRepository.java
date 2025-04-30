@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.repository;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcshardingmasterslave.mapper.ProductInfoBaseMapper;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 
 /**
- * 商品信息oms biz
+ * 商品信息repository
  *
  * @author collin
  * @date 2019-03-31

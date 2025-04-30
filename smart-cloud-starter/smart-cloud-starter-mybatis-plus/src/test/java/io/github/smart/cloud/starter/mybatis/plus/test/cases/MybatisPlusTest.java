@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.MybatisplusApp;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.biz.ProductInfoOmsRepository;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.repository.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.vo.PageProductReqVO;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.vo.ProductInfoRespVO;
@@ -41,16 +41,16 @@ import java.util.List;
 class MybatisPlusTest {
 
     @Autowired
-    private ProductInfoOmsRepository productInfoOmsBiz;
+    private ProductInfoOmsRepository productInfoOmsRepository;
 
     @BeforeEach
     void cleanData() {
-        productInfoOmsBiz.truncate();
+        productInfoOmsRepository.truncate();
     }
 
     @Test
     void testCreate() {
-        boolean success = productInfoOmsBiz.save(create("test"));
+        boolean success = productInfoOmsRepository.save(create("test"));
         Assertions.assertThat(success).isTrue();
     }
 
@@ -60,17 +60,17 @@ class MybatisPlusTest {
         for (int i = 0; i < 10; i++) {
             entities.add(create("test" + i));
         }
-        int successCount = productInfoOmsBiz.insertBatchSomeColumn(entities);
+        int successCount = productInfoOmsRepository.insertBatchSomeColumn(entities);
         Assertions.assertThat(successCount).isEqualTo(entities.size());
     }
 
     @Test
     void testLogicDelete() {
         ProductInfoEntity entity = create("testx");
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
-        Boolean deleteSuccess = productInfoOmsBiz.logicDelete(entity.getId(), 10L);
+        Boolean deleteSuccess = productInfoOmsRepository.logicDelete(entity.getId(), 10L);
         Assertions.assertThat(deleteSuccess).isTrue();
     }
 
@@ -78,30 +78,30 @@ class MybatisPlusTest {
     void testFastExists() {
         String name = "testx123x";
         ProductInfoEntity entity = create(name);
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
         LambdaQueryWrapper<ProductInfoEntity> condition = new LambdaQueryWrapper<>();
         condition.eq(ProductInfoEntity::getName, name);
 
-        boolean exist = productInfoOmsBiz.isExist(condition);
+        boolean exist = productInfoOmsRepository.isExist(condition);
         Assertions.assertThat(exist).isTrue();
     }
 
     @Test
     void testRemove() {
         ProductInfoEntity entity = create("testx");
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
-        Assertions.assertThat(productInfoOmsBiz.removeById(entity.getId())).isTrue();
+        Assertions.assertThat(productInfoOmsRepository.removeById(entity.getId())).isTrue();
     }
 
     @Test
     void testPage() {
         String name = "testx";
         ProductInfoEntity entity = create(name);
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
         PageProductReqVO reqVO = new PageProductReqVO();
@@ -113,7 +113,7 @@ class MybatisPlusTest {
         wrapper.like(ProductInfoEntity::getName, reqVO.getName());
         wrapper.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
         wrapper.orderByDesc(ProductInfoEntity::getInsertTime);
-        BasePageResponse<ProductInfoRespVO> response = productInfoOmsBiz.page(reqVO, wrapper, ProductInfoRespVO.class);
+        BasePageResponse<ProductInfoRespVO> response = productInfoOmsRepository.page(reqVO, wrapper, ProductInfoRespVO.class);
 
         Assertions.assertThat(response).isNotNull();
         Assertions.assertThat(response.getDatas()).isNotEmpty();

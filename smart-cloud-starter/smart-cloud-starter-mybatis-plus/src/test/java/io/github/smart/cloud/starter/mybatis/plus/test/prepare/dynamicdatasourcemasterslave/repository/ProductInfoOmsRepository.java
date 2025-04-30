@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.biz;
+package io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.repository;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -28,7 +28,7 @@ import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource
 import org.springframework.stereotype.Repository;
 
 /**
- * 商品信息oms biz
+ * 商品信息repository
  *
  * @author collin
  * @date 2019-03-31

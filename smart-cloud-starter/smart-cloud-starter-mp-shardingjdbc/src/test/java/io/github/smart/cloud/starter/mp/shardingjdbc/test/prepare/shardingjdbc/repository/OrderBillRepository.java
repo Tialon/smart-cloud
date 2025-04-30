@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.repository;
 
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.ProductInfoEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.mapper.ProductInfoBaseMapper;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.OrderBillEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.mapper.OrderBillBaseMapper;
 import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * 商品信息oms biz
+ * 订单信息repository
  *
  * @author collin
- * @date 2019-03-31
+ * @date 2019-04-08
  */
 @Repository
-public class ProductInfoRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
+public class OrderBillRepository extends BaseRepository<OrderBillBaseMapper, OrderBillEntity> {
 
 }

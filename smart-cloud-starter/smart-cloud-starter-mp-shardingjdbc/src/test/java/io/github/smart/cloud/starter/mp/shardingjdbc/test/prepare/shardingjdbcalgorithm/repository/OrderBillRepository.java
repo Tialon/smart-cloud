@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.entity.OrderBillEntity;
@@ -22,7 +22,7 @@ import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseReposito
 import org.springframework.stereotype.Repository;
 
 /**
- * 订单信息api biz
+ * 订单信息repository
  *
  * @author collin
  * @date 2019-04-08

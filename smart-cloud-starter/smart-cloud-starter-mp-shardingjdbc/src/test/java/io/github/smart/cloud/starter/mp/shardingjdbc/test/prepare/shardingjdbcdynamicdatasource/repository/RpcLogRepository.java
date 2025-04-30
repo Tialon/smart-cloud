@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.repository;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.RpcLogEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.mapper.RpcLogBaseMapper;
 import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.entity.ProductInfoEntity;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.mapper.ProductInfoBaseMapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * 商品信息oms biz
+ * 日志repository
  *
  * @author collin
- * @date 2019-03-31
+ * @date 2019-04-08
  */
 @Repository
-public class ProductInfoOmsRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
+@DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
+public class RpcLogRepository extends BaseRepository<RpcLogBaseMapper, RpcLogEntity> {
 
 }

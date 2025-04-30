@@ -16,8 +16,8 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.ShardingJdbcApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.biz.OrderBillRepository;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.biz.ProductInfoRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.repository.OrderBillRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.repository.ProductInfoRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbc.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
@@ -42,14 +42,14 @@ import java.util.Date;
 class ShardingJdbcTest {
 
     @Autowired
-    private OrderBillRepository orderBillBiz;
+    private OrderBillRepository orderBillRepository;
     @Autowired
-    private ProductInfoRepository productInfoBiz;
+    private ProductInfoRepository productInfoRepository;
 
     @BeforeEach
     void cleanData() throws SQLException {
-        orderBillBiz.truncate();
-        productInfoBiz.truncate();
+        orderBillRepository.truncate();
+        productInfoRepository.truncate();
     }
 
     @Test
@@ -64,10 +64,10 @@ class ShardingJdbcTest {
         orderBillEntity.setPayState((byte) 1);
         orderBillEntity.setBuyer(1L);
         orderBillEntity.setInsertUser(1L);
-        boolean saveResult = orderBillBiz.save(orderBillEntity);
+        boolean saveResult = orderBillRepository.save(orderBillEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        OrderBillEntity entity = orderBillBiz.getById(orderBillEntity.getId());
+        OrderBillEntity entity = orderBillRepository.getById(orderBillEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 
@@ -81,10 +81,10 @@ class ShardingJdbcTest {
         productInfoEntity.setSellPrice(100L);
         productInfoEntity.setStock(100L);
         productInfoEntity.setInsertUser(1L);
-        boolean saveResult = productInfoBiz.save(productInfoEntity);
+        boolean saveResult = productInfoRepository.save(productInfoEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        ProductInfoEntity entity = productInfoBiz.getById(productInfoEntity.getId());
+        ProductInfoEntity entity = productInfoRepository.getById(productInfoEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 

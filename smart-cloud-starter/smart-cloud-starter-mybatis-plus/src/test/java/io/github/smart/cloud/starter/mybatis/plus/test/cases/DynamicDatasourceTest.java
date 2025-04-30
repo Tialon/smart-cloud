@@ -19,8 +19,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.DynamicDatasourceApp;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.biz.ProductInfoOmsRepository;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.biz.RoleInfoOmsRepository;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.repository.ProductInfoRepository;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.repository.RoleInfoRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.entity.RoleInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasource.vo.PageProductReqVO;
@@ -48,16 +48,16 @@ public class DynamicDatasourceTest {
     class ProductTest {
 
         @Autowired
-        private ProductInfoOmsRepository productInfoOmsBiz;
+        private ProductInfoRepository productInfoRepository;
 
         @BeforeEach
         void cleanData() {
-            productInfoOmsBiz.truncate();
+            productInfoRepository.truncate();
         }
 
         @Test
         void testCreate() {
-            boolean success = productInfoOmsBiz.save(create("test"));
+            boolean success = productInfoRepository.save(create("test"));
             Assertions.assertThat(success).isTrue();
         }
 
@@ -67,17 +67,17 @@ public class DynamicDatasourceTest {
             for (int i = 0; i < 10; i++) {
                 entities.add(create("test" + i));
             }
-            int successCount = productInfoOmsBiz.insertBatchSomeColumn(entities);
+            int successCount = productInfoRepository.insertBatchSomeColumn(entities);
             Assertions.assertThat(successCount).isEqualTo(entities.size());
         }
 
         @Test
         void testLogicDelete() {
             ProductInfoEntity entity = create("testx");
-            boolean createSuccess = productInfoOmsBiz.save(entity);
+            boolean createSuccess = productInfoRepository.save(entity);
             Assertions.assertThat(createSuccess).isTrue();
 
-            Boolean deleteSuccess = productInfoOmsBiz.logicDelete(entity.getId(), 10L);
+            Boolean deleteSuccess = productInfoRepository.logicDelete(entity.getId(), 10L);
             Assertions.assertThat(deleteSuccess).isTrue();
         }
 
@@ -85,7 +85,7 @@ public class DynamicDatasourceTest {
         void testPage() {
             String name = "testx";
             ProductInfoEntity entity = create(name);
-            boolean createSuccess = productInfoOmsBiz.save(entity);
+            boolean createSuccess = productInfoRepository.save(entity);
             Assertions.assertThat(createSuccess).isTrue();
 
             PageProductReqVO reqVO = new PageProductReqVO();
@@ -97,7 +97,7 @@ public class DynamicDatasourceTest {
             wrapper.like(ProductInfoEntity::getName, reqVO.getName());
             wrapper.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
             wrapper.orderByDesc(ProductInfoEntity::getInsertTime);
-            BasePageResponse<ProductInfoRespVO> response = productInfoOmsBiz.page(reqVO, wrapper, ProductInfoRespVO.class);
+            BasePageResponse<ProductInfoRespVO> response = productInfoRepository.page(reqVO, wrapper, ProductInfoRespVO.class);
 
             Assertions.assertThat(response).isNotNull();
             Assertions.assertThat(response.getDatas()).isNotEmpty();
@@ -124,11 +124,11 @@ public class DynamicDatasourceTest {
     class AuthTest {
 
         @Autowired
-        private RoleInfoOmsRepository roleInfoOmsBiz;
+        private RoleInfoRepository roleInfoRepository;
 
         @BeforeEach
         void cleanData() {
-            roleInfoOmsBiz.truncate();
+            roleInfoRepository.truncate();
         }
 
         @Test
@@ -141,7 +141,7 @@ public class DynamicDatasourceTest {
             roleInfoEntity.setDescription("查询");
             roleInfoEntity.setInsertUser(1L);
 
-            Assertions.assertThat(roleInfoOmsBiz.save(roleInfoEntity)).isTrue();
+            Assertions.assertThat(roleInfoRepository.save(roleInfoEntity)).isTrue();
         }
     }
 

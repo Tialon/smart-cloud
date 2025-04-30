@@ -17,7 +17,7 @@ package io.github.smart.cloud.starter.mybatis.plus.test.cases;
 
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.MybatisplusApp;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.biz.ProductInfoOmsRepository;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.repository.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.mybatisplus.entity.ProductInfoEntity;
 import io.github.smart.cloud.utility.NonceUtil;
 import org.apache.logging.log4j.LogManager;
@@ -40,11 +40,11 @@ import java.util.Date;
 class MybatisSqlLogInterceptorTest {
 
     @Autowired
-    private ProductInfoOmsRepository productInfoOmsBiz;
+    private ProductInfoOmsRepository productInfoOmsRepository;
 
     @BeforeEach
     void cleanData() {
-        productInfoOmsBiz.truncate();
+        productInfoOmsRepository.truncate();
     }
 
     @Test
@@ -57,7 +57,7 @@ class MybatisSqlLogInterceptorTest {
         entity.setSellPrice(100L);
         entity.setStock(10L);
         entity.setInsertUser(10L);
-        boolean success = productInfoOmsBiz.save(entity);
+        boolean success = productInfoOmsRepository.save(entity);
         Assertions.assertThat(success).isTrue();
 
         try (LoggerContext ctx = (LoggerContext) LogManager.getContext(false)) {

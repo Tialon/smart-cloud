@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz;
+package io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.repository;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import io.github.smart.cloud.starter.mp.shardingjdbc.constants.ShardingSphereDataSourceName;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ProductInfoEntity;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.mapper.ProductInfoBaseMapper;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ProductInfoEntity;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.mapper.ProductInfoBaseMapper;
 import io.github.smart.cloud.starter.mybatis.plus.common.repository.BaseRepository;
+import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
+import io.github.smart.cloud.utility.NonceUtil;
+import io.github.smart.cloud.utility.RandomUtil;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 /**
- * 商品信息oms biz
+ * 商品信息repository
  *
  * @author collin
  * @date 2019-03-31
@@ -31,5 +36,23 @@ import org.springframework.stereotype.Repository;
 @Repository
 @DS(ShardingSphereDataSourceName.SHARDING_DATASOURCE)
 public class ProductInfoRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
+
+    public Long create() {
+        ProductInfoEntity entity = new ProductInfoEntity();
+        entity.setId(NonceUtil.nextId());
+        entity.setInsertTime(new Date());
+        entity.setDelState(DeleteState.NORMAL);
+        entity.setName(RandomUtil.generateRandom(false, 6));
+        entity.setSellPrice(100L);
+        entity.setStock(100L);
+        entity.setInsertUser(1L);
+        super.save(entity);
+
+        return entity.getId();
+    }
+
+    public ProductInfoEntity query(Long id) {
+        return super.getById(id);
+    }
 
 }
