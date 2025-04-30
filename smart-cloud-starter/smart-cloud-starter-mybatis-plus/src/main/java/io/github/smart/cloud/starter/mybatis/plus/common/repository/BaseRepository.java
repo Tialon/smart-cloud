@@ -16,12 +16,13 @@
 package io.github.smart.cloud.starter.mybatis.plus.common.repository;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.github.smart.cloud.common.pojo.EntityResponse;
 import io.github.smart.cloud.common.pojo.BasePageRequest;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
+import io.github.smart.cloud.common.pojo.EntityResponse;
 import io.github.smart.cloud.starter.mybatis.plus.common.entity.BaseEntity;
 import io.github.smart.cloud.starter.mybatis.plus.common.mapper.SmartMapper;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
@@ -58,12 +59,12 @@ public class BaseRepository<M extends SmartMapper<T>, T extends BaseEntity> exte
      * @return
      */
     public Boolean logicDelete(Long id, Long uid) {
-        T entity = BeanUtils.instantiateClass(entityClass);
-        entity.setId(id);
-        entity.setDelUser(uid);
-        entity.setDelTime(new Date());
-        entity.setDelState(DeleteState.DELETED);
-        return baseMapper.updateById(entity) == 1;
+        LambdaUpdateWrapper<T> updateWrapper = new LambdaUpdateWrapper<>(getEntityClass());
+        updateWrapper.set(T::getDelUser, uid)
+                .set(T::getDelTime, new Date())
+                .set(T::getDelState, DeleteState.DELETED)
+                .eq(T::getId, id);
+        return this.update(updateWrapper);
     }
 
     /**
@@ -72,7 +73,6 @@ public class BaseRepository<M extends SmartMapper<T>, T extends BaseEntity> exte
     public void truncate() {
         baseMapper.truncate();
     }
-
 
     /**
      * 是否存在（通过select 1 from Xxx where z=? limit 1查询，优化性能）
