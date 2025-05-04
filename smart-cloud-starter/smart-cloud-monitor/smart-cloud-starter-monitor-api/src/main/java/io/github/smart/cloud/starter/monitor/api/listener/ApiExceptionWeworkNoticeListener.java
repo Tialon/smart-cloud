@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.listener.wework;
+package io.github.smart.cloud.starter.monitor.api.listener;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.smart.cloud.exception.ConfigException;
@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ApiExceptionListener implements EnvironmentAware, InitializingBean, ApplicationListener<ApiExceptionNoticeEvent> {
+public class ApiExceptionWeworkNoticeListener implements EnvironmentAware, InitializingBean, ApplicationListener<ApiExceptionNoticeEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
 
