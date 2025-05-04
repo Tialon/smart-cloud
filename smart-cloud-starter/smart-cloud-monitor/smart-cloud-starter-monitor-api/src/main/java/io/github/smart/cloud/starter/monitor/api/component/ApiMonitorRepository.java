@@ -84,11 +84,19 @@ public class ApiMonitorRepository implements InitializingBean, DisposableBean, A
                         if (throwable == null) {
                             apiHealthCacheDTO.setThrowable(e);
                         } else {
-                            // 如果当前异常为需要提醒的基础，则不更新
+                            // 如果当前异常为需要提醒的类或code，则不更新
                             Set<String> needAlertExceptionClassNames = apiMonitorProperties.getNeedAlertExceptionClassNames();
-                            if (!needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
-                                apiHealthCacheDTO.setThrowable(e);
+                            if (needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
+                                return;
                             }
+                            if (throwable instanceof AbstractBaseException) {
+                                Set<String> needAlertExceptionCodes = apiMonitorProperties.getNeedAlertExceptionCodes();
+                                if (needAlertExceptionCodes.contains(((AbstractBaseException) throwable).getCode())) {
+                                    return;
+                                }
+                            }
+
+                            apiHealthCacheDTO.setThrowable(e);
                         }
                     }
                 }
