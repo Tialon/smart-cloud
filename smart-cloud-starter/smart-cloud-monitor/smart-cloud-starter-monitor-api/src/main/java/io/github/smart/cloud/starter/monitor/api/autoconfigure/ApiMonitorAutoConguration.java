@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * actuator自动配置类
+ * monitor-api自动配置类
  *
  * @author collin
  * @date 2024-01-16

@@ -22,6 +22,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 企业微信机器人text类型消息
@@ -45,8 +46,8 @@ public class WeworkRobotTextMessageDTO extends AbstractWeworkRobotMessageDTO imp
         this(content, null);
     }
 
-    public WeworkRobotTextMessageDTO(String content, LinkedHashSet<String> mentionedList) {
-        this.text = new WeworkRobotTextMessageContentDTO(content, mentionedList);
+    public WeworkRobotTextMessageDTO(String content, Set<String> mentionedMobileList) {
+        this.text = new WeworkRobotTextMessageContentDTO(content, mentionedMobileList);
         setMsgtype(WeworkRobotMessageType.TEXT.getValue());
     }
 

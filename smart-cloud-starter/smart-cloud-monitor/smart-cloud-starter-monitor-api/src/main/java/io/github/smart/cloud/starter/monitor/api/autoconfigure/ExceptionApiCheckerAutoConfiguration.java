@@ -16,11 +16,12 @@
 package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiExceptionMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
 import io.github.smart.cloud.starter.monitor.api.component.ApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiChecker;
+import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.listener.ApiExceptionWeworkNoticeListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +47,15 @@ public class ExceptionApiCheckerAutoConfiguration {
 
     @Bean
     @RefreshScope
-    @ConditionalOnProperty(prefix = ApiMonitorProperties.PREFIX, name = "notice.wework.enable", havingValue = "true", matchIfMissing = true)
-    public ApiExceptionWeworkNoticeListener apiExceptionListener(final ApiMonitorProperties apiMonitorProperties) {
-        return new ApiExceptionWeworkNoticeListener(apiMonitorProperties);
+    @ConditionWeworkRobotNotice
+    public WeworkRobotComponent weworkRobotComponent(final ApiMonitorProperties apiMonitorProperties) {
+        return new WeworkRobotComponent(apiMonitorProperties);
+    }
+
+    @Bean
+    @ConditionWeworkRobotNotice
+    public ApiExceptionWeworkNoticeListener apiExceptionListener(final WeworkRobotComponent weworkRobotComponent) {
+        return new ApiExceptionWeworkNoticeListener(weworkRobotComponent);
     }
 
 }

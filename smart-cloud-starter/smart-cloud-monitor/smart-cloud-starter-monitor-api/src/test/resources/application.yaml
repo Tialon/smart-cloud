@@ -17,6 +17,7 @@ smart:
       '[ProductService#query]': 0.1
     needAlertExceptionClassNames:
       - NullPointerException
+      - UnsupportedOperationException
     needAlertExceptionCodes:
       - 500
 management:

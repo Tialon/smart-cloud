@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 接口健康检测拦截器配置
+ * 接口监控拦截器配置
  *
  * @author collin
  * @date 2024-01-16

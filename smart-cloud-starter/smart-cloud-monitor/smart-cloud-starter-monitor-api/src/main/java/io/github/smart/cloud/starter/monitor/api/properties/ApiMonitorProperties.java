@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.properties;
 
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -86,9 +87,14 @@ public class ApiMonitorProperties {
      */
     private String robotKey;
     /**
-     * 异常提醒人
+     * 消息类型
      */
-    private Set<String> mentionedList = new LinkedHashSet<>();
+    private WeworkRobotMessageType messageType = WeworkRobotMessageType.MARKDOWN;
+    /**
+     * 异常提醒人（markdown类型消息为userid；text类型消息为手机号）
+     */
+    private Set<String> reminders = new LinkedHashSet<>();
+
     /**
      * “需要提醒的异常类名列表”中命中时，需要提醒
      */
