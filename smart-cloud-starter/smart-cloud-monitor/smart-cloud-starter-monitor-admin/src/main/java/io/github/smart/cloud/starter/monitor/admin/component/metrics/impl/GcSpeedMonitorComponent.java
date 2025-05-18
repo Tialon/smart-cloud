@@ -98,7 +98,7 @@ public class GcSpeedMonitorComponent extends AbstractInstanceMetricsMonitorCompo
         instanceData.add(metricValue);
         int historyCount = instanceData.size();
         Integer keepIncreasingCount = getKeepIncreasingCount(serviceName);
-        if (historyCount < keepIncreasingCount) {
+        if (historyCount < 2 || historyCount < keepIncreasingCount) {
             return MatchIncreaseResultDTO.normal();
         }
 
