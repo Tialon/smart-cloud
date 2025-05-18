@@ -67,8 +67,9 @@ public class TomcatMetricMonitorComponent implements IInstanceMetricsMonitorComp
         if (tomcatThreadsbusy == null) {
             return MetricCheckResultDTO.ok();
         }
-        if (BigDecimal.valueOf(tomcatThreadsbusy).compareTo(BigDecimal.valueOf(tomcatThreadsConfigMax).multiply(getThreshold(instance.getRegistration().getName()))) >= 0) {
-            String alertDesc = String.format("tomcat活动线程[%d]已超过预警值[%d]", tomcatThreadsbusy, tomcatThreadsConfigMax);
+        BigDecimal tomcatThreadsbusyThreshold = BigDecimal.valueOf(tomcatThreadsConfigMax).multiply(getThreshold(instance.getRegistration().getName()));
+        if (BigDecimal.valueOf(tomcatThreadsbusy).compareTo(tomcatThreadsbusyThreshold) >= 0) {
+            String alertDesc = String.format("tomcat活动线程[%d]已超过预警值[%s]", tomcatThreadsbusy, tomcatThreadsbusyThreshold);
             return MetricCheckResultDTO.error(MetricCheckStatus.AVAILABLE_RESOURCE_ALERT, alertDesc);
         }
 

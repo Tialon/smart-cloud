@@ -49,35 +49,35 @@ public class MetricsMonitorAutoConfiguration {
     @Bean
     @RefreshScope
     @ConditionalOnProperty(prefix = MONITOR_METRICS_PREFIX, value = "cpu-usage.enabled", havingValue = "true", matchIfMissing = true)
-    public CpuUsageMonitorComponent cpuUsageMonitorComponent() {
+    public IInstanceMetricsMonitorComponent cpuUsageMonitorComponent() {
         return new CpuUsageMonitorComponent();
     }
 
     @Bean
     @RefreshScope
     @ConditionalOnProperty(prefix = MONITOR_METRICS_PREFIX, value = "gc-speed.enabled", havingValue = "true", matchIfMissing = true)
-    public GcSpeedMonitorComponent gcSpeedMonitorComponent() {
+    public IInstanceMetricsMonitorComponent gcSpeedMonitorComponent() {
         return new GcSpeedMonitorComponent();
     }
 
     @Bean
     @RefreshScope
     @ConditionalOnProperty(prefix = MONITOR_METRICS_PREFIX, value = "jvm-heap.enabled", havingValue = "true", matchIfMissing = true)
-    public JvmMemoryHeapUsedMonitorComponent jvmMemoryHeapUsedMonitorComponent() {
+    public IInstanceMetricsMonitorComponent jvmMemoryHeapUsedMonitorComponent() {
         return new JvmMemoryHeapUsedMonitorComponent();
     }
 
     @Bean
     @RefreshScope
     @ConditionalOnProperty(prefix = MONITOR_METRICS_PREFIX, value = "jvm-nonheap.enabled", havingValue = "true", matchIfMissing = true)
-    public JvmMemoryNonHeapUsedMonitorComponent jvmMemoryNonHeapUsedMonitorComponent() {
+    public IInstanceMetricsMonitorComponent jvmMemoryNonHeapUsedMonitorComponent() {
         return new JvmMemoryNonHeapUsedMonitorComponent();
     }
 
     @Bean
     @RefreshScope
     @ConditionalOnProperty(prefix = MONITOR_METRICS_PREFIX, value = "live-thread-count.enabled", havingValue = "true", matchIfMissing = true)
-    public LiveThreadCountMonitorComponent liveThreadCountMonitorComponent() {
+    public IInstanceMetricsMonitorComponent liveThreadCountMonitorComponent() {
         return new LiveThreadCountMonitorComponent();
     }
 
