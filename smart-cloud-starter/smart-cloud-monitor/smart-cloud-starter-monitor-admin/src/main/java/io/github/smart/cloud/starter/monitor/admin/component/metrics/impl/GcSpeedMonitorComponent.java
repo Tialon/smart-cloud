@@ -96,9 +96,11 @@ public class GcSpeedMonitorComponent extends AbstractInstanceMetricsMonitorCompo
     private MatchIncreaseResultDTO matchIncreaseTooFast(String serviceName, String instanceId, Long metricValue) {
         List<Long> instanceData = HISTORY_DATA.computeIfAbsent(instanceId, (key) -> new CopyOnWriteArrayList<>());
         instanceData.add(metricValue);
+
+        final int minDataMatchSize = 2;
         int historyCount = instanceData.size();
         Integer keepIncreasingCount = getKeepIncreasingCount(serviceName);
-        if (historyCount < 2 || historyCount < keepIncreasingCount) {
+        if (historyCount < minDataMatchSize || historyCount < keepIncreasingCount) {
             return MatchIncreaseResultDTO.normal();
         }
 

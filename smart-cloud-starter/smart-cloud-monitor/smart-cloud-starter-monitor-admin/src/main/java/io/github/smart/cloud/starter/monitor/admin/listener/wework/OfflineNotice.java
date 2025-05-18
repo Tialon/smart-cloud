@@ -15,7 +15,10 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
+import io.github.smart.cloud.monitor.common.dto.wework.AbstractWeworkRobotMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
+import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.OfflineNoticeEvent;
@@ -38,14 +41,20 @@ public class OfflineNotice extends AbstractWeworkNotice<OfflineNoticeEvent> {
     @Override
     public void onApplicationEvent(OfflineNoticeEvent event) {
         String name = event.getName();
-        String reminders = getReminderParams(name);
         StringBuilder content = new StringBuilder(64);
-        content.append("**").append(name).append("**服务<font color=\"warning\">**在线实例数为0**</font>");
-        if (StringUtils.hasText(reminders)) {
-            content.append(reminders);
-        }
+        content.append("【").append(name).append("】服务在线实例数为0");
 
-        String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
+        AbstractWeworkRobotMessageDTO messageDto = null;
+        if (monitorProperties.getMessageType() == WeworkRobotMessageType.MARKDOWN) {
+            String reminders = getReminderParams(name);
+            if (StringUtils.hasText(reminders)) {
+                content.append(reminders);
+            }
+            messageDto = new WeworkRobotMarkdownMessageDTO(content.toString());
+        } else {
+            messageDto = new WeworkRobotTextMessageDTO(content.toString(), getReminders(name));
+        }
+        String robotMessage = JacksonUtil.toJson(messageDto);
         weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
     }
 

@@ -41,7 +41,7 @@ public class ServiceInfoProperties implements Serializable {
      */
     private Long id;
     /**
-     * 企业微信提醒人（账号）
+     * 异常提醒人（markdown类型消息为userid；text类型消息为手机号）
      */
     private Set<String> reminders = new LinkedHashSet<>();
     /**

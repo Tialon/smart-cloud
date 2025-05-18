@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -47,16 +48,27 @@ public abstract class AbstractWeworkNotice<E extends ApplicationEvent> implement
      * @return
      */
     protected String getReminderParams(String serviceName) {
-        ServiceInfoProperties projectProperties = monitorProperties.getServiceInfos().get(serviceName);
-        if (projectProperties == null) {
-            return SymbolConstant.EMPTY;
-        }
-        Set<String> reminders = projectProperties.getReminders();
+        Set<String> reminders = getReminders(serviceName);
         if (reminders == null || reminders.isEmpty()) {
             return SymbolConstant.EMPTY;
         }
 
         return reminderComponent.generateReminders(reminders);
+    }
+
+    /**
+     * 获取提醒人
+     *
+     * @param serviceName
+     * @return
+     */
+    protected Set<String> getReminders(String serviceName) {
+        ServiceInfoProperties projectProperties = monitorProperties.getServiceInfos().get(serviceName);
+        if (projectProperties == null) {
+            return Collections.emptySet();
+        }
+
+        return projectProperties.getReminders();
     }
 
 }

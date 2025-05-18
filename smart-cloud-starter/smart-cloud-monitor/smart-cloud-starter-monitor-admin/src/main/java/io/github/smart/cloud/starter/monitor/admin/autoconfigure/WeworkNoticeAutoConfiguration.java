@@ -66,13 +66,13 @@ public class WeworkNoticeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppChangeWeworkNotice appChangeWeworkNotice(final WeworkRobotComponent weworkRobotComponent, final ReminderComponent reminderComponent) {
-        return new AppChangeWeworkNotice(weworkRobotComponent, reminderComponent);
+    public AppChangeWeworkNotice appChangeWeworkNotice(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new AppChangeWeworkNotice(weworkRobotComponent, monitorProperties, reminderComponent);
     }
 
     @Bean
-    public MetricsAlertListener metricsAlertListener(final WeworkRobotComponent weworkRobotComponent) {
-        return new MetricsAlertListener(weworkRobotComponent);
+    public MetricsAlertListener metricsAlertListener(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new MetricsAlertListener(weworkRobotComponent, monitorProperties, reminderComponent);
     }
 
 }

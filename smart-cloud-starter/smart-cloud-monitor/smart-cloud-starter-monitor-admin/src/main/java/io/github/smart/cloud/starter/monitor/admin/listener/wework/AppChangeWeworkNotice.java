@@ -17,13 +17,14 @@ package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
+import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.*;
+import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.utility.DateUtil;
 import io.github.smart.cloud.utility.JacksonUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationListener;
 import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
@@ -35,14 +36,27 @@ import java.util.Map;
  * @author collin
  * @date 2024-01-25
  */
-@RequiredArgsConstructor
-public class AppChangeWeworkNotice implements ApplicationListener<AbstractAppChangeEvent> {
+public class AppChangeWeworkNotice extends AbstractWeworkNotice<AbstractAppChangeEvent> {
 
-    private final WeworkRobotComponent weworkRobotComponent;
-    private final ReminderComponent reminderComponent;
+    public AppChangeWeworkNotice(WeworkRobotComponent weworkRobotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotComponent, monitorProperties, reminderComponent);
+    }
 
     @Override
     public void onApplicationEvent(AbstractAppChangeEvent event) {
+        if (monitorProperties.getMessageType() == WeworkRobotMessageType.MARKDOWN) {
+            sendMarkdownMessage(event);
+            return;
+        }
+        sendTextMessage(event);
+    }
+
+    /**
+     * 发送markdown格式消息
+     *
+     * @param event
+     */
+    private void sendMarkdownMessage(AbstractAppChangeEvent event) {
         // 在线实例数
         Long healthInstanceCount = event.getHealthInstanceCount();
         String healthInstanceCountDesc = healthInstanceCount > 0 ? String.valueOf(healthInstanceCount) : "<font color=\"warning\">**0**</font>";
@@ -51,7 +65,7 @@ public class AppChangeWeworkNotice implements ApplicationListener<AbstractAppCha
         content.append("**时间**：").append(DateUtil.getCurrentDateTime()).append('\n')
                 .append("**服务**: ").append(event.getName()).append('\n')
                 .append("**地址**: ").append(event.getUrl()).append('\n')
-                .append("**状态**: ").append(getState(event)).append('\n')
+                .append("**状态**: ").append(getMarkdownState(event)).append('\n')
                 .append("**在线实例数**: ").append(healthInstanceCountDesc).append('\n');
 
         // 接口健康信息
@@ -76,12 +90,46 @@ public class AppChangeWeworkNotice implements ApplicationListener<AbstractAppCha
     }
 
     /**
-     * 获取服务状态描述
+     * 发送text格式消息
+     *
+     * @param event
+     */
+    private void sendTextMessage(AbstractAppChangeEvent event) {
+        StringBuilder content = new StringBuilder(128);
+        content.append("【时间】: ").append(DateUtil.getCurrentDateTime()).append('\n')
+                .append("【服务】: ").append(event.getName()).append('\n')
+                .append("【地址】: ").append(event.getUrl()).append('\n')
+                .append("【状态】: ").append(getTextState(event)).append('\n')
+                .append("【在线实例数】: ").append(event.getHealthInstanceCount()).append('\n');
+
+        // 接口健康信息
+        StatusInfo statusInfo = event.getStatusInfo();
+        if (statusInfo.isDown() || statusInfo.isOffline()) {
+            Object reason = getReason(statusInfo);
+            if (reason != null) {
+                content.append("【原因】: ").append(reason).append('\n');
+            }
+        }
+
+        if (!(event instanceof MarkedOfflineEvent)) {
+            // 提醒人
+            String reminderParams = reminderComponent.getReminderParams(event.getName(), event);
+            if (StringUtils.hasText(reminderParams)) {
+                content.append(reminderParams);
+            }
+        }
+
+        String robotMessage = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(event.getName())));
+        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(event.getName()), robotMessage);
+    }
+
+    /**
+     * 获取服务状态描述（markdown格式）
      *
      * @param event
      * @return
      */
-    private String getState(AbstractAppChangeEvent event) {
+    private String getMarkdownState(AbstractAppChangeEvent event) {
         if (event instanceof DownEvent) {
             return "<font color=\"comment\">**健康检查没通过**</font>";
         } else if (event instanceof UpEvent) {
@@ -92,6 +140,28 @@ public class AppChangeWeworkNotice implements ApplicationListener<AbstractAppCha
             return "<font color=\"comment\">**被人工标记下线**</font>";
         } else if (event instanceof UnknownEvent) {
             return "<font color=\"comment\">**未知异常**</font>";
+        }
+
+        return "**unknow**";
+    }
+
+    /**
+     * 获取服务状态描述（text格式）
+     *
+     * @param event
+     * @return
+     */
+    private String getTextState(AbstractAppChangeEvent event) {
+        if (event instanceof DownEvent) {
+            return "健康检查没通过❌";
+        } else if (event instanceof UpEvent) {
+            return "上线✔";
+        } else if (event instanceof OfflineEvent) {
+            return "离线⚠";
+        } else if (event instanceof MarkedOfflineEvent) {
+            return "被人工标记下线";
+        } else if (event instanceof UnknownEvent) {
+            return "未知异常";
         }
 
         return "**unknow**";

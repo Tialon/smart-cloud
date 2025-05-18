@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.properties;
 
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -63,6 +64,10 @@ public class MonitorProperties implements InitializingBean {
      * 默认的机器人key
      */
     private String robotKey;
+    /**
+     * 消息类型
+     */
+    private WeworkRobotMessageType messageType = WeworkRobotMessageType.MARKDOWN;
     /**
      * 服务配置
      */

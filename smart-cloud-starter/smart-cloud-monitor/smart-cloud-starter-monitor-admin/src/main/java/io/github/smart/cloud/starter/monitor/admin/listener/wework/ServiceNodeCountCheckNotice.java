@@ -16,6 +16,8 @@
 package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
+import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.ServiceNodeCountCheckNoticeEvent;
@@ -38,6 +40,19 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
 
     @Override
     public void onApplicationEvent(ServiceNodeCountCheckNoticeEvent event) {
+        if (monitorProperties.getMessageType() == WeworkRobotMessageType.MARKDOWN) {
+            sendMarkdownMessage(event);
+            return;
+        }
+        sendTextMessage(event);
+    }
+
+    /**
+     * 发送markdown格式消息
+     *
+     * @param event
+     */
+    private void sendMarkdownMessage(ServiceNodeCountCheckNoticeEvent event) {
         String name = event.getName();
         String reminders = getReminderParams(name);
         StringBuilder content = new StringBuilder(64);
@@ -56,6 +71,29 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
         }
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
+        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
+    }
+
+    /**
+     * 发送text格式消息
+     *
+     * @param event
+     */
+    private void sendTextMessage(ServiceNodeCountCheckNoticeEvent event) {
+        String name = event.getName();
+        StringBuilder content = new StringBuilder(64);
+        content.append("【服务】: ").append(name).append('\n');
+
+        ServiceInfoProperties serviceInfoProperties = monitorProperties.getServiceInfos().get(name);
+        if (serviceInfoProperties != null) {
+            Integer nodeCount = serviceInfoProperties.getNodeCount();
+            if (nodeCount != null) {
+                content.append("【期望实例数】: ").append(nodeCount).append('\n');
+            }
+        }
+        content.append("【当前实例数】:").append(event.getNodeCount()).append("⚠\n");
+
+        String robotMessage = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(name)));
         weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
     }
 

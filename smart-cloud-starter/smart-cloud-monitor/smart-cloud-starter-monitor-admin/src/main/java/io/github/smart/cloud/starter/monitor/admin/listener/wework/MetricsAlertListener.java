@@ -17,13 +17,16 @@ package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
+import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
+import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.dto.MetricCheckResultDTO;
 import io.github.smart.cloud.starter.monitor.admin.event.MetricAlertEvent;
+import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.utility.DateUtil;
 import io.github.smart.cloud.utility.JacksonUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationListener;
+import org.springframework.util.StringUtils;
 
 /**
  * 服务指标监控企业微信通知
@@ -31,24 +34,54 @@ import org.springframework.context.ApplicationListener;
  * @author collin
  * @date 2024-07-28
  */
-@RequiredArgsConstructor
-public class MetricsAlertListener implements ApplicationListener<MetricAlertEvent> {
+public class MetricsAlertListener extends AbstractWeworkNotice<MetricAlertEvent> {
 
-    private final WeworkRobotComponent weworkRobotComponent;
+
+    public MetricsAlertListener(WeworkRobotComponent weworkRobotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotComponent, monitorProperties, reminderComponent);
+    }
 
     @Override
     public void onApplicationEvent(MetricAlertEvent event) {
+        if (monitorProperties.getMessageType() == WeworkRobotMessageType.MARKDOWN) {
+            sendMarkdownMessage(event);
+            return;
+        }
+        sendTextMessage(event);
+    }
+
+    private void sendMarkdownMessage(MetricAlertEvent event) {
         Instance instance = event.getInstance();
         MetricCheckResultDTO metricCheckResult = event.getMetricCheckResult();
-
         String serviceName = instance.getRegistration().getName();
+        String reminders = getReminderParams(serviceName);
+
         StringBuilder content = new StringBuilder(128);
         content.append("**时间**：").append(DateUtil.getCurrentDateTime()).append("\n")
                 .append("**服务**：").append(instance.getRegistration().getName()).append("\n")
                 .append("**地址**：").append(instance.getRegistration().getServiceUrl()).append("\n")
                 .append("**指标**：").append(event.getInstanceMetric().getDesc()).append("-").append(metricCheckResult.getMetricCheckStatus().getDesc()).append("\n")
                 .append("**信息**：").append(metricCheckResult.getAlertDesc());
-        String messaeg = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
+        if (StringUtils.hasText(reminders)) {
+            content.append(reminders);
+        }
+        String message = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
+
+        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(serviceName), message);
+    }
+
+    private void sendTextMessage(MetricAlertEvent event) {
+        Instance instance = event.getInstance();
+        MetricCheckResultDTO metricCheckResult = event.getMetricCheckResult();
+
+        String serviceName = instance.getRegistration().getName();
+        StringBuilder content = new StringBuilder(128);
+        content.append("【时间】：").append(DateUtil.getCurrentDateTime()).append("\n")
+                .append("【服务】：").append(instance.getRegistration().getName()).append("\n")
+                .append("【地址】：").append(instance.getRegistration().getServiceUrl()).append("\n")
+                .append("【指标】：").append(event.getInstanceMetric().getDesc()).append("-").append(metricCheckResult.getMetricCheckStatus().getDesc()).append("\n")
+                .append("【信息】：").append(metricCheckResult.getAlertDesc());
+        String messaeg = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(serviceName)));
 
         weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(serviceName), messaeg);
     }
