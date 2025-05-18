@@ -17,7 +17,7 @@ package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
+import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.ServiceNodeCountCheckNoticeEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
@@ -32,8 +32,8 @@ import org.springframework.util.StringUtils;
  */
 public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNodeCountCheckNoticeEvent> {
 
-    public ServiceNodeCountCheckNotice(RobotComponent robotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
-        super(robotComponent, monitorProperties, reminderComponent);
+    public ServiceNodeCountCheckNotice(WeworkRobotComponent weworkRobotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotComponent, monitorProperties, reminderComponent);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
         }
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        robotComponent.sendWxworkNotice(robotComponent.getRobotKey(name), robotMessage);
+        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
     }
 
 }

@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class RobotComponent implements InitializingBean {
+public class WeworkRobotComponent implements InitializingBean {
 
     private final MonitorProperties monitorProperties;
     private HttpHost proxy;

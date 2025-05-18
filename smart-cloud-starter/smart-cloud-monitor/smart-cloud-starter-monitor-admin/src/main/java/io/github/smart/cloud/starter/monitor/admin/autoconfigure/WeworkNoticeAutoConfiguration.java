@@ -17,7 +17,7 @@ package io.github.smart.cloud.starter.monitor.admin.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.admin.component.GitLabComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
+import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.AppChangeWeworkNotice;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.MetricsAlertListener;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.OfflineNotice;
@@ -42,8 +42,8 @@ public class WeworkNoticeAutoConfiguration {
     @Bean
     @RefreshScope
     @ConditionalOnMissingBean
-    public RobotComponent robotComponent(final MonitorProperties monitorProperties) {
-        return new RobotComponent(monitorProperties);
+    public WeworkRobotComponent robotComponent(final MonitorProperties monitorProperties) {
+        return new WeworkRobotComponent(monitorProperties);
     }
 
     @Bean
@@ -54,25 +54,25 @@ public class WeworkNoticeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OfflineNotice offlineWeworkNotice(final RobotComponent robotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new OfflineNotice(robotComponent, monitorProperties, reminderComponent);
+    public OfflineNotice offlineWeworkNotice(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new OfflineNotice(weworkRobotComponent, monitorProperties, reminderComponent);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceNodeCountCheckNotice serviceNodeCountCheckNotice(final RobotComponent robotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new ServiceNodeCountCheckNotice(robotComponent, monitorProperties, reminderComponent);
+    public ServiceNodeCountCheckNotice serviceNodeCountCheckNotice(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new ServiceNodeCountCheckNotice(weworkRobotComponent, monitorProperties, reminderComponent);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppChangeWeworkNotice appChangeWeworkNotice(final RobotComponent robotComponent, final ReminderComponent reminderComponent) {
-        return new AppChangeWeworkNotice(robotComponent, reminderComponent);
+    public AppChangeWeworkNotice appChangeWeworkNotice(final WeworkRobotComponent weworkRobotComponent, final ReminderComponent reminderComponent) {
+        return new AppChangeWeworkNotice(weworkRobotComponent, reminderComponent);
     }
 
     @Bean
-    public MetricsAlertListener metricsAlertListener(final RobotComponent robotComponent) {
-        return new MetricsAlertListener(robotComponent);
+    public MetricsAlertListener metricsAlertListener(final WeworkRobotComponent weworkRobotComponent) {
+        return new MetricsAlertListener(weworkRobotComponent);
     }
 
 }

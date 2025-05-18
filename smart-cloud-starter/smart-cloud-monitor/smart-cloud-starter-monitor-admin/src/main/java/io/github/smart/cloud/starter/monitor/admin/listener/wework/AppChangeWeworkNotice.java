@@ -18,7 +18,7 @@ package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
+import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.*;
 import io.github.smart.cloud.utility.DateUtil;
 import io.github.smart.cloud.utility.JacksonUtil;
@@ -38,7 +38,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AppChangeWeworkNotice implements ApplicationListener<AbstractAppChangeEvent> {
 
-    private final RobotComponent robotComponent;
+    private final WeworkRobotComponent weworkRobotComponent;
     private final ReminderComponent reminderComponent;
 
     @Override
@@ -72,7 +72,7 @@ public class AppChangeWeworkNotice implements ApplicationListener<AbstractAppCha
         }
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        robotComponent.sendWxworkNotice(robotComponent.getRobotKey(event.getName()), robotMessage);
+        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(event.getName()), robotMessage);
     }
 
     /**

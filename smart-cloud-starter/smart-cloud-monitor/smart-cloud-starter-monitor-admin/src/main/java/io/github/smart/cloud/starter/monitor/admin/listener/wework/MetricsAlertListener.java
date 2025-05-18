@@ -17,7 +17,7 @@ package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
+import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.dto.MetricCheckResultDTO;
 import io.github.smart.cloud.starter.monitor.admin.event.MetricAlertEvent;
 import io.github.smart.cloud.utility.DateUtil;
@@ -34,7 +34,7 @@ import org.springframework.context.ApplicationListener;
 @RequiredArgsConstructor
 public class MetricsAlertListener implements ApplicationListener<MetricAlertEvent> {
 
-    private final RobotComponent robotComponent;
+    private final WeworkRobotComponent weworkRobotComponent;
 
     @Override
     public void onApplicationEvent(MetricAlertEvent event) {
@@ -50,7 +50,7 @@ public class MetricsAlertListener implements ApplicationListener<MetricAlertEven
                 .append("**信息**：").append(metricCheckResult.getAlertDesc());
         String messaeg = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
 
-        robotComponent.sendWxworkNotice(robotComponent.getRobotKey(serviceName), messaeg);
+        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(serviceName), messaeg);
     }
 
 }

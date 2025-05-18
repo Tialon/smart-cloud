@@ -17,7 +17,7 @@ package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import io.github.smart.cloud.constants.SymbolConstant;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
+import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public abstract class AbstractWeworkNotice<E extends ApplicationEvent> implements ApplicationListener<E> {
 
-    protected final RobotComponent robotComponent;
+    protected final WeworkRobotComponent weworkRobotComponent;
     protected final MonitorProperties monitorProperties;
     protected final ReminderComponent reminderComponent;
 
