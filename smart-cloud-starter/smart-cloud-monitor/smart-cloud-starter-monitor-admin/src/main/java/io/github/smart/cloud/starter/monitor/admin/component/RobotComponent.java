@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
 /**
  * 企业微信机器人发送消息
@@ -64,11 +65,11 @@ public class RobotComponent implements InitializingBean {
      */
     public String getRobotKey(String serviceName) {
         ServiceInfoProperties serviceInfoProperties = monitorProperties.getServiceInfos().get(serviceName);
-        if (serviceInfoProperties == null) {
-            return monitorProperties.getRobotKey();
+        if (serviceInfoProperties != null && StringUtils.hasText(serviceInfoProperties.getRobotKey())) {
+            return serviceInfoProperties.getRobotKey();
         }
 
-        return serviceInfoProperties.getRobotKey();
+        return monitorProperties.getRobotKey();
     }
 
     @Override
