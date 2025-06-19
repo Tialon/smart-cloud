@@ -118,7 +118,8 @@ public class WeworkRobotComponent implements EnvironmentAware, InitializingBean 
                     .append(isFailRateRemindType ? "</font>" : StringUtils.EMPTY);
 
             if (apiException.getThrowable() != null) {
-                boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO;
+                boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO
+                        || apiException.getRemindType() == ApiExceptionRemindType.FAIL_RATE;
                 needMention |= isExceptionRemindType;
 
                 content.append("\n>**异常信息**：")
