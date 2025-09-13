@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -55,10 +56,12 @@ public class MonitorProperties implements InitializingBean {
     /**
      * 工程信息
      */
+    @NestedConfigurationProperty
     private ProxyProperties proxy = new ProxyProperties();
     /**
      * gitlab配置
      */
+    @NestedConfigurationProperty
     private GitlabProperties gitlab = new GitlabProperties();
     /**
      * 默认的机器人key
@@ -67,10 +70,12 @@ public class MonitorProperties implements InitializingBean {
     /**
      * 消息类型
      */
+    @NestedConfigurationProperty
     private WeworkRobotMessageType messageType = WeworkRobotMessageType.MARKDOWN;
     /**
      * 服务配置
      */
+    @NestedConfigurationProperty
     private Map<String, ServiceInfoProperties> serviceInfos = new HashMap<>();
     /**
      * 不监听的服务
@@ -104,6 +109,7 @@ public class MonitorProperties implements InitializingBean {
     /**
      * 默认指标监控阈值
      */
+    @NestedConfigurationProperty
     private MetricAlertProperties metric = new MetricAlertProperties();
 
     @Override

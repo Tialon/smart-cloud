@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 
 import java.io.Serializable;
@@ -48,6 +49,7 @@ public class DynamicElasticsearchProperties implements Serializable {
     /**
      * elasticsearch数据源
      */
+    @NestedConfigurationProperty
     private final Map<String, ElasticsearchProperties> datasources = new LinkedHashMap<>();
 
 }
