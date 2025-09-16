@@ -15,24 +15,22 @@
  */
 package io.github.smart.cloud.starter.monitor.api.properties;
 
-import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * 接口健康检测配置属性
  * <p/>
  * <b>配置样例：</b>
  * <pre>
- * api-monitor:
- *   unhealthMatchMinCount: 10
- *   defaultFailRateThreshold: 0.3
- *   failRateThresholds:
- *     '[LoginController#login]': 0
- *     '[OrderController#query]': 0
+ * smart:
+ *   api-monitor:
+ *     exception-api-monitor:
+ *       unhealthMatchMinCount: 10
+ *       defaultFailRateThreshold: 0.3
+ *       failRateThresholds:
+ *         '[LoginController#login]': 0
+ *         '[OrderController#query]': 0
  * </pre>
  *
  * @author collin
@@ -45,36 +43,6 @@ public class ApiMonitorProperties {
     public static final String PREFIX = "smart.api-monitor";
 
     /**
-     * 不健康匹配最小数量
-     */
-    private int unhealthMatchMinCount = 5;
-    /**
-     * 不健康接口最大上报数
-     */
-    private int unhealthApiReportMaxCount = 10;
-    /**
-     * 默认失败阈值（默认0.5）
-     */
-    private BigDecimal defaultFailRateThreshold = BigDecimal.valueOf(0.5);
-    /**
-     * 特定接口失败阈值
-     */
-    private Map<String, BigDecimal> failRateThresholds = new LinkedHashMap<>();
-    /**
-     * 接口白名单（不监听异常）
-     */
-    private Set<String> apiWhiteList = new HashSet<>();
-
-    // -------企业微信通知配置 start
-    /**
-     * 清理间隔时间（单位：秒）
-     */
-    private long cleanIntervalSeconds = 60 * 3L;
-    /**
-     * 异常接口通知间隔时间（单位：秒）
-     */
-    private long apiExceptionNoticeIntervalSeconds = 60L;
-    /**
      * 发送消息时的代理host
      */
     private String proxyHost;
@@ -83,30 +51,12 @@ public class ApiMonitorProperties {
      */
     private int port;
     /**
-     * 企业微信机器人key
+     * 异常接口监控配置
      */
-    private String robotKey;
+    private ExceptionApiMonitorProperties exceptionApiMonitor = new ExceptionApiMonitorProperties();
     /**
-     * 消息类型
+     * 慢接口监控配置
      */
-    private WeworkRobotMessageType messageType = WeworkRobotMessageType.MARKDOWN;
-    /**
-     * 异常提醒人（markdown类型消息为userid；text类型消息为手机号）
-     */
-    private Set<String> reminders = new LinkedHashSet<>();
-
-    /**
-     * “需要提醒的异常类名列表”中命中时，需要提醒
-     */
-    private Boolean alertExceptionMarked = true;
-    /**
-     * 需要提醒的异常类名列表
-     */
-    private Set<String> needAlertExceptionClassNames = new HashSet<>();
-    /**
-     * 需要提醒的异常码列表
-     */
-    private Set<String> needAlertExceptionCodes = new HashSet<>();
-    // -------企业微信通知配置 end
+    private SlowApiMonitorProperties slowApiMonitor = new SlowApiMonitorProperties();
 
 }

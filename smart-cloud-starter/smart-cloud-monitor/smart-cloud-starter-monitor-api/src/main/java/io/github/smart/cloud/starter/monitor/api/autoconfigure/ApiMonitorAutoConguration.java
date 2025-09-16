@@ -15,10 +15,17 @@
  */
 package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
-import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiExceptionMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
+import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.interceptor.ApiMonitorInterceptor;
+import io.github.smart.cloud.starter.monitor.api.pointcut.ApiMonitorPointCut;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,14 +36,40 @@ import org.springframework.context.annotation.Configuration;
  * @date 2024-01-16
  */
 @Configuration
-@ConditionApiExceptionMonitor
+@ConditionApiMonitor
 public class ApiMonitorAutoConguration {
 
     @Bean
     @RefreshScope
     @ConfigurationProperties(prefix = ApiMonitorProperties.PREFIX)
-    public ApiMonitorProperties healthProperties() {
+    public ApiMonitorProperties apiMonitorProperties() {
         return new ApiMonitorProperties();
+    }
+
+    @Bean
+    @RefreshScope
+    @ConditionWeworkRobotNotice
+    public WeworkRobotComponent weworkRobotComponent(final ApiMonitorProperties apiMonitorProperties) {
+        return new WeworkRobotComponent(apiMonitorProperties);
+    }
+
+    @Bean
+    public ApiMonitorPointCut apiMonitorPointCut() {
+        return new ApiMonitorPointCut();
+    }
+
+    @Bean
+    public ApiMonitorInterceptor apiMonitorInterceptor(final ApplicationEventPublisher applicationEventPublisher) {
+        return new ApiMonitorInterceptor(applicationEventPublisher);
+    }
+
+    @Bean
+    public Advisor apiMonitorAdvisor(final ApiMonitorInterceptor apiMonitorInterceptor, final ApiMonitorPointCut apiMonitorPointCut) {
+        DefaultBeanFactoryPointcutAdvisor apiMonitorAdvisor = new DefaultBeanFactoryPointcutAdvisor();
+        apiMonitorAdvisor.setAdvice(apiMonitorInterceptor);
+        apiMonitorAdvisor.setPointcut(apiMonitorPointCut);
+
+        return apiMonitorAdvisor;
     }
 
 }

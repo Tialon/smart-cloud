@@ -15,16 +15,15 @@
  */
 package io.github.smart.cloud.starter.monitor.api.annotation;
 
-import java.lang.annotation.*;
+import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
- * 异常接口、慢接口上报注解
+ * 接口监控启用条件注解
  *
  * @author collin
- * @date 2024-04-28
+ * @date 2024-07-01
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ApiHealthMonitor {
+@ConditionalOnProperty(prefix = ApiMonitorProperties.PREFIX, name = "enable", havingValue = "true", matchIfMissing = true)
+public @interface ConditionApiMonitor {
 }

@@ -13,18 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.annotation;
+package io.github.smart.cloud.starter.monitor.api.event;
 
-import java.lang.annotation.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.context.ApplicationEvent;
 
 /**
- * 异常接口、慢接口上报注解
+ * 接口监控事件
  *
  * @author collin
- * @date 2024-04-28
+ * @date 2025-08-30
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ApiHealthMonitor {
+@Getter
+@Setter
+public class ApiMonitorEvent extends ApplicationEvent {
+
+    /**
+     * 接口名
+     */
+    private String apiName;
+    /**
+     * 接口耗时（单位：毫秒）
+     */
+    private long cost;
+    /**
+     * 接口异常信息
+     */
+    private Throwable throwable;
+
+    public ApiMonitorEvent(Object source) {
+        super(source);
+    }
+
 }

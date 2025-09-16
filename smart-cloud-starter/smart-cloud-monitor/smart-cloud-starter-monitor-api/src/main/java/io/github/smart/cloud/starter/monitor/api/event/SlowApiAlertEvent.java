@@ -13,18 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.annotation;
+package io.github.smart.cloud.starter.monitor.api.event;
 
-import java.lang.annotation.*;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
+
+import java.util.List;
 
 /**
- * 异常接口、慢接口上报注解
+ * 慢接口告警事件
  *
  * @author collin
- * @date 2024-04-28
+ * @date 2025-09-18
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ApiHealthMonitor {
+@Getter
+public class SlowApiAlertEvent extends ApplicationEvent {
+
+    private static final long serialVersionUID = 1L;
+
+    private final List<ApiSlowAlertDTO> slowApiAlerts;
+
+    public SlowApiAlertEvent(Object source, List<ApiSlowAlertDTO> slowApiAlerts) {
+        super(source);
+        this.slowApiAlerts = slowApiAlerts;
+    }
+
 }

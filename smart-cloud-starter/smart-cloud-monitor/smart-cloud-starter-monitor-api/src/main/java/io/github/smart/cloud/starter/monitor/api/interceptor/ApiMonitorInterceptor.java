@@ -15,11 +15,11 @@
  */
 package io.github.smart.cloud.starter.monitor.api.interceptor;
 
-import io.github.smart.cloud.starter.monitor.api.component.ApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.lang.reflect.Method;
 
@@ -29,22 +29,29 @@ import java.lang.reflect.Method;
  * @author collin
  * @date 2024-01-15
  */
-@Slf4j
 @RequiredArgsConstructor
 public class ApiMonitorInterceptor implements MethodInterceptor {
 
-    private final ApiMonitorRepository apiMonitorRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        String name = getApiName(invocation.getMethod());
+        long startTime = System.currentTimeMillis();
+        String apiName = getApiName(invocation.getMethod());
         Object result = null;
+        Throwable throwable = null;
         try {
             result = invocation.proceed();
-            apiMonitorRepository.add(name, true, null);
         } catch (Throwable e) {
-            apiMonitorRepository.add(name, false, e);
+            throwable = e;
             throw e;
+        } finally {
+            ApiMonitorEvent apiMonitorEvent = new ApiMonitorEvent(this);
+            apiMonitorEvent.setApiName(apiName);
+            apiMonitorEvent.setCost(System.currentTimeMillis() - startTime);
+            apiMonitorEvent.setThrowable(throwable);
+
+            applicationEventPublisher.publishEvent(apiMonitorEvent);
         }
 
         return result;

@@ -29,12 +29,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ApiExceptionDTO {
+public class ApiExceptionAlertDTO extends ApiAlertCommonDTO {
 
-    /**
-     * 接口名（类名#方法名）
-     */
-    private String name;
     /**
      * 请求总数
      */

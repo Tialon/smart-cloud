@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.listener;
+package io.github.smart.cloud.starter.monitor.api.listener.monitor;
 
-import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
-import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionNoticeEvent;
+import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 
 /**
- * 接口异常企业微信通知
+ * 慢接口监控监听处理器
  *
  * @author collin
- * @date 2024-07-01
+ * @date 2025-09-14
  */
-@Slf4j
 @RequiredArgsConstructor
-public class ApiExceptionWeworkNoticeListener implements ApplicationListener<ApiExceptionNoticeEvent> {
+public class SlowApiMonitorListener implements ApplicationListener<ApiMonitorEvent> {
 
-    private final WeworkRobotComponent weworkRobotComponent;
+    private final IApiMonitorRepository slowApiMonitorRepository;
 
     @Override
-    public void onApplicationEvent(ApiExceptionNoticeEvent event) {
-        weworkRobotComponent.sendWeworkRobotMessage(event.getApiExceptions());
+    public void onApplicationEvent(ApiMonitorEvent event) {
+        slowApiMonitorRepository.saveRequestLog(event);
     }
-
 
 }

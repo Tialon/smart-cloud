@@ -15,36 +15,39 @@
  */
 package io.github.smart.cloud.starter.monitor.api.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 接口访问状态（成功、失败）缓存信息
+ * 慢接口信息
  *
  * @author collin
  * @date 2024-01-6
  */
 @Getter
+@Setter
 @ToString
-@AllArgsConstructor
-public class ApiHealthCacheDTO {
+public class ApiSlowAlertDTO extends ApiAlertCommonDTO {
 
     /**
-     * 成功数
+     * 最大耗时（单位毫秒）
      */
-    private volatile LongAdder successCount;
+    private Long maxCost;
     /**
-     * 失败数
+     * 总访问数
      */
-    private volatile LongAdder failCount;
+    private Long totalCount;
     /**
-     * 异常
+     * 慢接口数
      */
-    @Setter
-    private Throwable throwable;
+    private Long slowCount;
+    /**
+     * 慢接口百分比
+     */
+    private BigDecimal slowRate;
 
 }

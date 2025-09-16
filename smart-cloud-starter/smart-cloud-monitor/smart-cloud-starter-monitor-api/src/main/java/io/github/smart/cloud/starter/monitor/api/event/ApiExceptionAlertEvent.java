@@ -13,17 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.annotation;
+package io.github.smart.cloud.starter.monitor.api.event;
 
-import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
+
+import java.util.List;
 
 /**
- * 接口异常监控启用条件注解
+ * 接口异常告警事件
  *
  * @author collin
  * @date 2024-07-01
  */
-@ConditionalOnProperty(prefix = ApiMonitorProperties.PREFIX, name = "enable", havingValue = "true", matchIfMissing = true)
-public @interface ConditionApiExceptionMonitor {
+@Getter
+public class ApiExceptionAlertEvent extends ApplicationEvent {
+
+    private static final long serialVersionUID = 1L;
+
+    private final List<ApiExceptionAlertDTO> apiExceptions;
+
+    public ApiExceptionAlertEvent(Object source, List<ApiExceptionAlertDTO> apiExceptions) {
+        super(source);
+        this.apiExceptions = apiExceptions;
+    }
+
 }

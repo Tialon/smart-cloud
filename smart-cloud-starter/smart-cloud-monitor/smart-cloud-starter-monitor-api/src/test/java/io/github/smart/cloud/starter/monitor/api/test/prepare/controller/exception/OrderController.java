@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.test.prepare.controller;
+package io.github.smart.cloud.starter.monitor.api.test.prepare.controller.exception;
 
 import io.github.smart.cloud.exception.ServerException;
 import org.springframework.http.ResponseEntity;

@@ -13,18 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.annotation;
+package io.github.smart.cloud.starter.monitor.api.dto;
 
-import java.lang.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 异常接口、慢接口上报注解
+ * 接口访问状态（成功、失败）缓存信息
  *
  * @author collin
- * @date 2024-04-28
+ * @date 2024-01-6
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ApiHealthMonitor {
+@Getter
+@ToString
+@AllArgsConstructor
+public class ApiExceptionMonitorCacheDTO {
+
+    /**
+     * 成功数
+     */
+    private volatile LongAdder successCount;
+    /**
+     * 失败数
+     */
+    private volatile LongAdder failCount;
+    /**
+     * 异常
+     */
+    @Setter
+    private Throwable throwable;
+
 }

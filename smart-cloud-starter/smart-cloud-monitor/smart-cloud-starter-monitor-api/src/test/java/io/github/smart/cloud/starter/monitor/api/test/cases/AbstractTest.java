@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
-import io.github.smart.cloud.starter.monitor.api.component.ApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiMonitorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -44,8 +44,8 @@ public abstract class AbstractTest {
 
         mockMvc = MockMvcBuilders.webAppContextSetup((WebApplicationContext) applicationContext).addFilters(filters).build();
 
-        ApiMonitorRepository apiMonitorRepository = applicationContext.getBean(ApiMonitorRepository.class);
-        apiMonitorRepository.clearApiStatusStatistics();
+        ExceptionApiMonitorRepository exceptionApiMonitorRepository = applicationContext.getBean(ExceptionApiMonitorRepository.class);
+        exceptionApiMonitorRepository.clearApiStatusStatistics();
     }
 
 }
