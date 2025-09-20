@@ -36,11 +36,11 @@ public class ApiExceptionMonitorCacheDTO {
     /**
      * 成功数
      */
-    private volatile LongAdder successCount;
+    private LongAdder successCount;
     /**
      * 失败数
      */
-    private volatile LongAdder failCount;
+    private LongAdder failCount;
     /**
      * 异常
      */

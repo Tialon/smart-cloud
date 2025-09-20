@@ -17,8 +17,8 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiChecker;
-import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.component.check.ExceptionApiChecker;
+import io.github.smart.cloud.starter.monitor.api.component.repository.ExceptionApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionWeworkAlertListener;

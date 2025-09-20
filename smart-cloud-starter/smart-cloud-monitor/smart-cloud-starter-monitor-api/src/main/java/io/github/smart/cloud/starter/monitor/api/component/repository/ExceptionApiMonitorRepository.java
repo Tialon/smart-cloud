@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component;
+package io.github.smart.cloud.starter.monitor.api.component.repository;
 
 import io.github.smart.cloud.exception.AbstractBaseException;
+import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionMonitorCacheDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;

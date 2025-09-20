@@ -17,8 +17,8 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
-import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiChecker;
+import io.github.smart.cloud.starter.monitor.api.component.repository.ExceptionApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.component.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.exception.NullPointExceptionController;

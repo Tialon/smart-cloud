@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component;
+package io.github.smart.cloud.starter.monitor.api.component.repository;
 
+import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.SlowApiMonitorCacheDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
@@ -50,9 +51,9 @@ public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAl
 
     private final ApiMonitorProperties apiMonitorProperties;
     /**
-     * 接口成功失败记录统计
+     * 慢接口统计
      */
-    private final ConcurrentMap<String, SlowApiMonitorCacheDTO> apiHistory = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, SlowApiMonitorCacheDTO> slowApiHistory = new ConcurrentHashMap<>();
     private final CreateSlowApiMonitorCacheDtoFunction createSlowApiMonitorCacheDtoFunction = new CreateSlowApiMonitorCacheDtoFunction();
     private ScheduledExecutorService cleanSchedule;
 
@@ -64,7 +65,7 @@ public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAl
                 return;
             }
 
-            SlowApiMonitorCacheDTO slowApiMonitorCacheDTO = apiHistory.computeIfAbsent(event.getApiName(), createSlowApiMonitorCacheDtoFunction);
+            SlowApiMonitorCacheDTO slowApiMonitorCacheDTO = slowApiHistory.computeIfAbsent(event.getApiName(), createSlowApiMonitorCacheDtoFunction);
             slowApiMonitorCacheDTO.getTotalCount().increment();
             if (event.getCost() >= slowApiMonitorProperties.getCostThreshold(event.getApiName())) {
                 slowApiMonitorCacheDTO.getSlowCount().increment();
@@ -81,13 +82,13 @@ public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAl
 
     @Override
     public List<ApiSlowAlertDTO> getAlertRecords() {
-        if (apiHistory.isEmpty()) {
+        if (slowApiHistory.isEmpty()) {
             return Collections.emptyList();
         }
 
         SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
         List<ApiSlowAlertDTO> apiSlowAlerts = new ArrayList<>(0);
-        for (Map.Entry<String, SlowApiMonitorCacheDTO> entry : apiHistory.entrySet()) {
+        for (Map.Entry<String, SlowApiMonitorCacheDTO> entry : slowApiHistory.entrySet()) {
             String apiName = entry.getKey();
             SlowApiMonitorCacheDTO slowApiMonitorCacheDTO = entry.getValue();
             if (slowApiMonitorCacheDTO.getMaxCost() >= slowApiMonitorProperties.getAlertCostThreshold()) {
@@ -169,7 +170,7 @@ public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAl
     }
 
     public void clearApiHistory() {
-        apiHistory.clear();
+        slowApiHistory.clear();
     }
 
     /**

@@ -36,11 +36,11 @@ public class SlowApiMonitorCacheDTO {
     /**
      * 总访问数
      */
-    private volatile LongAdder totalCount;
+    private LongAdder totalCount;
     /**
      * 慢接口数
      */
-    private volatile LongAdder slowCount;
+    private LongAdder slowCount;
     /**
      * 最大耗时（毫秒）
      */
