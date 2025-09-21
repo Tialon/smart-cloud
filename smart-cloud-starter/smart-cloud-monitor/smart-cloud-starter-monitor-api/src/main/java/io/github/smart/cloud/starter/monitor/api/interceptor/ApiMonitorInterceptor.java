@@ -15,11 +15,14 @@
  */
 package io.github.smart.cloud.starter.monitor.api.interceptor;
 
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
 
@@ -64,7 +67,12 @@ public class ApiMonitorInterceptor implements MethodInterceptor {
      * @return
      */
     private String getApiName(Method method) {
-        return method.getDeclaringClass().getSimpleName() + "#" + method.getName();
+        String methodName = method.getName();
+        ApiMonitor apiMonitor = AnnotationUtils.findAnnotation(method, ApiMonitor.class);
+        if (apiMonitor != null && StringUtils.isNotBlank(apiMonitor.apiName())) {
+            methodName = apiMonitor.apiName();
+        }
+        return method.getDeclaringClass().getSimpleName() + "#" + methodName;
     }
 
 }

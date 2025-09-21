@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
-import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
@@ -128,7 +128,7 @@ public class ExceptionApiTest extends AbstractTest {
     /**
      * 异常注解
      *
-     * @see ApiHealthMonitor
+     * @see ApiMonitor
      */
     @Test
     void testApiHealthMonitor() {

@@ -18,7 +18,7 @@ package io.github.smart.cloud.starter.monitor.api.annotation;
 import java.lang.annotation.*;
 
 /**
- * 异常接口、慢接口上报注解
+ * 接口（异常接口、慢接口）监控注解
  *
  * @author collin
  * @date 2024-04-28
@@ -26,5 +26,14 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ApiHealthMonitor {
+public @interface ApiMonitor {
+
+    /**
+     * 指定接口名称
+     * <p>适用于url路径中带有参数的接口</p>
+     *
+     * @return
+     */
+    String apiName() default "";
+
 }

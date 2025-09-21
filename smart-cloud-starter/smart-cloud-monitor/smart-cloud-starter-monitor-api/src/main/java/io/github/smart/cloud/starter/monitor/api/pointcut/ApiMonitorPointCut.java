@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.pointcut;
 
-import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -67,7 +67,7 @@ public class ApiMonitorPointCut extends StaticMethodMatcherPointcut {
 
     @Override
     public boolean matches(Method method, Class<?> c) {
-        if (AnnotatedElementUtils.isAnnotated(method, ApiHealthMonitor.class)) {
+        if (AnnotatedElementUtils.isAnnotated(method, ApiMonitor.class)) {
             return true;
         }
 
