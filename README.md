@@ -24,7 +24,7 @@ smart cloud
 - 接口多版本控制
 - 分布式锁注解，缓存注解
 - mq（rabbitmq）消费失败，通过自定义注解实现重试（放入延迟队列重新消费）
-- 服务监控，接口异常监控
+- 服务监控，慢接口监控、异常接口监控
 - [日志敏感数据脱敏](https://github.com/smart-cloud/smart-cloud#%E4%BA%8C%E6%97%A5%E5%BF%97%E6%95%B0%E6%8D%AE%E8%84%B1%E6%95%8F)
 - 单体服务开发接阶段测试不依赖其他服务（mock test、关闭nacos、sentinel等）
 
@@ -71,7 +71,7 @@ smart-cloud
    ├──smart-cloud-starter-web -- web封装（日志切面、异常处理、参数校验）
    └──smart-cloud-starter-monitor -- 服务监控，接口监控
       ├──smart-cloud-monitor-common -- 监控公共代码
-      ├──smart-cloud-starter-monitor-api -- 接口异常监控
+      ├──smart-cloud-starter-monitor-api -- 慢接口监控，异常接口监控
       └──smart-cloud-starter-monitor-admin -- spring boot admin监控（服务状态、gc、线程数、内存、cpu、tomcat等），企业微信发通知
 ```
 

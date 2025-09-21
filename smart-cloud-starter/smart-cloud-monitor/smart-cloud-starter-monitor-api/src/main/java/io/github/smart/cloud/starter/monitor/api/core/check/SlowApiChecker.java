@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.core.check;
 
-import io.github.smart.cloud.starter.monitor.api.core.repository.SlowApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.event.SlowApiAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class SlowApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    private final SlowApiMonitorRepository slowApiMonitorRepository;
+    private final SlowApiMonitorDataProccessor slowApiMonitorRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private ScheduledExecutorService slowApiCheckSchedule;
 

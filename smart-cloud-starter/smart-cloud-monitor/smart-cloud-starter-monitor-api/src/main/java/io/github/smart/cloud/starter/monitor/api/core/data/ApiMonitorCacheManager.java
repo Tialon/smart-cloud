@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.core.repository;
+package io.github.smart.cloud.starter.monitor.api.core.data;
 
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;

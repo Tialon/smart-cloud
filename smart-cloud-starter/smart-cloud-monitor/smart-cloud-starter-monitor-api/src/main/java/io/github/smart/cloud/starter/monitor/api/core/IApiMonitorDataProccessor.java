@@ -21,13 +21,13 @@ import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import java.util.List;
 
 /**
- * 接口监控数据存储
+ * 接口监控数据处理器
  *
  * @param <T>
  * @author collin.li
  * @datge 2025-09-19
  */
-public interface IApiMonitorRepository<T extends ApiAlertCommonDTO> {
+public interface IApiMonitorDataProccessor<T extends ApiAlertCommonDTO> {
 
     /**
      * 设置接口访问信息

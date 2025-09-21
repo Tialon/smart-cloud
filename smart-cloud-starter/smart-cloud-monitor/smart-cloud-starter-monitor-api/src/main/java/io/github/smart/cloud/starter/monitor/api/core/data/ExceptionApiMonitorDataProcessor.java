@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.core.repository;
+package io.github.smart.cloud.starter.monitor.api.core.data;
 
 import io.github.smart.cloud.exception.AbstractBaseException;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
@@ -39,14 +39,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 异常接口监控信息存储
+ * 异常接口监控处理处理器
  *
  * @author collin
  * @date 2024-01-6
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiExceptionAlertDTO>, InitializingBean {
+public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccessor<ApiExceptionAlertDTO>, InitializingBean {
 
     private final ApiMonitorProperties apiMonitorProperties;
     private final ApiMonitorCacheManager apiMonitorCacheManager;

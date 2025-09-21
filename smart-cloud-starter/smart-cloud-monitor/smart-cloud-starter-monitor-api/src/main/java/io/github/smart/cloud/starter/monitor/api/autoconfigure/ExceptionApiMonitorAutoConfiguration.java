@@ -17,11 +17,11 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
-import io.github.smart.cloud.starter.monitor.api.core.repository.ApiMonitorCacheManager;
-import io.github.smart.cloud.starter.monitor.api.core.repository.ExceptionApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.ExceptionApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -43,22 +43,22 @@ import org.springframework.context.annotation.Configuration;
 public class ExceptionApiMonitorAutoConfiguration {
 
     @Bean
-    public ExceptionApiMonitorRepository exceptionApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
-                                                                       final ApiMonitorCacheManager apiMonitorCacheManager) {
-        return new ExceptionApiMonitorRepository(apiMonitorProperties, apiMonitorCacheManager);
+    public ExceptionApiMonitorDataProcessor exceptionApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
+                                                                          final ApiMonitorCacheManager apiMonitorCacheManager) {
+        return new ExceptionApiMonitorDataProcessor(apiMonitorProperties, apiMonitorCacheManager);
     }
 
     @Bean
-    public ExceptionApiMonitorListener exceptionApiMonitorListener(final IApiMonitorRepository exceptionApiMonitorRepository) {
+    public ExceptionApiMonitorListener exceptionApiMonitorListener(final IApiMonitorDataProccessor exceptionApiMonitorRepository) {
         return new ExceptionApiMonitorListener(exceptionApiMonitorRepository);
     }
 
     @Bean
     @RefreshScope
     public ExceptionApiChecker exceptionApiChecker(final ApiMonitorProperties apiMonitorProperties,
-                                                   final ExceptionApiMonitorRepository exceptionApiMonitorRepository,
+                                                   final ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor,
                                                    final ApplicationEventPublisher applicationEventPublisher) {
-        return new ExceptionApiChecker(apiMonitorProperties, exceptionApiMonitorRepository, applicationEventPublisher);
+        return new ExceptionApiChecker(apiMonitorProperties, exceptionApiMonitorDataProcessor, applicationEventPublisher);
     }
 
     @Bean

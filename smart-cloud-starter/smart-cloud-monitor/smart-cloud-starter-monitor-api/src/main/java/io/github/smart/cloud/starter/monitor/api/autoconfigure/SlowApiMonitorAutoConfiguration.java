@@ -17,11 +17,11 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
-import io.github.smart.cloud.starter.monitor.api.core.repository.ApiMonitorCacheManager;
-import io.github.smart.cloud.starter.monitor.api.core.repository.SlowApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.listener.alert.SlowApiWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.SlowApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -44,20 +44,20 @@ public class SlowApiMonitorAutoConfiguration {
 
     @Bean
     @RefreshScope
-    public SlowApiMonitorRepository slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
-                                                             final ApiMonitorCacheManager apiMonitorCacheManager) {
-        return new SlowApiMonitorRepository(apiMonitorProperties, apiMonitorCacheManager);
+    public SlowApiMonitorDataProccessor slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
+                                                                 final ApiMonitorCacheManager apiMonitorCacheManager) {
+        return new SlowApiMonitorDataProccessor(apiMonitorProperties, apiMonitorCacheManager);
     }
 
     @Bean
-    public SlowApiMonitorListener slowApiMonitorListener(final IApiMonitorRepository slowApiMonitorRepository) {
+    public SlowApiMonitorListener slowApiMonitorListener(final IApiMonitorDataProccessor slowApiMonitorRepository) {
         return new SlowApiMonitorListener(slowApiMonitorRepository);
     }
 
     @Bean
     @RefreshScope
     public SlowApiChecker slowApiChecker(final ApiMonitorProperties apiMonitorProperties,
-                                         final SlowApiMonitorRepository slowApiMonitorRepository,
+                                         final SlowApiMonitorDataProccessor slowApiMonitorRepository,
                                          final ApplicationEventPublisher applicationEventPublisher) {
         return new SlowApiChecker(apiMonitorProperties, slowApiMonitorRepository, applicationEventPublisher);
     }

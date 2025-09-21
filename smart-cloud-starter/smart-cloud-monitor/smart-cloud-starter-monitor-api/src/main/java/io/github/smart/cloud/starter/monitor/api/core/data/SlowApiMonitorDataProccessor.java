@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.core.repository;
+package io.github.smart.cloud.starter.monitor.api.core.data;
 
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
@@ -33,14 +33,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 慢接口监控数据存储
+ * 慢接口监控数据处理器
  *
  * @author collin.li
  * @datge 2025-09-19
  */
 @Slf4j
 @RequiredArgsConstructor
-public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAlertDTO> {
+public class SlowApiMonitorDataProccessor implements IApiMonitorDataProccessor<ApiSlowAlertDTO> {
 
     private final ApiMonitorProperties apiMonitorProperties;
     private final ApiMonitorCacheManager apiMonitorCacheManager;

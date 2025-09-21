@@ -24,7 +24,7 @@ smart cloud
 - Interface multi-version control
 - Annotated distributed lock, cache annotations
 - mq (rabbitmq) consumption fails, retry through custom annotations (put into delayed queue for re-consumption)
-- Service monitoring, interface exception monitoring
+- Service monitoring, slow interface monitoring, abnormal interface monitoring
 - [Log sensitive data desensitization](https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md#desensitization-of-log-data)
 - The testing of the single service development phase does not depend on other services (mock test, closing nacos, sentinel, etc.)
 
@@ -73,7 +73,7 @@ smart-cloud
    ├──smart-cloud-starter-web -- web encapsulation (log aspect, exception handling, parameter verification)
    └──smart-cloud-starter-monitor -- Service monitoring, interface monitoring
       ├──smart-cloud-monitor-common -- Monitor common code
-      ├──smart-cloud-starter-monitor-api -- api exception monitoring
+      ├──smart-cloud-starter-monitor-api -- Slow interface monitoring, abnormal interface monitoring
       └──smart-cloud-starter-monitor-admin -- spring boot admin monitoring(Service status, gc, thread count, memory, cpu, tomcat, etc.), wework notifications
 ```
 

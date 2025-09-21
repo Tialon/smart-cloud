@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
-import io.github.smart.cloud.starter.monitor.api.core.repository.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

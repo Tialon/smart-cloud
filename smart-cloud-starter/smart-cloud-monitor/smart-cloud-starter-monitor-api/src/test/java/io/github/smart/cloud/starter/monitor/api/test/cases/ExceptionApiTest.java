@@ -17,7 +17,7 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
-import io.github.smart.cloud.starter.monitor.api.core.repository.ExceptionApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
@@ -43,7 +43,7 @@ public class ExceptionApiTest extends AbstractTest {
     @Autowired
     private ExceptionApiChecker exceptionApiChecker;
     @Autowired
-    private ExceptionApiMonitorRepository exceptionApiMonitorRepository;
+    private ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor;
 
     /**
      * 特定异常监控
@@ -59,7 +59,7 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorRepository.getAlertRecords();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
         Assertions.assertThat(apiExceptions.get(0).getThrowable()).isInstanceOf(NullPointerException.class);
     }
@@ -75,7 +75,7 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorRepository.getAlertRecords();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
         Assertions.assertThat(apiExceptions.get(0).getThrowable()).isInstanceOf(ServerException.class);
     }
@@ -113,7 +113,7 @@ public class ExceptionApiTest extends AbstractTest {
         }
 
         // 失败率倒叙测试
-        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorRepository.getAlertRecords();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(2);
 
         ApiExceptionAlertDTO apiException0 = apiExceptions.get(0);
@@ -142,7 +142,7 @@ public class ExceptionApiTest extends AbstractTest {
         }
 
 
-        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorRepository.getAlertRecords();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
     }
 

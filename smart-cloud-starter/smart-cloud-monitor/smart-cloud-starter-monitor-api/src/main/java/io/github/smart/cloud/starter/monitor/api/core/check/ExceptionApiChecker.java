@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.core.check;
 
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class ExceptionApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    private final IApiMonitorRepository exceptionApiMonitorRepository;
+    private final IApiMonitorDataProccessor exceptionApiMonitorRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private ScheduledExecutorService exceptionApiCheckSchedule;
 
