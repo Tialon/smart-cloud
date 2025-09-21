@@ -15,7 +15,6 @@
  */
 package io.github.smart.cloud.starter.monitor.api.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,20 +22,34 @@ import lombok.ToString;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * （慢）接口缓存信息
+ * 接口请求汇总信息
  *
  * @author collin
- * @date 2024-01-6
+ * @date 2025-09-21
  */
 @Getter
+@Setter
 @ToString
-@AllArgsConstructor
-public class SlowApiMonitorCacheDTO {
+public class ApiRequestSummaryDTO {
 
     /**
-     * 总访问数
+     * 请求总数
      */
     private LongAdder totalCount;
+
+    // ----start:异常接口信息
+    /**
+     * 失败数
+     */
+    private LongAdder failCount;
+    /**
+     * 异常
+     */
+    @Setter
+    private volatile Throwable throwable;
+    // ----end:异常接口信息
+
+    // ----start:慢接口信息
     /**
      * 慢接口数
      */
@@ -46,5 +59,6 @@ public class SlowApiMonitorCacheDTO {
      */
     @Setter
     private volatile Long maxCost;
+    // ----end:慢接口信息
 
 }

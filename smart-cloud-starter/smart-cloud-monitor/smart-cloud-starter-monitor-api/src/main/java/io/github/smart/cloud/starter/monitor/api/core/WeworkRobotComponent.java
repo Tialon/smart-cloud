@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component;
+package io.github.smart.cloud.starter.monitor.api.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.smart.cloud.exception.ConfigException;

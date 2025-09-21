@@ -17,10 +17,11 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.check.SlowApiChecker;
-import io.github.smart.cloud.starter.monitor.api.component.repository.SlowApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
+import io.github.smart.cloud.starter.monitor.api.core.repository.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.repository.SlowApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.listener.alert.SlowApiWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.SlowApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -43,8 +44,9 @@ public class SlowApiMonitorAutoConfiguration {
 
     @Bean
     @RefreshScope
-    public SlowApiMonitorRepository slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties) {
-        return new SlowApiMonitorRepository(apiMonitorProperties);
+    public SlowApiMonitorRepository slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
+                                                             final ApiMonitorCacheManager apiMonitorCacheManager) {
+        return new SlowApiMonitorRepository(apiMonitorProperties, apiMonitorCacheManager);
     }
 
     @Bean

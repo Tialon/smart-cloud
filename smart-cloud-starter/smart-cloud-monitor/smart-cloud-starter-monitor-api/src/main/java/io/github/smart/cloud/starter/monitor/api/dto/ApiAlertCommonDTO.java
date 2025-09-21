@@ -34,5 +34,9 @@ public class ApiAlertCommonDTO {
      * 接口名（类名#方法名）
      */
     private String name;
+    /**
+     * 总访问数
+     */
+    private Long totalCount;
 
 }

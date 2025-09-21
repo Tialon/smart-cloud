@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component.repository;
+package io.github.smart.cloud.starter.monitor.api.core.repository;
 
 import io.github.smart.cloud.exception.AbstractBaseException;
-import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
-import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionMonitorCacheDTO;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.util.PercentUtil;
-import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.util.CollectionUtils;
 import sun.security.provider.certpath.SunCertPathBuilderException;
 
@@ -40,9 +36,7 @@ import java.security.cert.CertPathValidatorException;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * 异常接口监控信息存储
@@ -52,15 +46,10 @@ import java.util.function.Function;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiExceptionAlertDTO>, InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
+public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiExceptionAlertDTO>, InitializingBean {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    /**
-     * 接口成功失败记录统计
-     */
-    private final ConcurrentMap<String, ApiExceptionMonitorCacheDTO> apiStatusStatistics = new ConcurrentHashMap<>();
-    private final CreateApiHealthCacheDtoFunction createApiHealthCacheDtoFunction = new CreateApiHealthCacheDtoFunction();
-    private ScheduledExecutorService cleanSchedule;
+    private final ApiMonitorCacheManager apiMonitorCacheManager;
     private Set<String> needAlertExceptionClassNames;
 
     /**
@@ -69,22 +58,20 @@ public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiE
      * @param event
      */
     @Override
-    public void saveRequestLog(ApiMonitorEvent event) {
+    public void process(ApiMonitorEvent event) {
         try {
             ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
             if (exceptionApiMonitorProperties.getApiWhiteList().contains(event.getApiName())) {
                 return;
             }
 
-            ApiExceptionMonitorCacheDTO apiExceptionMonitorCacheDTO = apiStatusStatistics.computeIfAbsent(event.getApiName(), createApiHealthCacheDtoFunction);
-            if (event.getThrowable() == null) {
-                apiExceptionMonitorCacheDTO.getSuccessCount().increment();
-            } else {
-                apiExceptionMonitorCacheDTO.getFailCount().increment();
-                Throwable throwable = apiExceptionMonitorCacheDTO.getThrowable();
-                synchronized (apiExceptionMonitorCacheDTO) {
+            ApiRequestSummaryDTO apiRequestSummaryDTO = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
+            if (event.getThrowable() != null) {
+                apiRequestSummaryDTO.getFailCount().increment();
+                Throwable throwable = apiRequestSummaryDTO.getThrowable();
+                synchronized (apiRequestSummaryDTO) {
                     if (throwable == null) {
-                        apiExceptionMonitorCacheDTO.setThrowable(event.getThrowable());
+                        apiRequestSummaryDTO.setThrowable(event.getThrowable());
                     } else {
                         // 如果当前异常为需要提醒的类或code，则不更新
                         Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
@@ -98,7 +85,7 @@ public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiE
                             }
                         }
 
-                        apiExceptionMonitorCacheDTO.setThrowable(event.getThrowable());
+                        apiRequestSummaryDTO.setThrowable(event.getThrowable());
                     }
                 }
             }
@@ -114,30 +101,31 @@ public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiE
      */
     @Override
     public List<ApiExceptionAlertDTO> getAlertRecords() {
-        if (apiStatusStatistics.isEmpty()) {
+        ConcurrentMap<String, ApiRequestSummaryDTO> apiRequestSummaryMap = apiMonitorCacheManager.getApiRequestSummaryMap();
+        if (apiRequestSummaryMap.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<ApiExceptionAlertDTO> apiExceptions = new ArrayList<>(0);
-        for (Map.Entry<String, ApiExceptionMonitorCacheDTO> entry : apiStatusStatistics.entrySet()) {
+        for (Map.Entry<String, ApiRequestSummaryDTO> entry : apiRequestSummaryMap.entrySet()) {
             String name = entry.getKey();
-            ApiExceptionMonitorCacheDTO apiExceptionMonitorCacheDTO = entry.getValue();
-            long failCountSum = apiExceptionMonitorCacheDTO.getFailCount().sum();
+            ApiRequestSummaryDTO apiRequestSummary = entry.getValue();
+            long failCountSum = apiRequestSummary.getFailCount().sum();
             if (failCountSum == 0) {
                 continue;
             }
 
             BigDecimal failCount = BigDecimal.valueOf(failCountSum);
-            BigDecimal total = BigDecimal.valueOf(apiExceptionMonitorCacheDTO.getSuccessCount().sum()).add(failCount);
+            BigDecimal total = BigDecimal.valueOf(apiRequestSummary.getTotalCount().sum());
             BigDecimal failRate = failCount.divide(total, 4, RoundingMode.HALF_UP);
-            ApiExceptionRemindType remindType = match(name, total, failRate, apiExceptionMonitorCacheDTO.getThrowable());
+            ApiExceptionRemindType remindType = match(name, total, failRate, apiRequestSummary.getThrowable());
             if (remindType != ApiExceptionRemindType.NONE) {
                 ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
                 apiExceptionAlertDTO.setName(name);
-                apiExceptionAlertDTO.setTotal(total.longValue());
+                apiExceptionAlertDTO.setTotalCount(total.longValue());
                 apiExceptionAlertDTO.setFailCount(failCount.longValue());
                 apiExceptionAlertDTO.setFailRate(PercentUtil.format(failRate));
-                apiExceptionAlertDTO.setThrowable(apiExceptionMonitorCacheDTO.getThrowable());
+                apiExceptionAlertDTO.setThrowable(apiRequestSummary.getThrowable());
                 apiExceptionAlertDTO.setRemindType(remindType);
                 apiExceptions.add(apiExceptionAlertDTO);
             }
@@ -158,7 +146,7 @@ public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiE
                     }
 
                     // 按失败率倒叙排序
-                    return (int) (o2.getFailCount() * o1.getTotal() - o1.getFailCount() * o2.getTotal());
+                    return (int) (o2.getFailCount() * o1.getTotalCount() - o1.getFailCount() * o2.getTotalCount());
                 });
                 return apiExceptions.subList(0, exceptionApiMonitorProperties.getApiReportMaxCount());
             }
@@ -230,44 +218,6 @@ public class ExceptionApiMonitorRepository implements IApiMonitorRepository<ApiE
 
             needAlertExceptionClassNames = defaultNeedAlertExceptionClassNames;
         }
-
-        cleanSchedule = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("clean-api-history-cache"));
-        cleanSchedule.scheduleWithFixedDelay(this::clearApiStatusStatistics, exceptionApiMonitorProperties.getCleanIntervalSeconds(),
-                exceptionApiMonitorProperties.getCleanIntervalSeconds(), TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (cleanSchedule != null) {
-            cleanSchedule.shutdown();
-        }
-
-        clearApiStatusStatistics();
-    }
-
-    public void clearApiStatusStatistics() {
-        apiStatusStatistics.clear();
-    }
-
-    @Override
-    public void onApplicationEvent(RefreshScopeRefreshedEvent event) {
-        // 处理“@RefreshScope会导致ScheduledExecutorService失效”的问题
-        // do nothing
-    }
-
-    /**
-     * 创建ApiHealthCacheDTO
-     *
-     * @author collin
-     * @date 2024-01-7
-     */
-    private class CreateApiHealthCacheDtoFunction implements Function<String, ApiExceptionMonitorCacheDTO> {
-
-        @Override
-        public ApiExceptionMonitorCacheDTO apply(String s) {
-            return new ApiExceptionMonitorCacheDTO(new LongAdder(), new LongAdder(), null);
-        }
-
     }
 
 }

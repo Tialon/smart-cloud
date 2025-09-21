@@ -15,8 +15,8 @@
  */
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
-import io.github.smart.cloud.starter.monitor.api.component.check.SlowApiChecker;
-import io.github.smart.cloud.starter.monitor.api.component.repository.SlowApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
+import io.github.smart.cloud.starter.monitor.api.core.repository.SlowApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.slow.ProductController;

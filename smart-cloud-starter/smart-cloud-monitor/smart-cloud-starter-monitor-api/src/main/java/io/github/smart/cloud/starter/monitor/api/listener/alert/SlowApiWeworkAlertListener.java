@@ -18,11 +18,10 @@ package io.github.smart.cloud.starter.monitor.api.listener.alert;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
-import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.event.SlowApiAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
-import io.github.smart.cloud.starter.monitor.api.properties.SlowApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.util.PercentUtil;
 import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +30,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,10 +72,9 @@ public class SlowApiWeworkAlertListener extends AbstractWeworkAlertListener impl
      * @return
      */
     private String buildWeworkRobotMarkdownMessage(List<ApiSlowAlertDTO> apiSlowAlerts) {
-        SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
         StringBuilder content = new StringBuilder(128);
         content.append("**").append(appName).append("** ")
-                .append(TimeUnit.SECONDS.toMinutes(slowApiMonitorProperties.getCleanIntervalSeconds()))
+                .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds()))
                 .append("分钟慢接口统计:")
                 .append("\n**IP**：").append(ip);
 
@@ -88,8 +87,9 @@ public class SlowApiWeworkAlertListener extends AbstractWeworkAlertListener impl
                     .append("\n>**最大耗时（ms）**：").append(apiSlowAlert.getMaxCost());
         }
 
-        if (!CollectionUtils.isEmpty(slowApiMonitorProperties.getReminders())) {
-            content.append("\n\n<@").append(StringUtils.join(slowApiMonitorProperties.getReminders(), ">\n<@")).append(">");
+        Set<String> reminders = apiMonitorProperties.getSlowApiMonitor().getReminders();
+        if (!CollectionUtils.isEmpty(reminders)) {
+            content.append("\n\n<@").append(StringUtils.join(reminders, ">\n<@")).append(">");
         }
 
         return JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
@@ -102,10 +102,9 @@ public class SlowApiWeworkAlertListener extends AbstractWeworkAlertListener impl
      * @return
      */
     private String buildWeworkRobotTextMessage(List<ApiSlowAlertDTO> apiSlowAlerts) {
-        SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
         StringBuilder content = new StringBuilder(128);
         content.append("【").append(appName).append("】")
-                .append(TimeUnit.SECONDS.toMinutes(slowApiMonitorProperties.getCleanIntervalSeconds()))
+                .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds()))
                 .append("分钟慢接口统计:")
                 .append("\n【IP】：").append(ip);
 
@@ -122,7 +121,7 @@ public class SlowApiWeworkAlertListener extends AbstractWeworkAlertListener impl
                     .append("\n【最大耗时（ms）】：").append(apiSlowAlert.getMaxCost());
         }
 
-        return JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), slowApiMonitorProperties.getReminders()));
+        return JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), apiMonitorProperties.getSlowApiMonitor().getReminders()));
     }
 
 }

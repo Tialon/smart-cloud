@@ -51,6 +51,10 @@ public class ApiMonitorProperties {
      */
     private int port;
     /**
+     * 清理间隔时间（单位：秒）
+     */
+    private long cleanIntervalSeconds = 60 * 3L;
+    /**
      * 异常接口监控配置
      */
     private ExceptionApiMonitorProperties exceptionApiMonitor = new ExceptionApiMonitorProperties();

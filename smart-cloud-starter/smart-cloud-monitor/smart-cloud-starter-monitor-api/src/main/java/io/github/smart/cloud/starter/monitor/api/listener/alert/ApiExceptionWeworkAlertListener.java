@@ -18,7 +18,7 @@ package io.github.smart.cloud.starter.monitor.api.listener.alert;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
-import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
@@ -84,7 +84,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
             boolean isFailRateRemindType = apiException.getRemindType() == ApiExceptionRemindType.FAIL_RATE;
 
             content.append("\n\n>**接口").append(i + 1).append("**：").append(apiException.getName())
-                    .append("\n>**请求总数**：").append(apiException.getTotal())
+                    .append("\n>**请求总数**：").append(apiException.getTotalCount())
                     .append("\n>**失败数**：").append(apiException.getFailCount())
                     .append("\n>**失败率**：")
                     .append(isFailRateRemindType ? "<font color=\"warning\">" : StringUtils.EMPTY)
@@ -117,10 +117,9 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @return
      */
     private String buildWeworkRobotTextMessage(List<ApiExceptionAlertDTO> apiExceptions) {
-        ExceptionApiMonitorProperties exceptionApiMonitor = apiMonitorProperties.getExceptionApiMonitor();
         StringBuilder content = new StringBuilder(128);
         content.append("【").append(appName).append("】")
-                .append(TimeUnit.SECONDS.toMinutes(exceptionApiMonitor.getCleanIntervalSeconds()))
+                .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds()))
                 .append("分钟异常接口统计:")
                 .append("\n【IP】：").append(ip);
 
@@ -133,7 +132,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
                 content.append("\n───────────────────────");
             }
             content.append("\n【接口").append(i + 1).append("】：").append(apiException.getName())
-                    .append("\n【请求总数】：").append(apiException.getTotal())
+                    .append("\n【请求总数】：").append(apiException.getTotalCount())
                     .append("\n【失败数】：").append(apiException.getFailCount())
                     .append("\n").append(isFailRateRemindType ? "⚠" : StringUtils.EMPTY).append("【失败率】：").append(apiException.getFailRate());
 
@@ -144,7 +143,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
             }
         }
 
-        Set<String> mentionedMobileList = needMention ? exceptionApiMonitor.getReminders() : null;
+        Set<String> mentionedMobileList = needMention ? apiMonitorProperties.getExceptionApiMonitor().getReminders() : null;
         return JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), mentionedMobileList));
     }
 

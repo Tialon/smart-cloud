@@ -32,10 +32,6 @@ import lombok.ToString;
 public class ApiExceptionAlertDTO extends ApiAlertCommonDTO {
 
     /**
-     * 请求总数
-     */
-    private Long total;
-    /**
      * 失败数
      */
     private Long failCount;

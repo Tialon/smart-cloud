@@ -16,31 +16,31 @@
 package io.github.smart.cloud.starter.monitor.api.listener.monitor;
 
 import io.github.smart.cloud.starter.monitor.api.constants.OrderConstants;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.repository.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
- * 异常接口监控监听处理器
+ * 接口监控监听处理器
  *
  * @author collin
- * @date 2025-09-14
+ * @date 2025-09-20
  */
 @RequiredArgsConstructor
-public class ExceptionApiMonitorListener implements ApplicationListener<ApiMonitorEvent>, Ordered {
+public class ApiMonitorListener implements ApplicationListener<ApiMonitorEvent>, Ordered {
 
-    private final IApiMonitorRepository exceptionApiMonitorRepository;
+    private final ApiMonitorCacheManager apiMonitorCacheManager;
 
     @Override
     public void onApplicationEvent(ApiMonitorEvent event) {
-        exceptionApiMonitorRepository.process(event);
+        apiMonitorCacheManager.process(event);
     }
 
     @Override
     public int getOrder() {
-        return OrderConstants.EXCEPTION_API_MONITOR_LISTENER;
+        return OrderConstants.API_MONITOR_LISTENER;
     }
 
 }

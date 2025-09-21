@@ -65,10 +65,6 @@ public class SlowApiMonitorProperties {
     private Map<String, BigDecimal> slowRateThresholds = new HashMap<>();
     // -------企业微信通知配置 start
     /**
-     * 清理间隔时间（单位：秒）
-     */
-    private long cleanIntervalSeconds = 60 * 3L;
-    /**
      * 慢接口通知间隔时间（单位：秒）
      */
     private long slowApiNoticeIntervalSeconds = 60L;

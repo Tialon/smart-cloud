@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component.check;
+package io.github.smart.cloud.starter.monitor.api.core.check;
 
-import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
-import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
+import io.github.smart.cloud.starter.monitor.api.core.repository.SlowApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
+import io.github.smart.cloud.starter.monitor.api.event.SlowApiAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
-import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
+import io.github.smart.cloud.starter.monitor.api.properties.SlowApiMonitorProperties;
 import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.DisposableBean;
@@ -34,45 +34,45 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 异常接口监控，企业微信机器人通知
+ * 慢接口监控，企业微信机器人通知
  *
  * @author collin
- * @date 2024-04-28
+ * @date 2025-09-18
  */
 @RequiredArgsConstructor
-public class ExceptionApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
+public class SlowApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    private final IApiMonitorRepository exceptionApiMonitorRepository;
+    private final SlowApiMonitorRepository slowApiMonitorRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private ScheduledExecutorService exceptionApiCheckSchedule;
+    private ScheduledExecutorService slowApiCheckSchedule;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        exceptionApiCheckSchedule = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("exception-api-notice-schedule"));
+        slowApiCheckSchedule = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slow-api-notice-schedule"));
 
-        ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
-        exceptionApiCheckSchedule.scheduleWithFixedDelay(this::checkExceptionApiAndNotice, exceptionApiMonitorProperties.getNoticeIntervalSeconds(),
-                exceptionApiMonitorProperties.getNoticeIntervalSeconds(), TimeUnit.SECONDS);
+        SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
+        slowApiCheckSchedule.scheduleWithFixedDelay(this::checkSlowApiAndNotice, slowApiMonitorProperties.getSlowApiNoticeIntervalSeconds(),
+                slowApiMonitorProperties.getSlowApiNoticeIntervalSeconds(), TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if (slowApiCheckSchedule != null) {
+            slowApiCheckSchedule.shutdown();
+        }
     }
 
     /**
      * 检测异常接口，并发送通知
      */
-    public void checkExceptionApiAndNotice() {
-        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorRepository.getAlertRecords();
-        if (apiExceptions.isEmpty()) {
+    public void checkSlowApiAndNotice() {
+        List<ApiSlowAlertDTO> apiSlowAlerts = slowApiMonitorRepository.getAlertRecords();
+        if (apiSlowAlerts.isEmpty()) {
             return;
         }
 
-        applicationEventPublisher.publishEvent(new ApiExceptionAlertEvent(this, apiExceptions));
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (exceptionApiCheckSchedule != null) {
-            exceptionApiCheckSchedule.shutdown();
-        }
+        applicationEventPublisher.publishEvent(new SlowApiAlertEvent(this, apiSlowAlerts));
     }
 
     @Override

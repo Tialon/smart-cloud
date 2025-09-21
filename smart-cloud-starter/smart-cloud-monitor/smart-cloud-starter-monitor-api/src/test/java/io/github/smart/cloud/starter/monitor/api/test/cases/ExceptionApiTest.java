@@ -17,8 +17,8 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
-import io.github.smart.cloud.starter.monitor.api.component.repository.ExceptionApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.check.ExceptionApiChecker;
+import io.github.smart.cloud.starter.monitor.api.core.repository.ExceptionApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.exception.NullPointExceptionController;
@@ -118,8 +118,8 @@ public class ExceptionApiTest extends AbstractTest {
 
         ApiExceptionAlertDTO apiException0 = apiExceptions.get(0);
         ApiExceptionAlertDTO apiException1 = apiExceptions.get(1);
-        BigDecimal fail0 = BigDecimal.valueOf(apiException0.getFailCount()).divide(BigDecimal.valueOf(apiException0.getTotal()), 10, RoundingMode.HALF_UP);
-        BigDecimal fail1 = BigDecimal.valueOf(apiException1.getFailCount()).divide(BigDecimal.valueOf(apiException1.getTotal()), 10, RoundingMode.HALF_UP);
+        BigDecimal fail0 = BigDecimal.valueOf(apiException0.getFailCount()).divide(BigDecimal.valueOf(apiException0.getTotalCount()), 10, RoundingMode.HALF_UP);
+        BigDecimal fail1 = BigDecimal.valueOf(apiException1.getFailCount()).divide(BigDecimal.valueOf(apiException1.getTotalCount()), 10, RoundingMode.HALF_UP);
         Assertions.assertThat(fail0).isGreaterThanOrEqualTo(fail1);
 
         exceptionApiChecker.checkExceptionApiAndNotice();

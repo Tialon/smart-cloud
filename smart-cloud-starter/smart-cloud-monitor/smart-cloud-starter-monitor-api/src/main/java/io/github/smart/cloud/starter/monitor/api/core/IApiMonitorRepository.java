@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component;
+package io.github.smart.cloud.starter.monitor.api.core;
 
 import io.github.smart.cloud.starter.monitor.api.dto.ApiAlertCommonDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
@@ -30,11 +30,11 @@ import java.util.List;
 public interface IApiMonitorRepository<T extends ApiAlertCommonDTO> {
 
     /**
-     * 添加接口访问记录
+     * 设置接口访问信息
      *
      * @param event
      */
-    void saveRequestLog(ApiMonitorEvent event);
+    void process(ApiMonitorEvent event);
 
     /**
      * 查询需要告警的接口信息

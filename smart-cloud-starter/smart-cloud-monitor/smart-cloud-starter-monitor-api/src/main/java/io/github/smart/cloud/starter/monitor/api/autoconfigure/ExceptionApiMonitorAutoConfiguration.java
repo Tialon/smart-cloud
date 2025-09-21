@@ -17,10 +17,11 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.component.check.ExceptionApiChecker;
-import io.github.smart.cloud.starter.monitor.api.component.repository.ExceptionApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
+import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
+import io.github.smart.cloud.starter.monitor.api.core.repository.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.repository.ExceptionApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.ExceptionApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -42,9 +43,9 @@ import org.springframework.context.annotation.Configuration;
 public class ExceptionApiMonitorAutoConfiguration {
 
     @Bean
-    @RefreshScope
-    public ExceptionApiMonitorRepository exceptionApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties) {
-        return new ExceptionApiMonitorRepository(apiMonitorProperties);
+    public ExceptionApiMonitorRepository exceptionApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
+                                                                       final ApiMonitorCacheManager apiMonitorCacheManager) {
+        return new ExceptionApiMonitorRepository(apiMonitorProperties, apiMonitorCacheManager);
     }
 
     @Bean

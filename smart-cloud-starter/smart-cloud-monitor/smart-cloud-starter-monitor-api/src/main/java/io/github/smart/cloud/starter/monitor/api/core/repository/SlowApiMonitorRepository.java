@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.component.repository;
+package io.github.smart.cloud.starter.monitor.api.core.repository;
 
-import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
-import io.github.smart.cloud.starter.monitor.api.dto.SlowApiMonitorCacheDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.SlowApiMonitorProperties;
-import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
-import org.springframework.context.ApplicationListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,9 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * 慢接口监控数据存储
@@ -47,31 +40,25 @@ import java.util.function.Function;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAlertDTO>, InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
+public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAlertDTO> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    /**
-     * 慢接口统计
-     */
-    private final ConcurrentMap<String, SlowApiMonitorCacheDTO> slowApiHistory = new ConcurrentHashMap<>();
-    private final CreateSlowApiMonitorCacheDtoFunction createSlowApiMonitorCacheDtoFunction = new CreateSlowApiMonitorCacheDtoFunction();
-    private ScheduledExecutorService cleanSchedule;
+    private final ApiMonitorCacheManager apiMonitorCacheManager;
 
     @Override
-    public void saveRequestLog(ApiMonitorEvent event) {
+    public void process(ApiMonitorEvent event) {
         try {
             SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
             if (slowApiMonitorProperties.getApiWhiteList().contains(event.getApiName())) {
                 return;
             }
 
-            SlowApiMonitorCacheDTO slowApiMonitorCacheDTO = slowApiHistory.computeIfAbsent(event.getApiName(), createSlowApiMonitorCacheDtoFunction);
-            slowApiMonitorCacheDTO.getTotalCount().increment();
+            ApiRequestSummaryDTO apiRequestSummary = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
             if (event.getCost() >= slowApiMonitorProperties.getCostThreshold(event.getApiName())) {
-                slowApiMonitorCacheDTO.getSlowCount().increment();
-                if (event.getCost() > slowApiMonitorCacheDTO.getMaxCost()) {
-                    synchronized (slowApiMonitorCacheDTO) {
-                        slowApiMonitorCacheDTO.setMaxCost(Math.max(slowApiMonitorCacheDTO.getMaxCost(), event.getCost()));
+                apiRequestSummary.getSlowCount().increment();
+                if (event.getCost() > apiRequestSummary.getMaxCost()) {
+                    synchronized (apiRequestSummary) {
+                        apiRequestSummary.setMaxCost(Math.max(apiRequestSummary.getMaxCost(), event.getCost()));
                     }
                 }
             }
@@ -82,39 +69,41 @@ public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAl
 
     @Override
     public List<ApiSlowAlertDTO> getAlertRecords() {
-        if (slowApiHistory.isEmpty()) {
+        ConcurrentMap<String, ApiRequestSummaryDTO> apiRequestSummaryMap = apiMonitorCacheManager.getApiRequestSummaryMap();
+        if (apiRequestSummaryMap.isEmpty()) {
             return Collections.emptyList();
         }
 
         SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
         List<ApiSlowAlertDTO> apiSlowAlerts = new ArrayList<>(0);
-        for (Map.Entry<String, SlowApiMonitorCacheDTO> entry : slowApiHistory.entrySet()) {
+        for (Map.Entry<String, ApiRequestSummaryDTO> entry : apiRequestSummaryMap.entrySet()) {
             String apiName = entry.getKey();
-            SlowApiMonitorCacheDTO slowApiMonitorCacheDTO = entry.getValue();
-            if (slowApiMonitorCacheDTO.getMaxCost() >= slowApiMonitorProperties.getAlertCostThreshold()) {
+            ApiRequestSummaryDTO apiRequestSummary = entry.getValue();
+            if (apiRequestSummary.getMaxCost() >= slowApiMonitorProperties.getAlertCostThreshold()) {
                 ApiSlowAlertDTO apiSlowAlert = new ApiSlowAlertDTO();
                 apiSlowAlert.setName(apiName);
-                apiSlowAlert.setSlowCount(slowApiMonitorCacheDTO.getSlowCount().sum());
-                apiSlowAlert.setTotalCount(slowApiMonitorCacheDTO.getTotalCount().sum());
-                apiSlowAlert.setMaxCost(slowApiMonitorCacheDTO.getMaxCost());
+                apiSlowAlert.setSlowCount(apiRequestSummary.getSlowCount().sum());
+                apiSlowAlert.setTotalCount(apiRequestSummary.getTotalCount().sum());
+                apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
 
                 apiSlowAlerts.add(apiSlowAlert);
                 continue;
             }
 
-            long slowCountSum = slowApiMonitorCacheDTO.getSlowCount().sum();
+            long slowCountSum = apiRequestSummary.getSlowCount().sum();
             if (slowCountSum == 0) {
                 continue;
             }
 
             BigDecimal slowRateThreshold = slowApiMonitorProperties.getSlowRateThreshold(apiName);
-            BigDecimal slowRate = BigDecimal.valueOf(slowCountSum).divide(BigDecimal.valueOf(slowApiMonitorCacheDTO.getTotalCount().sum()), 4, RoundingMode.HALF_UP);
+            long totalCount = apiRequestSummary.getTotalCount().sum();
+            BigDecimal slowRate = BigDecimal.valueOf(slowCountSum).divide(BigDecimal.valueOf(totalCount), 4, RoundingMode.HALF_UP);
             if (slowRate.compareTo(slowRateThreshold) >= 0) {
                 ApiSlowAlertDTO apiSlowAlert = new ApiSlowAlertDTO();
                 apiSlowAlert.setName(apiName);
-                apiSlowAlert.setSlowCount(slowApiMonitorCacheDTO.getSlowCount().sum());
-                apiSlowAlert.setTotalCount(slowApiMonitorCacheDTO.getTotalCount().sum());
-                apiSlowAlert.setMaxCost(slowApiMonitorCacheDTO.getMaxCost());
+                apiSlowAlert.setSlowCount(slowCountSum);
+                apiSlowAlert.setTotalCount(totalCount);
+                apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
                 apiSlowAlert.setSlowRate(slowRate);
 
                 apiSlowAlerts.add(apiSlowAlert);
@@ -146,46 +135,6 @@ public class SlowApiMonitorRepository implements IApiMonitorRepository<ApiSlowAl
         }
 
         return apiSlowAlerts;
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (cleanSchedule != null) {
-            cleanSchedule.shutdown();
-        }
-
-        clearApiHistory();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        SlowApiMonitorProperties slowApiMonitorProperties = apiMonitorProperties.getSlowApiMonitor();
-        cleanSchedule = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("clean-slow-api-cache"));
-        cleanSchedule.scheduleWithFixedDelay(this::clearApiHistory, slowApiMonitorProperties.getCleanIntervalSeconds(), slowApiMonitorProperties.getCleanIntervalSeconds(), TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void onApplicationEvent(RefreshScopeRefreshedEvent event) {
-
-    }
-
-    public void clearApiHistory() {
-        slowApiHistory.clear();
-    }
-
-    /**
-     * 创建SlowApiMonitorCacheDTO
-     *
-     * @author collin
-     * @date 2025-09-16
-     */
-    private class CreateSlowApiMonitorCacheDtoFunction implements Function<String, SlowApiMonitorCacheDTO> {
-
-        @Override
-        public SlowApiMonitorCacheDTO apply(String s) {
-            return new SlowApiMonitorCacheDTO(new LongAdder(), new LongAdder(), 0L);
-        }
-
     }
 
 }

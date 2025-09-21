@@ -15,10 +15,12 @@
  */
 package io.github.smart.cloud.starter.monitor.api.listener.monitor;
 
-import io.github.smart.cloud.starter.monitor.api.component.IApiMonitorRepository;
+import io.github.smart.cloud.starter.monitor.api.constants.OrderConstants;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorRepository;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.Ordered;
 
 /**
  * 慢接口监控监听处理器
@@ -27,13 +29,18 @@ import org.springframework.context.ApplicationListener;
  * @date 2025-09-14
  */
 @RequiredArgsConstructor
-public class SlowApiMonitorListener implements ApplicationListener<ApiMonitorEvent> {
+public class SlowApiMonitorListener implements ApplicationListener<ApiMonitorEvent>, Ordered {
 
     private final IApiMonitorRepository slowApiMonitorRepository;
 
     @Override
     public void onApplicationEvent(ApiMonitorEvent event) {
-        slowApiMonitorRepository.saveRequestLog(event);
+        slowApiMonitorRepository.process(event);
+    }
+
+    @Override
+    public int getOrder() {
+        return OrderConstants.SLOW_API_MONITOR_LISTENER;
     }
 
 }

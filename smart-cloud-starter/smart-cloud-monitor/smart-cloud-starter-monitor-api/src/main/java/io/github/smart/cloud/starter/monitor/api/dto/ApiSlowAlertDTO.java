@@ -38,10 +38,6 @@ public class ApiSlowAlertDTO extends ApiAlertCommonDTO {
      */
     private Long maxCost;
     /**
-     * 总访问数
-     */
-    private Long totalCount;
-    /**
      * 慢接口数
      */
     private Long slowCount;
