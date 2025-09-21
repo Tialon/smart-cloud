@@ -59,6 +59,10 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
      */
     @Override
     public void process(ApiMonitorEvent event) {
+        if (event.getThrowable() == null) {
+            return;
+        }
+
         try {
             ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
             if (exceptionApiMonitorProperties.getApiWhiteList().contains(event.getApiName())) {
@@ -66,31 +70,29 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
             }
 
             ApiRequestSummaryDTO apiRequestSummaryDTO = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
-            if (event.getThrowable() != null) {
-                apiRequestSummaryDTO.getFailCount().increment();
-                Throwable throwable = apiRequestSummaryDTO.getThrowable();
-                synchronized (apiRequestSummaryDTO) {
-                    if (throwable == null) {
-                        apiRequestSummaryDTO.setThrowable(event.getThrowable());
-                    } else {
-                        // 如果当前异常为需要提醒的类或code，则不更新
-                        Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
-                        if (needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
+            apiRequestSummaryDTO.getFailCount().increment();
+            Throwable throwable = apiRequestSummaryDTO.getThrowable();
+            synchronized (apiRequestSummaryDTO) {
+                if (throwable == null) {
+                    apiRequestSummaryDTO.setThrowable(event.getThrowable());
+                } else {
+                    // 如果当前异常为需要提醒的类或code，则不更新
+                    Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
+                    if (needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
+                        return;
+                    }
+                    if (throwable instanceof AbstractBaseException) {
+                        Set<String> needAlertExceptionCodes = exceptionApiMonitorProperties.getNeedAlertExceptionCodes();
+                        if (needAlertExceptionCodes.contains(((AbstractBaseException) throwable).getCode())) {
                             return;
                         }
-                        if (throwable instanceof AbstractBaseException) {
-                            Set<String> needAlertExceptionCodes = exceptionApiMonitorProperties.getNeedAlertExceptionCodes();
-                            if (needAlertExceptionCodes.contains(((AbstractBaseException) throwable).getCode())) {
-                                return;
-                            }
-                        }
-
-                        apiRequestSummaryDTO.setThrowable(event.getThrowable());
                     }
+
+                    apiRequestSummaryDTO.setThrowable(event.getThrowable());
                 }
             }
-        } catch (Throwable ex) {
-            log.error("api health info add error|name={}", event.getApiName(), ex);
+        } catch (Throwable e) {
+            log.error("api health info add error|name={}", event.getApiName(), e);
         }
     }
 

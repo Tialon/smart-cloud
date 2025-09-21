@@ -53,17 +53,19 @@ public class SlowApiMonitorDataProccessor implements IApiMonitorDataProccessor<A
                 return;
             }
 
+            if (event.getCost() < slowApiMonitorProperties.getCostThreshold(event.getApiName())) {
+                return;
+            }
+
             ApiRequestSummaryDTO apiRequestSummary = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
-            if (event.getCost() >= slowApiMonitorProperties.getCostThreshold(event.getApiName())) {
-                apiRequestSummary.getSlowCount().increment();
-                if (event.getCost() > apiRequestSummary.getMaxCost()) {
-                    synchronized (apiRequestSummary) {
-                        apiRequestSummary.setMaxCost(Math.max(apiRequestSummary.getMaxCost(), event.getCost()));
-                    }
+            apiRequestSummary.getSlowCount().increment();
+            if (event.getCost() > apiRequestSummary.getMaxCost()) {
+                synchronized (apiRequestSummary) {
+                    apiRequestSummary.setMaxCost(Math.max(apiRequestSummary.getMaxCost(), event.getCost()));
                 }
             }
-        } catch (Throwable ex) {
-            log.error("api slow info add error|name={}", event.getApiName(), ex);
+        } catch (Throwable e) {
+            log.error("api slow info add error|name={}", event.getApiName(), e);
         }
     }
 
