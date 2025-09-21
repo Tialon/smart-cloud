@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.properties;
 
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,6 +55,12 @@ public class ApiMonitorProperties {
      * 清理间隔时间（单位：秒）
      */
     private long cleanIntervalSeconds = 60 * 3L;
+    /**
+     * 接口监控切面是否支持mapping注解
+     * <li>true-支持</li>
+     * <li>false-不支持，仅支持@ApiMonitor注解</li>
+     */
+    private boolean pointCutSupportMappingAnnotation = true;
     /**
      * 异常接口监控配置
      */

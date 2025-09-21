@@ -56,8 +56,8 @@ public class ApiMonitorAutoConguration {
     }
 
     @Bean
-    public ApiMonitorPointCut apiMonitorPointCut() {
-        return new ApiMonitorPointCut();
+    public ApiMonitorPointCut apiMonitorPointCut(ApiMonitorProperties apiMonitorProperties) {
+        return new ApiMonitorPointCut(apiMonitorProperties.isPointCutSupportMappingAnnotation());
     }
 
     @Bean
