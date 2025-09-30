@@ -16,6 +16,7 @@
 package io.github.smart.cloud.starter.monitor.api.listener.alert;
 
 import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
+import io.github.smart.cloud.monitor.common.dto.wework.AbstractWeworkRobotMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
@@ -24,7 +25,6 @@ import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
-import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationListener;
@@ -57,7 +57,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @param apiExceptions
      * @return
      */
-    public String buildWeworkRobotMessage(List<ApiExceptionAlertDTO> apiExceptions) {
+    public AbstractWeworkRobotMessageDTO buildWeworkRobotMessage(List<ApiExceptionAlertDTO> apiExceptions) {
         if (WeworkRobotMessageType.MARKDOWN == apiMonitorProperties.getExceptionApiMonitor().getMessageType()) {
             return buildWeworkRobotMarkdownMessage(apiExceptions);
         } else {
@@ -71,7 +71,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @param apiExceptions
      * @return
      */
-    private String buildWeworkRobotMarkdownMessage(List<ApiExceptionAlertDTO> apiExceptions) {
+    private AbstractWeworkRobotMessageDTO buildWeworkRobotMarkdownMessage(List<ApiExceptionAlertDTO> apiExceptions) {
         ExceptionApiMonitorProperties exceptionApiMonitor = apiMonitorProperties.getExceptionApiMonitor();
         StringBuilder content = new StringBuilder(128);
         content.append("**risk-service** 3分钟异常接口统计:")
@@ -106,7 +106,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
             content.append("\n\n<@").append(StringUtils.join(exceptionApiMonitor.getReminders(), ">\n<@")).append(">");
         }
 
-        return JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
+        return new WeworkRobotMarkdownMessageDTO(content.toString());
     }
 
     /**
@@ -115,7 +115,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @param apiExceptions
      * @return
      */
-    private String buildWeworkRobotTextMessage(List<ApiExceptionAlertDTO> apiExceptions) {
+    private AbstractWeworkRobotMessageDTO buildWeworkRobotTextMessage(List<ApiExceptionAlertDTO> apiExceptions) {
         StringBuilder content = new StringBuilder(128);
         content.append("【").append(appName).append("】")
                 .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds()))
@@ -143,7 +143,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
         }
 
         Set<String> mentionedMobileList = needMention ? apiMonitorProperties.getExceptionApiMonitor().getReminders() : null;
-        return JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), mentionedMobileList));
+        return new WeworkRobotTextMessageDTO(content.toString(), mentionedMobileList);
     }
 
 }

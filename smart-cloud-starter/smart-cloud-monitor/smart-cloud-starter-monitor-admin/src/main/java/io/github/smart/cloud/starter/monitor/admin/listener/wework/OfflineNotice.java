@@ -23,7 +23,6 @@ import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.OfflineNoticeEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
-import io.github.smart.cloud.utility.JacksonUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -54,8 +53,7 @@ public class OfflineNotice extends AbstractWeworkNotice<OfflineNoticeEvent> {
         } else {
             messageDto = new WeworkRobotTextMessageDTO(content.toString(), getReminders(name));
         }
-        String robotMessage = JacksonUtil.toJson(messageDto);
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), robotMessage);
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), messageDto);
     }
 
 }

@@ -15,10 +15,12 @@
  */
 package io.github.smart.cloud.monitor.common.dto.wework;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
@@ -38,12 +40,14 @@ public class WeworkRobotMarkdownMessageDTO extends AbstractWeworkRobotMessageDTO
     /**
      * 消息内容
      */
+    @JsonProperty("markdown")
     private WeworkRobotMessageContentDTO markdown;
 
     public WeworkRobotMarkdownMessageDTO(String content) {
+        Assert.notNull(content, "content must not be null");
+
         this.markdown = new WeworkRobotMessageContentDTO();
         markdown.setContent(content);
-
         setMsgtype(WeworkRobotMessageType.MARKDOWN.getValue());
     }
 

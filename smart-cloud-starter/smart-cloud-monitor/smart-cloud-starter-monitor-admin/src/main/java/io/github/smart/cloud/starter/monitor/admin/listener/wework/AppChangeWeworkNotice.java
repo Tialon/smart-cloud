@@ -24,7 +24,6 @@ import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.*;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.utility.DateUtil;
-import io.github.smart.cloud.utility.JacksonUtil;
 import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
@@ -85,8 +84,8 @@ public class AppChangeWeworkNotice extends AbstractWeworkNotice<AbstractAppChang
             }
         }
 
-        String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(event.getName()), robotMessage);
+        String robotKey = monitorProperties.getRobotKey(event.getName());
+        weworkRobotAgent.sendMessage(robotKey, new WeworkRobotMarkdownMessageDTO(content.toString()));
     }
 
     /**
@@ -119,8 +118,9 @@ public class AppChangeWeworkNotice extends AbstractWeworkNotice<AbstractAppChang
             }
         }
 
-        String robotMessage = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(event.getName())));
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(event.getName()), robotMessage);
+        String robotKey = monitorProperties.getRobotKey(event.getName());
+        WeworkRobotTextMessageDTO textMessage = new WeworkRobotTextMessageDTO(content.toString(), getReminders(event.getName()));
+        weworkRobotAgent.sendMessage(robotKey, textMessage);
     }
 
     /**

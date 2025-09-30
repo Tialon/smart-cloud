@@ -25,7 +25,6 @@ import io.github.smart.cloud.starter.monitor.admin.dto.MetricCheckResultDTO;
 import io.github.smart.cloud.starter.monitor.admin.event.MetricAlertEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.utility.DateUtil;
-import io.github.smart.cloud.utility.JacksonUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -64,9 +63,9 @@ public class MetricsAlertListener extends AbstractWeworkNotice<MetricAlertEvent>
         if (StringUtils.hasText(reminders)) {
             content.append(reminders);
         }
-        String message = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
 
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(serviceName), message);
+        WeworkRobotMarkdownMessageDTO markdownMessage = new WeworkRobotMarkdownMessageDTO(content.toString());
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(serviceName), markdownMessage);
     }
 
     private void sendTextMessage(MetricAlertEvent event) {
@@ -80,9 +79,9 @@ public class MetricsAlertListener extends AbstractWeworkNotice<MetricAlertEvent>
                 .append("【地址】：").append(instance.getRegistration().getServiceUrl()).append("\n")
                 .append("【指标】：").append(event.getInstanceMetric().getDesc()).append("-").append(metricCheckResult.getMetricCheckStatus().getDesc()).append("\n")
                 .append("【信息】：").append(metricCheckResult.getAlertDesc());
-        String messaeg = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(serviceName)));
 
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(serviceName), messaeg);
+        WeworkRobotTextMessageDTO textMessage = new WeworkRobotTextMessageDTO(content.toString(), getReminders(serviceName));
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(serviceName), textMessage);
     }
 
 }

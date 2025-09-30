@@ -17,6 +17,7 @@ package io.github.smart.cloud.monitor.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.smart.cloud.exception.ConfigException;
+import io.github.smart.cloud.monitor.common.dto.wework.*;
 import io.github.smart.cloud.monitor.common.properties.ProxyProperties;
 import io.github.smart.cloud.utility.HttpUtil;
 import io.github.smart.cloud.utility.JacksonUtil;
@@ -40,6 +41,14 @@ public class WeworkRobotAgent implements InitializingBean {
 
     private final ProxyProperties proxyProperties;
     private HttpHost proxyHttpHost;
+    /**
+     * txt格式消息最大长度
+     */
+    private static final int TXT_CONTENT_MAX_LENGTH = 2048;
+    /**
+     * markdown格式消息最大长度
+     */
+    private static final int MARKDOWN_CONTENT_MAX_LENGTH = 4096;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -63,10 +72,47 @@ public class WeworkRobotAgent implements InitializingBean {
      * 发送企业微信机器人消息
      *
      * @param robotKey
+     * @param message
+     * @return
+     */
+    public boolean sendMessage(String robotKey, AbstractWeworkRobotMessageDTO message) {
+        // 截掉content超过的部分
+        if (message instanceof WeworkRobotMarkdownMessageDTO) {
+            WeworkRobotMarkdownMessageDTO markdownMessage = (WeworkRobotMarkdownMessageDTO) message;
+            WeworkRobotMessageContentDTO markdownContent = markdownMessage.getMarkdown();
+            markdownContent.setContent(truncateContent(markdownContent.getContent(), MARKDOWN_CONTENT_MAX_LENGTH));
+        } else if (message instanceof WeworkRobotTextMessageDTO) {
+            WeworkRobotTextMessageDTO textMessage = (WeworkRobotTextMessageDTO) message;
+            WeworkRobotTextMessageContentDTO textContent = textMessage.getText();
+            textContent.setContent(truncateContent(textContent.getContent(), TXT_CONTENT_MAX_LENGTH));
+        }
+
+        return sendMessage(robotKey, JacksonUtil.toJson(message));
+    }
+
+    /**
+     * 截掉超过的部分
+     *
+     * @param content
+     * @param maxLength
+     * @return
+     */
+    private String truncateContent(String content, int maxLength) {
+        if (content != null && content.length() > maxLength) {
+            log.warn("content before truncate:{}", content);
+            return content.substring(0, maxLength);
+        }
+        return content;
+    }
+
+    /**
+     * 发送企业微信机器人消息
+     *
+     * @param robotKey
      * @param msg
      * @return
      */
-    public boolean sendMessage(String robotKey, String msg) {
+    private boolean sendMessage(String robotKey, String msg) {
         if (!StringUtils.hasText(robotKey)) {
             throw new ConfigException("The robot key is not configured");
         }

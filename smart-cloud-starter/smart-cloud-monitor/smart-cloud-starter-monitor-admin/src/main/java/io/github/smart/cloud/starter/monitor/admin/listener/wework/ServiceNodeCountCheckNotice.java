@@ -23,7 +23,6 @@ import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.ServiceNodeCountCheckNoticeEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
-import io.github.smart.cloud.utility.JacksonUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -70,8 +69,8 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
             content.append(reminders);
         }
 
-        String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), robotMessage);
+        WeworkRobotMarkdownMessageDTO markdownMessage = new WeworkRobotMarkdownMessageDTO(content.toString());
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), markdownMessage);
     }
 
     /**
@@ -93,8 +92,8 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
         }
         content.append("【当前实例数】:").append(event.getNodeCount()).append("⚠\n");
 
-        String robotMessage = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(name)));
-        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), robotMessage);
+        WeworkRobotTextMessageDTO textMessage = new WeworkRobotTextMessageDTO(content.toString(), getReminders(name));
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), textMessage);
     }
 
 }
