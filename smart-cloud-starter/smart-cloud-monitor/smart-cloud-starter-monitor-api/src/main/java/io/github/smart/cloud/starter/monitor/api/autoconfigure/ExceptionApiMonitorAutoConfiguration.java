@@ -15,10 +15,10 @@
  */
 package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
 import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
-import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
@@ -63,9 +63,9 @@ public class ExceptionApiMonitorAutoConfiguration {
 
     @Bean
     @ConditionWeworkRobotNotice
-    public ApiExceptionWeworkAlertListener apiExceptionWeworkAlertListener(final WeworkRobotComponent weworkRobotComponent,
+    public ApiExceptionWeworkAlertListener apiExceptionWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
                                                                            final ApiMonitorProperties apiMonitorProperties) {
-        return new ApiExceptionWeworkAlertListener(weworkRobotComponent, apiMonitorProperties);
+        return new ApiExceptionWeworkAlertListener(weworkRobotAgent, apiMonitorProperties);
     }
 
 }

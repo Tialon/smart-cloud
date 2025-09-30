@@ -13,34 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.core;
+package io.github.smart.cloud.monitor.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.smart.cloud.exception.ConfigException;
-import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
+import io.github.smart.cloud.monitor.common.properties.ProxyProperties;
 import io.github.smart.cloud.utility.HttpUtil;
 import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
 /**
- * 企业微信机器人
+ * 企业微信机器人发送消息
  *
  * @author collin
- * @date 2025-05-17
+ * @date 2025-09-21
  */
 @Slf4j
 @RequiredArgsConstructor
-public class WeworkRobotComponent implements InitializingBean {
+public class WeworkRobotAgent implements InitializingBean {
 
-    private final ApiMonitorProperties apiMonitorProperties;
+    private final ProxyProperties proxyProperties;
+    private HttpHost proxyHttpHost;
 
-    private HttpHost proxy;
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (existProxy(proxyProperties)) {
+            this.proxyHttpHost = new HttpHost(proxyProperties.getHost(), proxyProperties.getPort());
+        }
+    }
+
+    /**
+     * 是否存在代理代理
+     *
+     * @param proxyProperties
+     * @return
+     */
+    private boolean existProxy(ProxyProperties proxyProperties) {
+        return (proxyProperties.getHost() != null && proxyProperties.getHost().trim().length() > 0)
+                && (proxyProperties.getPort() != null && proxyProperties.getPort() > 0);
+    }
 
     /**
      * 发送企业微信机器人消息
@@ -49,16 +66,16 @@ public class WeworkRobotComponent implements InitializingBean {
      * @param msg
      * @return
      */
-    public boolean sendWeworkRobotMessage(String robotKey, String msg) {
-        if (StringUtils.isBlank(robotKey)) {
+    public boolean sendMessage(String robotKey, String msg) {
+        if (!StringUtils.hasText(robotKey)) {
             throw new ConfigException("The robot key is not configured");
         }
 
         try {
             String weworkRobotUrl = String.format("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%s", robotKey);
-            String result = HttpUtil.postWithRaw(weworkRobotUrl, msg, proxy);
+            String result = HttpUtil.postWithRaw(weworkRobotUrl, msg, proxyHttpHost);
             // {"errcode":0,"errmsg":"ok"}
-            if (StringUtils.isBlank(result)) {
+            if (!StringUtils.hasText(result)) {
                 return false;
             }
 
@@ -72,13 +89,6 @@ public class WeworkRobotComponent implements InitializingBean {
         } catch (IOException e) {
             log.error("send http request fail|request={}", msg, e);
             return false;
-        }
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (StringUtils.isNotBlank(apiMonitorProperties.getProxyHost())) {
-            proxy = new HttpHost(apiMonitorProperties.getProxyHost(), apiMonitorProperties.getPort());
         }
     }
 

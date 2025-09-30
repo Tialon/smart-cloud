@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.admin.properties;
+package io.github.smart.cloud.monitor.common.properties;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -18,6 +18,7 @@ package io.github.smart.cloud.starter.monitor.api.properties;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 接口健康检测配置属性
@@ -44,17 +45,13 @@ public class ApiMonitorProperties {
     public static final String PREFIX = "smart.api-monitor";
 
     /**
-     * 发送消息时的代理host
-     */
-    private String proxyHost;
-    /**
-     * 发送消息时的代理端口
-     */
-    private int port;
-    /**
      * 清理间隔时间（单位：秒）
      */
     private long cleanIntervalSeconds = 60 * 3L;
+    /**
+     * 默认的机器人key
+     */
+    private String robotKey;
     /**
      * 接口监控切面是否支持mapping注解
      * <li>true-支持</li>
@@ -69,5 +66,29 @@ public class ApiMonitorProperties {
      * 慢接口监控配置
      */
     private SlowApiMonitorProperties slowApiMonitor = new SlowApiMonitorProperties();
+
+    /**
+     * 获取异常接口通知机器人key
+     *
+     * @return
+     */
+    public String getExceptionApiRobotKey() {
+        if (StringUtils.isBlank(exceptionApiMonitor.getRobotKey())) {
+            return robotKey;
+        }
+        return exceptionApiMonitor.getRobotKey();
+    }
+
+    /**
+     * 获取慢接口通知机器人key
+     *
+     * @return
+     */
+    public String getSlowApiRobotKey() {
+        if (StringUtils.isBlank(slowApiMonitor.getRobotKey())) {
+            return robotKey;
+        }
+        return slowApiMonitor.getRobotKey();
+    }
 
 }

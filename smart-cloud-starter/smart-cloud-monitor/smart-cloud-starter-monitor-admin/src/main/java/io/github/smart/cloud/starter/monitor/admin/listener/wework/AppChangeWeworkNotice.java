@@ -16,11 +16,11 @@
 package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.*;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.utility.DateUtil;
@@ -38,8 +38,8 @@ import java.util.Map;
  */
 public class AppChangeWeworkNotice extends AbstractWeworkNotice<AbstractAppChangeEvent> {
 
-    public AppChangeWeworkNotice(WeworkRobotComponent weworkRobotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
-        super(weworkRobotComponent, monitorProperties, reminderComponent);
+    public AppChangeWeworkNotice(WeworkRobotAgent weworkRobotAgent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class AppChangeWeworkNotice extends AbstractWeworkNotice<AbstractAppChang
         }
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(event.getName()), robotMessage);
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(event.getName()), robotMessage);
     }
 
     /**
@@ -120,7 +120,7 @@ public class AppChangeWeworkNotice extends AbstractWeworkNotice<AbstractAppChang
         }
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(event.getName())));
-        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(event.getName()), robotMessage);
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(event.getName()), robotMessage);
     }
 
     /**

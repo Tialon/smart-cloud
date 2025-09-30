@@ -15,10 +15,10 @@
  */
 package io.github.smart.cloud.starter.monitor.api.listener.alert;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
-import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
@@ -43,13 +43,12 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener implements ApplicationListener<ApiExceptionAlertEvent> {
 
-    private final WeworkRobotComponent weworkRobotComponent;
+    private final WeworkRobotAgent weworkRobotAgent;
     private final ApiMonitorProperties apiMonitorProperties;
 
     @Override
     public void onApplicationEvent(ApiExceptionAlertEvent event) {
-        String robotKey = apiMonitorProperties.getExceptionApiMonitor().getRobotKey();
-        weworkRobotComponent.sendWeworkRobotMessage(robotKey, buildWeworkRobotMessage(event.getApiExceptions()));
+        weworkRobotAgent.sendMessage(apiMonitorProperties.getExceptionApiRobotKey(), buildWeworkRobotMessage(event.getApiExceptions()));
     }
 
     /**

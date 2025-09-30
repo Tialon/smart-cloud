@@ -15,11 +15,11 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.ServiceNodeCountCheckNoticeEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
@@ -34,8 +34,8 @@ import org.springframework.util.StringUtils;
  */
 public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNodeCountCheckNoticeEvent> {
 
-    public ServiceNodeCountCheckNotice(WeworkRobotComponent weworkRobotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
-        super(weworkRobotComponent, monitorProperties, reminderComponent);
+    public ServiceNodeCountCheckNotice(WeworkRobotAgent weworkRobotAgent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
         }
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), robotMessage);
     }
 
     /**
@@ -94,7 +94,7 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
         content.append("【当前实例数】:").append(event.getNodeCount()).append("⚠\n");
 
         String robotMessage = JacksonUtil.toJson(new WeworkRobotTextMessageDTO(content.toString(), getReminders(name)));
-        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), robotMessage);
     }
 
 }

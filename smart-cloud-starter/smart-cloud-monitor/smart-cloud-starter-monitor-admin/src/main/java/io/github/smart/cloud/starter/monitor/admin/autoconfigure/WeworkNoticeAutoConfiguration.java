@@ -15,9 +15,9 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.autoconfigure;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.starter.monitor.admin.component.GitLabComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.AppChangeWeworkNotice;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.MetricsAlertListener;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.OfflineNotice;
@@ -25,7 +25,6 @@ import io.github.smart.cloud.starter.monitor.admin.listener.wework.ServiceNodeCo
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,13 +39,6 @@ import org.springframework.context.annotation.Configuration;
 public class WeworkNoticeAutoConfiguration {
 
     @Bean
-    @RefreshScope
-    @ConditionalOnMissingBean
-    public WeworkRobotComponent robotComponent(final MonitorProperties monitorProperties) {
-        return new WeworkRobotComponent(monitorProperties);
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public ReminderComponent reminderComponent(final GitLabComponent gitLabComponent, final MonitorProperties monitorProperties) {
         return new ReminderComponent(gitLabComponent, monitorProperties);
@@ -54,25 +46,25 @@ public class WeworkNoticeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OfflineNotice offlineWeworkNotice(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new OfflineNotice(weworkRobotComponent, monitorProperties, reminderComponent);
+    public OfflineNotice offlineWeworkNotice(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new OfflineNotice(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceNodeCountCheckNotice serviceNodeCountCheckNotice(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new ServiceNodeCountCheckNotice(weworkRobotComponent, monitorProperties, reminderComponent);
+    public ServiceNodeCountCheckNotice serviceNodeCountCheckNotice(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new ServiceNodeCountCheckNotice(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppChangeWeworkNotice appChangeWeworkNotice(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new AppChangeWeworkNotice(weworkRobotComponent, monitorProperties, reminderComponent);
+    public AppChangeWeworkNotice appChangeWeworkNotice(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new AppChangeWeworkNotice(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Bean
-    public MetricsAlertListener metricsAlertListener(final WeworkRobotComponent weworkRobotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new MetricsAlertListener(weworkRobotComponent, monitorProperties, reminderComponent);
+    public MetricsAlertListener metricsAlertListener(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new MetricsAlertListener(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
 }

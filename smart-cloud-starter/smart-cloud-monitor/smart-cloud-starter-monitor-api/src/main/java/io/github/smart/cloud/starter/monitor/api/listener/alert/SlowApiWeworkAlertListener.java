@@ -15,10 +15,10 @@
  */
 package io.github.smart.cloud.starter.monitor.api.listener.alert;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
-import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.event.SlowApiAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -42,13 +42,12 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class SlowApiWeworkAlertListener extends AbstractWeworkAlertListener implements ApplicationListener<SlowApiAlertEvent> {
 
-    private final WeworkRobotComponent weworkRobotComponent;
+    private final WeworkRobotAgent weworkRobotAgent;
     private final ApiMonitorProperties apiMonitorProperties;
 
     @Override
     public void onApplicationEvent(SlowApiAlertEvent event) {
-        String robotKey = apiMonitorProperties.getExceptionApiMonitor().getRobotKey();
-        weworkRobotComponent.sendWeworkRobotMessage(robotKey, buildWeworkRobotMessage(event.getSlowApiAlerts()));
+        weworkRobotAgent.sendMessage(apiMonitorProperties.getSlowApiRobotKey(), buildWeworkRobotMessage(event.getSlowApiAlerts()));
     }
 
     /**

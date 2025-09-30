@@ -16,11 +16,13 @@
 package io.github.smart.cloud.starter.monitor.admin.properties;
 
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
+import io.github.smart.cloud.monitor.common.properties.ProxyProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -207,6 +209,21 @@ public class MonitorProperties implements InitializingBean {
         if (gc.getThreshold() == null) {
             gc.setThreshold(BigDecimal.valueOf(0.85D));
         }
+    }
+
+    /**
+     * 获取机器人key
+     *
+     * @param serviceName
+     * @return
+     */
+    public String getRobotKey(String serviceName) {
+        ServiceInfoProperties serviceInfoProperties = serviceInfos.get(serviceName);
+        if (serviceInfoProperties != null && StringUtils.hasText(serviceInfoProperties.getRobotKey())) {
+            return serviceInfoProperties.getRobotKey();
+        }
+
+        return robotKey;
     }
 
 }

@@ -16,8 +16,6 @@
 package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
-import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.interceptor.ApiMonitorInterceptor;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.ApiMonitorListener;
@@ -46,13 +44,6 @@ public class ApiMonitorAutoConguration {
     @ConfigurationProperties(prefix = ApiMonitorProperties.PREFIX)
     public ApiMonitorProperties apiMonitorProperties() {
         return new ApiMonitorProperties();
-    }
-
-    @Bean
-    @RefreshScope
-    @ConditionWeworkRobotNotice
-    public WeworkRobotComponent weworkRobotComponent(final ApiMonitorProperties apiMonitorProperties) {
-        return new WeworkRobotComponent(apiMonitorProperties);
     }
 
     @Bean

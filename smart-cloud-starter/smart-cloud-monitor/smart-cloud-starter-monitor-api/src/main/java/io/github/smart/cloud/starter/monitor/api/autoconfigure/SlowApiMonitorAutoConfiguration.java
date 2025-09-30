@@ -15,10 +15,10 @@
  */
 package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
 import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
-import io.github.smart.cloud.starter.monitor.api.core.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProccessor;
@@ -64,9 +64,9 @@ public class SlowApiMonitorAutoConfiguration {
 
     @Bean
     @ConditionWeworkRobotNotice
-    public SlowApiWeworkAlertListener slowApiWeworkAlertListener(final WeworkRobotComponent weworkRobotComponent,
+    public SlowApiWeworkAlertListener slowApiWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
                                                                  final ApiMonitorProperties apiMonitorProperties) {
-        return new SlowApiWeworkAlertListener(weworkRobotComponent, apiMonitorProperties);
+        return new SlowApiWeworkAlertListener(weworkRobotAgent, apiMonitorProperties);
     }
 
 }

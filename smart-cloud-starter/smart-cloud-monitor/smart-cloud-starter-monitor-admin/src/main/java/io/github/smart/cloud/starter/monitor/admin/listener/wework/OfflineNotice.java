@@ -15,12 +15,12 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.AbstractWeworkRobotMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.WeworkRobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.OfflineNoticeEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.utility.JacksonUtil;
@@ -34,8 +34,8 @@ import org.springframework.util.StringUtils;
  */
 public class OfflineNotice extends AbstractWeworkNotice<OfflineNoticeEvent> {
 
-    public OfflineNotice(WeworkRobotComponent weworkRobotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
-        super(weworkRobotComponent, monitorProperties, reminderComponent);
+    public OfflineNotice(WeworkRobotAgent weworkRobotAgent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class OfflineNotice extends AbstractWeworkNotice<OfflineNoticeEvent> {
             messageDto = new WeworkRobotTextMessageDTO(content.toString(), getReminders(name));
         }
         String robotMessage = JacksonUtil.toJson(messageDto);
-        weworkRobotComponent.sendWxworkNotice(weworkRobotComponent.getRobotKey(name), robotMessage);
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), robotMessage);
     }
 
 }
