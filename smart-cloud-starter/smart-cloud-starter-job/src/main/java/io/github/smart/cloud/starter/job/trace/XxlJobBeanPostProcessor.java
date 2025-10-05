@@ -59,11 +59,11 @@ public class XxlJobBeanPostProcessor implements BeanPostProcessor, BeanFactoryAw
         boolean cglibProxy = !classFinal;
         IJobHandler job = (IJobHandler) bean;
         try {
-            return createProxy(bean, cglibProxy, new XxlJobMethodInterceptor<IJobHandler>(job, beanFactory));
+            return createProxy(bean, cglibProxy, new XxlJobMethodInterceptor<>(job, beanFactory));
         } catch (AopConfigException ex) {
             if (cglibProxy) {
                 log.warn("Exception occurred while trying to create a proxy, falling back to JDK proxy", ex);
-                return createProxy(bean, false, new XxlJobMethodInterceptor<IJobHandler>(job, this.beanFactory));
+                return createProxy(bean, false, new XxlJobMethodInterceptor<>(job, this.beanFactory));
             }
             throw ex;
         }

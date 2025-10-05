@@ -31,17 +31,23 @@ public final class XxlJobLogUtil {
     }
 
     public static void debug(String format, Object... arguments) {
-        log.debug(format, arguments);
+        if (log.isDebugEnabled()) {
+            log.debug(format, arguments);
+        }
         XxlJobHelper.log(format, arguments);
     }
 
     public static void info(String format, Object... arguments) {
-        log.info(format, arguments);
+        if (log.isInfoEnabled()) {
+            log.info(format, arguments);
+        }
         XxlJobHelper.log(format, arguments);
     }
 
     public static void warn(String format, Object... arguments) {
-        log.warn(format, arguments);
+        if (log.isWarnEnabled()) {
+            log.warn(format, arguments);
+        }
         XxlJobHelper.log(format, arguments);
     }
 
