@@ -27,6 +27,6 @@ import org.springframework.stereotype.Repository;
  * @date 2019-03-31
  */
 @Repository
-public class ProductInfoOmsRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
+public class ProductInfoRepository extends BaseRepository<ProductInfoBaseMapper, ProductInfoEntity> {
 
 }
