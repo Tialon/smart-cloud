@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.configure.constants;
-
-import org.springframework.core.Ordered;
+package io.github.smart.cloud.constants;
 
 /**
  * bean执行顺序
@@ -26,33 +24,39 @@ import org.springframework.core.Ordered;
 public class OrderConstant {
 
     /**
+     * redis锁
+     */
+    public static final int REDIS_LOCK = 0;
+    /**
      * 用户上下文清理过滤器
      */
-    public static final int CLEAN_USER_CONTEXT_FILTER = Ordered.HIGHEST_PRECEDENCE;
+    public static final int CLEAN_USER_CONTEXT_FILTER = REDIS_LOCK + 10;
     /**
      * http filter
      */
-    public static final int HTTP_FITLER = CLEAN_USER_CONTEXT_FILTER + 1;
+    public static final int HTTP_FITLER = CLEAN_USER_CONTEXT_FILTER + 10;
     /**
      * api接口日志
      */
-    public static final int API_LOG = 1;
+    public static final int API_LOG = HTTP_FITLER + 10;
     /**
      * feign header参数
      */
-    public static final int FEIGN_HEADER = API_LOG + 1;
+    public static final int FEIGN_HEADER = API_LOG + 10;
     /**
      * feign接口日志
      */
-    public static final int FEIGN_LOG = FEIGN_HEADER + 1;
+    public static final int FEIGN_LOG = FEIGN_HEADER + 10;
     /**
      * 多语言切面
      */
     public static final int LOCALE = FEIGN_LOG + 1;
+
+    // ---------------------------------mybatis拦截器
     /**
      * 自定义sql日志拦截器（MybatisSqlLogInterceptor的优先级必须在高于MybatisPlusInterceptor，否则分页查询时，sql打印不全）
      */
-    public static final int MYBATIS_SQL_LOG_INTERCEPTOR = LOCALE + 1;
+    public static final int MYBATIS_SQL_LOG_INTERCEPTOR = 0;
     /**
      * mybatis plus拦截器（MybatisSqlLogInterceptor的优先级必须在高于MybatisPlusInterceptor，否则分页查询时，sql打印不全）
      */

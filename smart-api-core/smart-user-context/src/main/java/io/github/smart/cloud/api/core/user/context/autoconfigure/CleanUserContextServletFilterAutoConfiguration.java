@@ -16,7 +16,7 @@
 package io.github.smart.cloud.api.core.user.context.autoconfigure;
 
 import io.github.smart.cloud.api.core.user.context.filter.CleanUserContextServletFilter;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
+import io.github.smart.cloud.constants.OrderConstant;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
