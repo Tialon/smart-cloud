@@ -17,7 +17,9 @@ package io.github.smart.cloud.starter.redis.autoconfigure;
 
 import io.github.smart.cloud.starter.redis.adapter.IRedisAdapter;
 import io.github.smart.cloud.starter.redis.adapter.impl.RedisAdapterImpl;
+import io.github.smart.cloud.starter.redis.util.RedissonLockUtil;
 import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
 import org.redisson.spring.starter.RedissonAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -80,6 +82,11 @@ public class RedisAutoConfiguration {
     @Bean
     public IRedisAdapter redisAdapter(final RedisTemplate<Object, Object> redisTemplate) {
         return new RedisAdapterImpl(redisTemplate);
+    }
+
+    @Bean
+    public RedissonLockUtil redissonLockUtil(final RedissonClient redissonClient) {
+        return new RedissonLockUtil(redissonClient);
     }
 
 }

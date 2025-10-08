@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.redis.test.unit;
 
-import io.github.smart.cloud.starter.redis.RedisKeyUtil;
+import io.github.smart.cloud.starter.redis.util.RedisKeyUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
