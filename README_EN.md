@@ -43,12 +43,13 @@ smart-cloud
 ├──smart-constants -- constant module
 ├──smart-exception -- exception module
 ├──smart-mask -- Sensitive data obfuscation
+├──smart-design-pattern-utility -- Design-pattern tools
+├──smart-utility -- Tools
 ├──smart-test -- test package
 │  ├──smart-cloud-starter-test -- test package
 │  ├──smart-cloud-starter-test-mock-rabbitmq -- test rabbitmq module package
 │  ├──smart-cloud-starter-test-mock-redis -- test redis module package
 │  └──smart-cloud-test-core -- test unit test, integration test package
-├──smart-utility -- Tools
 └──smart-could-starter -- frame encapsulation
    ├──smart-cloud-starter-api-version -- Interface multi-version control
    ├──smart-cloud-starter-configure -- Framework configuration property encapsulation

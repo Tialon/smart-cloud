@@ -63,6 +63,7 @@
         <module>smart-common-pojo</module>
         <module>smart-common-web</module>
         <module>smart-constants</module>
+        <module>smart-design-pattern-utility</module>
         <module>smart-exception</module>
         <module>smart-mask</module>
         <module>smart-test</module>
@@ -154,6 +155,12 @@
             <dependency>
                 <groupId>io.github.smart-cloud</groupId>
                 <artifactId>smart-constants</artifactId>
+                <version>${smart-cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.smart-cloud</groupId>
+                <artifactId>smart-design-pattern-utility</artifactId>
                 <version>${smart-cloud.version}</version>
             </dependency>
 

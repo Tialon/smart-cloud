@@ -43,12 +43,13 @@ smart-cloud
 ├──smart-constants -- 常量模块
 ├──smart-exception -- 异常模块
 ├──smart-mask -- 敏感数据混淆
+├──smart-design-pattern-utility -- 设计模式工具
+├──smart-utility -- 工具类
 ├──smart-test -- test封装
 │  ├──smart-cloud-starter-test -- test封装
 │  ├──smart-cloud-starter-test-mock-rabbitmq -- test rabbitmq模块封装
 │  ├──smart-cloud-starter-test-mock-redis -- test redis模块封装
 │  └──smart-cloud-test-core -- test 单元测试、集成测试封装
-├──smart-utility -- 工具类
 └──smart-could-starter -- 框架封装
    ├──smart-cloud-starter-api-version -- 接口多版本控制
    ├──smart-cloud-starter-configure -- 框架配置属性封装
