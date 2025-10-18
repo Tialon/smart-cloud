@@ -74,7 +74,8 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
     private AbstractWeworkRobotMessageDTO buildWeworkRobotMarkdownMessage(List<ApiExceptionAlertDTO> apiExceptions) {
         ExceptionApiMonitorProperties exceptionApiMonitor = apiMonitorProperties.getExceptionApiMonitor();
         StringBuilder content = new StringBuilder(128);
-        content.append("**risk-service** 3分钟异常接口统计:")
+        content.append("**").append(appName).append("**")
+                .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds())).append("分钟异常接口统计:")
                 .append("\n**IP**：").append(ip);
         boolean needMention = false;
 
