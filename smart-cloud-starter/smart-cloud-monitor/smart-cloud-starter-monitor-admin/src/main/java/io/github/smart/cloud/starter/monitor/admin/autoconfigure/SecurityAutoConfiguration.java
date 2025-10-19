@@ -45,15 +45,15 @@ public class SecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
         successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
 
         http.authorizeRequests()
-                .antMatchers(new String[]{this.adminContextPath + "/assets/**"}).permitAll()
-                .antMatchers(new String[]{this.adminContextPath + "/login"}).permitAll()
-                .antMatchers(new String[]{this.adminContextPath + "/actuator/**"}).permitAll()
+                .antMatchers(new String[]{this.adminContextPath + "/assets/**",
+                        this.adminContextPath + "/login",
+                        this.adminContextPath + "/actuator/**",
+                        this.adminContextPath + "/instances"}).permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin().loginPage(this.adminContextPath + "/login").successHandler(successHandler)
                 .and().logout().logoutUrl(this.adminContextPath + "/logout")
                 .and().httpBasic()
-                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringAntMatchers(new String[]{this.adminContextPath + "/instances", this.adminContextPath + "/actuator/**"});
+                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 
 }

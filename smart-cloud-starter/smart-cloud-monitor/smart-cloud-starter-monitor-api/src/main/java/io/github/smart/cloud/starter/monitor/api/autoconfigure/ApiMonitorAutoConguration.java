@@ -23,6 +23,7 @@ import io.github.smart.cloud.starter.monitor.api.pointcut.ApiMonitorPointCut;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,16 +48,19 @@ public class ApiMonitorAutoConguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ApiMonitorPointCut apiMonitorPointCut(ApiMonitorProperties apiMonitorProperties) {
         return new ApiMonitorPointCut(apiMonitorProperties.isPointCutSupportMappingAnnotation());
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ApiMonitorInterceptor apiMonitorInterceptor(final ApplicationEventPublisher applicationEventPublisher) {
         return new ApiMonitorInterceptor(applicationEventPublisher);
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public Advisor apiMonitorAdvisor(final ApiMonitorInterceptor apiMonitorInterceptor, final ApiMonitorPointCut apiMonitorPointCut) {
         DefaultBeanFactoryPointcutAdvisor apiMonitorAdvisor = new DefaultBeanFactoryPointcutAdvisor();
         apiMonitorAdvisor.setAdvice(apiMonitorInterceptor);
@@ -66,12 +70,14 @@ public class ApiMonitorAutoConguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ApiMonitorListener apiMonitorListener(final ApiMonitorCacheManager apiMonitorCacheManager) {
         return new ApiMonitorListener(apiMonitorCacheManager);
     }
 
     @Bean
     @RefreshScope
+    @ConditionalOnMissingBean
     public ApiMonitorCacheManager apiMonitorCacheManager(final ApiMonitorProperties apiMonitorProperties) {
         return new ApiMonitorCacheManager(apiMonitorProperties);
     }

@@ -40,13 +40,25 @@ public class MetricCheckResultDTO {
      */
     private String alertDesc;
 
+    /**
+     * 构建正常信息
+     *
+     * @return
+     */
     public static MetricCheckResultDTO ok() {
         MetricCheckResultDTO ok = new MetricCheckResultDTO();
         ok.setMetricCheckStatus(MetricCheckStatus.OK);
         return ok;
     }
 
-    public static MetricCheckResultDTO error(MetricCheckStatus metricCheckStatus, String alertDesc) {
+    /**
+     * 构建告警信息
+     *
+     * @param metricCheckStatus
+     * @param alertDesc
+     * @return
+     */
+    public static MetricCheckResultDTO alert(MetricCheckStatus metricCheckStatus, String alertDesc) {
         MetricCheckResultDTO metricCheckResult = new MetricCheckResultDTO();
         metricCheckResult.setMetricCheckStatus(metricCheckStatus);
         metricCheckResult.setAlertDesc(alertDesc);

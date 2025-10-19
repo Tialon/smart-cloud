@@ -25,6 +25,7 @@ import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDa
 import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.ExceptionApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,18 +44,21 @@ import org.springframework.context.annotation.Configuration;
 public class ExceptionApiMonitorAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean
     public ExceptionApiMonitorDataProcessor exceptionApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
                                                                           final ApiMonitorCacheManager apiMonitorCacheManager) {
         return new ExceptionApiMonitorDataProcessor(apiMonitorProperties, apiMonitorCacheManager);
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ExceptionApiMonitorListener exceptionApiMonitorListener(final IApiMonitorDataProccessor exceptionApiMonitorRepository) {
         return new ExceptionApiMonitorListener(exceptionApiMonitorRepository);
     }
 
     @Bean
     @RefreshScope
+    @ConditionalOnMissingBean
     public ExceptionApiChecker exceptionApiChecker(final ApiMonitorProperties apiMonitorProperties,
                                                    final ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor,
                                                    final ApplicationEventPublisher applicationEventPublisher) {
@@ -63,6 +67,7 @@ public class ExceptionApiMonitorAutoConfiguration {
 
     @Bean
     @ConditionWeworkRobotNotice
+    @ConditionalOnMissingBean
     public ApiExceptionWeworkAlertListener apiExceptionWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
                                                                            final ApiMonitorProperties apiMonitorProperties) {
         return new ApiExceptionWeworkAlertListener(weworkRobotAgent, apiMonitorProperties);

@@ -25,6 +25,7 @@ import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataPro
 import io.github.smart.cloud.starter.monitor.api.listener.alert.SlowApiWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.SlowApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,18 +45,21 @@ public class SlowApiMonitorAutoConfiguration {
 
     @Bean
     @RefreshScope
+    @ConditionalOnMissingBean
     public SlowApiMonitorDataProccessor slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
                                                                  final ApiMonitorCacheManager apiMonitorCacheManager) {
         return new SlowApiMonitorDataProccessor(apiMonitorProperties, apiMonitorCacheManager);
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public SlowApiMonitorListener slowApiMonitorListener(final IApiMonitorDataProccessor slowApiMonitorRepository) {
         return new SlowApiMonitorListener(slowApiMonitorRepository);
     }
 
     @Bean
     @RefreshScope
+    @ConditionalOnMissingBean
     public SlowApiChecker slowApiChecker(final ApiMonitorProperties apiMonitorProperties,
                                          final SlowApiMonitorDataProccessor slowApiMonitorRepository,
                                          final ApplicationEventPublisher applicationEventPublisher) {
@@ -64,6 +68,7 @@ public class SlowApiMonitorAutoConfiguration {
 
     @Bean
     @ConditionWeworkRobotNotice
+    @ConditionalOnMissingBean
     public SlowApiWeworkAlertListener slowApiWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
                                                                  final ApiMonitorProperties apiMonitorProperties) {
         return new SlowApiWeworkAlertListener(weworkRobotAgent, apiMonitorProperties);

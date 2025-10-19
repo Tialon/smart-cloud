@@ -73,7 +73,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
             // 触发阈值
             if (currentCpuUsage >= alertThreshold) {
                 String alertDesc = String.format("当前值[%.4f]超过预警值[%.4f]", currentCpuUsage, alertThreshold);
-                return MetricCheckResultDTO.error(MetricCheckStatus.THRESHOLD_EXCEPTION, alertDesc);
+                return MetricCheckResultDTO.alert(MetricCheckStatus.THRESHOLD_EXCEPTION, alertDesc);
             }
 
             // 连续新增
@@ -81,7 +81,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
             if (matchIncreaseResult.getMatch()) {
                 String alertDesc = String.format("cpu使用率连续新增超过预警值[%.4f][%d次]，当前使用率[%.4f]", getDiffThreshold(name),
                         getKeepIncreasingCount(name), currentCpuUsage);
-                return MetricCheckResultDTO.error(MetricCheckStatus.KEEP_INCREASING_EXCEPTION, alertDesc);
+                return MetricCheckResultDTO.alert(MetricCheckStatus.KEEP_INCREASING_EXCEPTION, alertDesc);
             }
         } catch (JsonProcessingException e) {
             log.error("parse json error|response={}", response, e);
