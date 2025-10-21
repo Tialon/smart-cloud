@@ -45,5 +45,9 @@ public class ApiSlowAlertDTO extends ApiAlertCommonDTO {
      * 慢接口百分比
      */
     private BigDecimal slowRate;
+    /**
+     * 是否@提醒
+     */
+    private boolean needAtSomeone;
 
 }

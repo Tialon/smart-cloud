@@ -81,12 +81,13 @@ public class SlowApiMonitorDataProccessor implements IApiMonitorDataProccessor<A
         for (Map.Entry<String, ApiRequestSummaryDTO> entry : apiRequestSummaryMap.entrySet()) {
             String apiName = entry.getKey();
             ApiRequestSummaryDTO apiRequestSummary = entry.getValue();
-            if (apiRequestSummary.getMaxCost() >= slowApiMonitorProperties.getAlertCostThreshold()) {
+            if (apiRequestSummary.getMaxCost() >= slowApiMonitorProperties.getAtSomeoneCostThreshold()) {
                 ApiSlowAlertDTO apiSlowAlert = new ApiSlowAlertDTO();
                 apiSlowAlert.setName(apiName);
                 apiSlowAlert.setSlowCount(apiRequestSummary.getSlowCount().sum());
                 apiSlowAlert.setTotalCount(apiRequestSummary.getTotalCount().sum());
                 apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
+                apiSlowAlert.setNeedAtSomeone(true);
 
                 apiSlowAlerts.add(apiSlowAlert);
                 continue;
@@ -107,6 +108,7 @@ public class SlowApiMonitorDataProccessor implements IApiMonitorDataProccessor<A
                 apiSlowAlert.setTotalCount(totalCount);
                 apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
                 apiSlowAlert.setSlowRate(slowRate);
+                apiSlowAlert.setNeedAtSomeone(false);
 
                 apiSlowAlerts.add(apiSlowAlert);
             }

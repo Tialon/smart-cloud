@@ -41,9 +41,9 @@ public class SlowApiMonitorProperties {
      */
     private int apiReportMaxCount = 10;
     /**
-     * 慢接口告警默认阈值（只要达到这个值就告警，忽略比率），单位：毫秒
+     * 慢接口告警@某人提醒默认阈值，单位：毫秒
      */
-    private long alertCostThreshold = 10000L;
+    private long atSomeoneCostThreshold = 10000L;
     /**
      * 慢接口默认阈值，单位：毫秒
      */
