@@ -55,8 +55,9 @@ public class ApiMonitorAutoConguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApiMonitorInterceptor apiMonitorInterceptor(final ApplicationEventPublisher applicationEventPublisher) {
-        return new ApiMonitorInterceptor(applicationEventPublisher);
+    public ApiMonitorInterceptor apiMonitorInterceptor(final ApiMonitorProperties apiMonitorProperties,
+                                                       final ApplicationEventPublisher applicationEventPublisher) {
+        return new ApiMonitorInterceptor(apiMonitorProperties, applicationEventPublisher);
     }
 
     @Bean

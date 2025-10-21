@@ -17,14 +17,18 @@ package io.github.smart.cloud.starter.monitor.api.interceptor;
 
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
+import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * 接口健康监控
@@ -32,10 +36,14 @@ import java.lang.reflect.Method;
  * @author collin
  * @date 2024-01-15
  */
+@Slf4j
 @RequiredArgsConstructor
-public class ApiMonitorInterceptor implements MethodInterceptor {
+public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBean {
 
+    private final ApiMonitorProperties apiMonitorProperties;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private ArrayBlockingQueue<ApiMonitorEvent> apiMonitorEventQueue = null;
+    private Thread apiMonitorEventQueueConsumerThread = null;
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -49,15 +57,43 @@ public class ApiMonitorInterceptor implements MethodInterceptor {
             throwable = e;
             throw e;
         } finally {
-            ApiMonitorEvent apiMonitorEvent = new ApiMonitorEvent(this);
-            apiMonitorEvent.setApiName(apiName);
-            apiMonitorEvent.setCost(System.currentTimeMillis() - startTime);
-            apiMonitorEvent.setThrowable(throwable);
-
-            applicationEventPublisher.publishEvent(apiMonitorEvent);
+            try {
+                ApiMonitorEvent apiMonitorEvent = new ApiMonitorEvent(this);
+                apiMonitorEvent.setApiName(apiName);
+                apiMonitorEvent.setCost(System.currentTimeMillis() - startTime);
+                apiMonitorEvent.setThrowable(throwable);
+                if (!apiMonitorEventQueue.offer(apiMonitorEvent)) {
+                    log.warn("ApiMonitorEvent queue is full, discard event: {}", apiMonitorEvent);
+                }
+            } catch (Exception e) {
+                log.error("offer ApiMonitorEvent to queue fail", e);
+            }
         }
 
         return result;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        apiMonitorEventQueue = new ArrayBlockingQueue<>(apiMonitorProperties.getApiMonitorEventQueueSize());
+
+        // 消费队列
+        apiMonitorEventQueueConsumerThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // 从队列中取日志（阻塞等待，直到有数据）
+                    ApiMonitorEvent apiMonitorEvent = apiMonitorEventQueue.take();
+                    applicationEventPublisher.publishEvent(apiMonitorEvent);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception e) {
+                    log.error("publishEvent apiMonitorEvent fail", e);
+                }
+            }
+        }, "api-monitor-event-consumer-thread");
+
+        apiMonitorEventQueueConsumerThread.start();
     }
 
     /**

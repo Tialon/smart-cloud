@@ -35,6 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -49,7 +50,7 @@ public class ExceptionApiTest extends AbstractTest {
      * 特定异常监控
      */
     @Test
-    void testNullPointerException() {
+    void testNullPointerException() throws InterruptedException {
         NullPointExceptionController nullPointExceptionController = applicationContext.getBean(NullPointExceptionController.class);
         for (int i = 0; i < 100; i++) {
             try {
@@ -59,13 +60,16 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
+        // 接口监控切面异步处理，此处等待1秒钟
+        TimeUnit.SECONDS.sleep(1);
+
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
         Assertions.assertThat(apiExceptions.get(0).getThrowable()).isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void testErrorCode() {
+    void testErrorCode() throws InterruptedException {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 0; i < 100; i++) {
             try {
@@ -74,6 +78,9 @@ public class ExceptionApiTest extends AbstractTest {
 
             }
         }
+
+        // 接口监控切面异步处理，此处等待1秒钟
+        TimeUnit.SECONDS.sleep(1);
 
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
@@ -112,6 +119,9 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
+        // 接口监控切面异步处理，此处等待1秒钟
+        TimeUnit.SECONDS.sleep(1);
+
         // 失败率倒叙测试
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(2);
@@ -131,7 +141,7 @@ public class ExceptionApiTest extends AbstractTest {
      * @see ApiMonitor
      */
     @Test
-    void testApiHealthMonitor() {
+    void testApiMonitor() throws InterruptedException {
         ProductService productService = applicationContext.getBean(ProductService.class);
         int[] ids = {5, 5, 1};
         for (int id : ids) {
@@ -141,6 +151,8 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
+        // 接口监控切面异步处理，此处等待1秒钟
+        TimeUnit.SECONDS.sleep(1);
 
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);

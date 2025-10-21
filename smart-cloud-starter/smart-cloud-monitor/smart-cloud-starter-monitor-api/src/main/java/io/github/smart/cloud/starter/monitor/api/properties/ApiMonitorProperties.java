@@ -45,6 +45,11 @@ public class ApiMonitorProperties {
     public static final String PREFIX = "smart.api-monitor";
 
     /**
+     * 接口监控事件队列大小
+     */
+    private int apiMonitorEventQueueSize = 4096;
+
+    /**
      * 清理间隔时间（单位：秒）
      */
     private long cleanIntervalSeconds = 60 * 3L;
