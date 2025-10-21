@@ -27,7 +27,7 @@ import io.github.smart.cloud.starter.monitor.admin.event.MetricAlertEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MetricItemAlertProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
-import io.github.smart.cloud.starter.monitor.admin.util.ActuatorUtil;
+import io.github.smart.cloud.starter.monitor.admin.component.ActuatorAgent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -98,7 +98,7 @@ public class TomcatMetricMonitorComponent implements IInstanceMetricsMonitorComp
     }
 
     private Integer getTomcatMetric(Instance instance, String metricName) throws IOException {
-        String response = ActuatorUtil.sendGetRequest(instance, metricName);
+        String response = ActuatorAgent.sendGetRequest(instance, metricName);
         if (response == null || ObjectUtils.isEmpty(response)) {
             return null;
         }
@@ -112,7 +112,7 @@ public class TomcatMetricMonitorComponent implements IInstanceMetricsMonitorComp
             if (measurementsNodes == null || measurementsNodes.isEmpty()) {
                 return null;
             }
-            JsonNode valueNode = ActuatorUtil.parseValueNode(measurementsNodes, "VALUE");
+            JsonNode valueNode = ActuatorAgent.parseValueNode(measurementsNodes, "VALUE");
             if (valueNode == null) {
                 return null;
             }

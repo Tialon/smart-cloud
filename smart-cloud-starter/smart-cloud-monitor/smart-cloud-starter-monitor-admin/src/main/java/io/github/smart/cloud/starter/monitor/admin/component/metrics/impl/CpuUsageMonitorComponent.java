@@ -24,7 +24,7 @@ import io.github.smart.cloud.starter.monitor.admin.enums.InstanceMetric;
 import io.github.smart.cloud.starter.monitor.admin.enums.MetricCheckStatus;
 import io.github.smart.cloud.starter.monitor.admin.properties.MetricItemAlertProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
-import io.github.smart.cloud.starter.monitor.admin.util.ActuatorUtil;
+import io.github.smart.cloud.starter.monitor.admin.component.ActuatorAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -47,7 +47,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
 
     @Override
     public MetricCheckResultDTO check(Instance instance) throws IOException {
-        String response = ActuatorUtil.sendGetRequest(instance, getInstanceMetric().getValue());
+        String response = ActuatorAgent.sendGetRequest(instance, getInstanceMetric().getValue());
         if (!StringUtils.hasText(response)) {
             return MetricCheckResultDTO.ok();
         }
@@ -62,7 +62,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
                 return MetricCheckResultDTO.ok();
             }
 
-            JsonNode valueNode = ActuatorUtil.parseValueNode(measurementsNodes, "VALUE");
+            JsonNode valueNode = ActuatorAgent.parseValueNode(measurementsNodes, "VALUE");
             if (valueNode == null) {
                 return MetricCheckResultDTO.ok();
             }

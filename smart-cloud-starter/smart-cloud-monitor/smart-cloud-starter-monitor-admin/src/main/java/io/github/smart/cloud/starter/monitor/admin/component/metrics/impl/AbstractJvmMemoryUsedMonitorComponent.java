@@ -21,7 +21,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import io.github.smart.cloud.starter.monitor.admin.dto.MatchIncreaseResultDTO;
 import io.github.smart.cloud.starter.monitor.admin.dto.MetricCheckResultDTO;
 import io.github.smart.cloud.starter.monitor.admin.enums.MetricCheckStatus;
-import io.github.smart.cloud.starter.monitor.admin.util.ActuatorUtil;
+import io.github.smart.cloud.starter.monitor.admin.component.ActuatorAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
@@ -39,7 +39,7 @@ public abstract class AbstractJvmMemoryUsedMonitorComponent extends AbstractInst
 
     @Override
     public MetricCheckResultDTO check(Instance instance) throws IOException {
-        String response = ActuatorUtil.sendGetRequest(instance, getInstanceMetric().getValue());
+        String response = ActuatorAgent.sendGetRequest(instance, getInstanceMetric().getValue());
         if (response == null || !StringUtils.hasText(response)) {
             return MetricCheckResultDTO.ok();
         }
@@ -54,7 +54,7 @@ public abstract class AbstractJvmMemoryUsedMonitorComponent extends AbstractInst
                 return MetricCheckResultDTO.ok();
             }
 
-            JsonNode valueNode = ActuatorUtil.parseValueNode(measurementsNodes, "VALUE");
+            JsonNode valueNode = ActuatorAgent.parseValueNode(measurementsNodes, "VALUE");
             if (valueNode == null) {
                 return MetricCheckResultDTO.ok();
             }

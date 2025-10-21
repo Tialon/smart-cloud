@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.admin.util;
+package io.github.smart.cloud.starter.monitor.admin.component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -29,7 +29,7 @@ import java.io.IOException;
  * @date 2024-09-18
  */
 @Slf4j
-public class ActuatorUtil {
+public class ActuatorAgent {
 
     /**
      * 发送get请求，通过actuator接口获取指标数据
@@ -40,6 +40,7 @@ public class ActuatorUtil {
      * @throws IOException
      */
     public static String sendGetRequest(Instance instance, String metricName) throws IOException {
+        // TODO:是否需要添加content-path
         String url = String.format("%s/metrics/%s", instance.getRegistration().getManagementUrl(), metricName);
 
         return HttpUtil.get(url, null, null);
