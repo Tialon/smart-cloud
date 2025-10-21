@@ -60,7 +60,6 @@ public class ApiMonitorAutoConguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public Advisor apiMonitorAdvisor(final ApiMonitorInterceptor apiMonitorInterceptor, final ApiMonitorPointCut apiMonitorPointCut) {
         DefaultBeanFactoryPointcutAdvisor apiMonitorAdvisor = new DefaultBeanFactoryPointcutAdvisor();
         apiMonitorAdvisor.setAdvice(apiMonitorInterceptor);
