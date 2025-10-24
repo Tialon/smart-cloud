@@ -53,7 +53,8 @@ public class SecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
                 .and().formLogin().loginPage(this.adminContextPath + "/login").successHandler(successHandler)
                 .and().logout().logoutUrl(this.adminContextPath + "/logout")
                 .and().httpBasic()
-                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringAntMatchers(this.adminContextPath + "/instances", this.adminContextPath + "/actuator/**");
     }
 
 }
