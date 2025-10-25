@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.listener.alert;
+package io.github.smart.cloud.starter.monitor.api.core.message;
 
-import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.AbstractWeworkRobotMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
+import io.github.smart.cloud.starter.monitor.api.core.IMessageFactory;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
-import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
-import lombok.RequiredArgsConstructor;
+import io.github.smart.cloud.utility.DateUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationListener;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -35,20 +33,15 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 接口异常企业微信告警通知
+ * 接口异常消息工厂
  *
- * @author collin
- * @date 2024-07-01
+ * @author collin.li
+ * @date 2025-10-22
  */
-@RequiredArgsConstructor
-public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener implements ApplicationListener<ApiExceptionAlertEvent> {
+public class ApiExceptionMessageFactory extends AbstractMessageFactory implements IMessageFactory<ApiExceptionAlertDTO> {
 
-    private final WeworkRobotAgent weworkRobotAgent;
-    private final ApiMonitorProperties apiMonitorProperties;
-
-    @Override
-    public void onApplicationEvent(ApiExceptionAlertEvent event) {
-        weworkRobotAgent.sendMessage(apiMonitorProperties.getExceptionApiRobotKey(), buildWeworkRobotMessage(event.getApiExceptions()));
+    public ApiExceptionMessageFactory(ApiMonitorProperties apiMonitorProperties) {
+        super(apiMonitorProperties);
     }
 
     /**
@@ -57,11 +50,54 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @param apiExceptions
      * @return
      */
-    public AbstractWeworkRobotMessageDTO buildWeworkRobotMessage(List<ApiExceptionAlertDTO> apiExceptions) {
+    @Override
+    public AbstractWeworkRobotMessageDTO buildSummaryAlertMessages(List<ApiExceptionAlertDTO> apiExceptions) {
         if (WeworkRobotMessageType.MARKDOWN == apiMonitorProperties.getExceptionApiMonitor().getMessageType()) {
-            return buildWeworkRobotMarkdownMessage(apiExceptions);
+            return buildSummaryAlertMarkdownMessages(apiExceptions);
         } else {
-            return buildWeworkRobotTextMessage(apiExceptions);
+            return buildSummaryAlertTextMessage(apiExceptions);
+        }
+    }
+
+    /**
+     * 构建企业微信机器人消息体（立即通知）
+     *
+     * @param apiExceptionAlert
+     * @return
+     */
+    @Override
+    public AbstractWeworkRobotMessageDTO buildImmediateAlertMessage(ApiExceptionAlertDTO apiExceptionAlert) {
+        if (WeworkRobotMessageType.MARKDOWN == apiMonitorProperties.getExceptionApiMonitor().getMessageType()) {
+            StringBuilder content = new StringBuilder(128);
+            content.append("**").append(appName).append("**")
+                    .append("接口异常:")
+                    .append("\n**IP**：").append(ip)
+                    .append("\n**时间**：").append(DateUtil.getCurrentDateTime())
+                    .append("\n**接口**：").append(apiExceptionAlert.getName());
+            if (apiExceptionAlert.getTraceId() != null) {
+                content.append("\n**traceId**：").append(apiExceptionAlert.getTraceId());
+            }
+            content.append("\n**异常信息**：")
+                    .append("<font color=\"warning\">")
+                    .append(apiExceptionAlert.getThrowable().toString())
+                    .append("</font>");
+
+            if (!CollectionUtils.isEmpty(apiMonitorProperties.getExceptionApiMonitor().getReminders())) {
+                content.append("\n\n<@").append(StringUtils.join(apiMonitorProperties.getExceptionApiMonitor().getReminders(), ">\n<@")).append(">");
+            }
+            return new WeworkRobotMarkdownMessageDTO(content.toString());
+        } else {
+            StringBuilder content = new StringBuilder(128);
+            content.append("【").append(appName).append("】")
+                    .append("异常接口:")
+                    .append("\n【IP】：").append(ip)
+                    .append("\n【时间】：").append(DateUtil.getCurrentDateTime())
+                    .append("\n【接口】：").append(apiExceptionAlert.getName());
+            if (apiExceptionAlert.getTraceId() != null) {
+                content.append("\n【traceId】：").append(apiExceptionAlert.getTraceId());
+            }
+            content.append("\n⚠【异常信息】：").append(apiExceptionAlert.getThrowable().toString());
+            return new WeworkRobotTextMessageDTO(content.toString(), apiMonitorProperties.getExceptionApiMonitor().getReminders());
         }
     }
 
@@ -71,11 +107,12 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @param apiExceptions
      * @return
      */
-    private AbstractWeworkRobotMessageDTO buildWeworkRobotMarkdownMessage(List<ApiExceptionAlertDTO> apiExceptions) {
+    private AbstractWeworkRobotMessageDTO buildSummaryAlertMarkdownMessages(List<ApiExceptionAlertDTO> apiExceptions) {
         ExceptionApiMonitorProperties exceptionApiMonitor = apiMonitorProperties.getExceptionApiMonitor();
         StringBuilder content = new StringBuilder(128);
         content.append("**").append(appName).append("**")
-                .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds())).append("分钟异常接口统计:")
+                .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds()))
+                .append("分钟异常接口统计:")
                 .append("\n**IP**：").append(ip);
         boolean needMention = false;
 
@@ -90,17 +127,17 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
                     .append(isFailRateRemindType ? "<font color=\"warning\">" : StringUtils.EMPTY)
                     .append(apiException.getFailRate())
                     .append(isFailRateRemindType ? "</font>" : StringUtils.EMPTY);
-
+            if (apiException.getTraceId() != null) {
+                content.append("\n>**traceId**：").append(apiException.getTraceId());
+            }
             if (apiException.getThrowable() != null) {
-                boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO
-                        || apiException.getRemindType() == ApiExceptionRemindType.FAIL_RATE;
-                needMention |= isExceptionRemindType;
-
+                boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO;
                 content.append("\n>**异常信息**：")
                         .append(isExceptionRemindType ? "<font color=\"warning\">" : StringUtils.EMPTY)
                         .append(apiException.getThrowable().toString())
                         .append(isExceptionRemindType ? "</font>" : StringUtils.EMPTY);
             }
+            needMention |= apiException.isNeedAtSomeone();
         }
 
         if (needMention && !CollectionUtils.isEmpty(exceptionApiMonitor.getReminders())) {
@@ -116,7 +153,7 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
      * @param apiExceptions
      * @return
      */
-    private AbstractWeworkRobotMessageDTO buildWeworkRobotTextMessage(List<ApiExceptionAlertDTO> apiExceptions) {
+    private AbstractWeworkRobotMessageDTO buildSummaryAlertTextMessage(List<ApiExceptionAlertDTO> apiExceptions) {
         StringBuilder content = new StringBuilder(128);
         content.append("【").append(appName).append("】")
                 .append(TimeUnit.SECONDS.toMinutes(apiMonitorProperties.getCleanIntervalSeconds()))
@@ -135,12 +172,14 @@ public class ApiExceptionWeworkAlertListener extends AbstractWeworkAlertListener
                     .append("\n【请求总数】：").append(apiException.getTotalCount())
                     .append("\n【失败数】：").append(apiException.getFailCount())
                     .append("\n").append(isFailRateRemindType ? "⚠" : StringUtils.EMPTY).append("【失败率】：").append(apiException.getFailRate());
-
+            if (apiException.getTraceId() != null) {
+                content.append("\n【traceId】：").append(apiException.getTraceId());
+            }
             if (apiException.getThrowable() != null) {
                 boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO;
-                needMention |= isExceptionRemindType;
                 content.append("\n").append(isExceptionRemindType ? "⚠" : StringUtils.EMPTY).append("【异常信息】：").append(apiException.getThrowable().toString());
             }
+            needMention |= apiException.isNeedAtSomeone();
         }
 
         Set<String> mentionedMobileList = needMention ? apiMonitorProperties.getExceptionApiMonitor().getReminders() : null;

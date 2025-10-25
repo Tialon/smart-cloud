@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.monitor.api.listener.monitor;
 
 import io.github.smart.cloud.starter.monitor.api.constants.OrderConstants;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
@@ -31,7 +31,7 @@ import org.springframework.core.Ordered;
 @RequiredArgsConstructor
 public class ExceptionApiMonitorListener implements ApplicationListener<ApiMonitorEvent>, Ordered {
 
-    private final IApiMonitorDataProccessor exceptionApiMonitorRepository;
+    private final IApiMonitorDataProcessor exceptionApiMonitorRepository;
 
     @Override
     public void onApplicationEvent(ApiMonitorEvent event) {

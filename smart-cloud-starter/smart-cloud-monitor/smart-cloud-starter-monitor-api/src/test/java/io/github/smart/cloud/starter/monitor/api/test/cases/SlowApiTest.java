@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
-import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.slow.ProductController;
@@ -36,7 +36,7 @@ public class SlowApiTest extends AbstractTest {
     @Autowired
     private SlowApiChecker slowApiChecker;
     @Autowired
-    private SlowApiMonitorDataProccessor slowApiMonitorRepository;
+    private SlowApiMonitorDataProcessor slowApiMonitorRepository;
 
     @Test
     void testSlowApi() throws InterruptedException {

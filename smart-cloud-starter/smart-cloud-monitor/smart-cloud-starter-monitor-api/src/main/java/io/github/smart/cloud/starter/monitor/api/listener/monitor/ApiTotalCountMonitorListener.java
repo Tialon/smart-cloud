@@ -16,31 +16,31 @@
 package io.github.smart.cloud.starter.monitor.api.listener.monitor;
 
 import io.github.smart.cloud.starter.monitor.api.constants.OrderConstants;
-import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiTotalCountMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
- * 接口监控监听处理器
+ * 接口请求数监控监听处理器
  *
  * @author collin
  * @date 2025-09-20
  */
 @RequiredArgsConstructor
-public class ApiMonitorListener implements ApplicationListener<ApiMonitorEvent>, Ordered {
+public class ApiTotalCountMonitorListener implements ApplicationListener<ApiMonitorEvent>, Ordered {
 
-    private final ApiMonitorCacheManager apiMonitorCacheManager;
+    private final ApiTotalCountMonitorDataProcessor apiTotalCountMonitorDataProcessor;
 
     @Override
     public void onApplicationEvent(ApiMonitorEvent event) {
-        apiMonitorCacheManager.process(event);
+        apiTotalCountMonitorDataProcessor.process(event);
     }
 
     @Override
     public int getOrder() {
-        return OrderConstants.API_MONITOR_LISTENER;
+        return OrderConstants.API_TOTAL_COUNT_MONITOR_LISTENER;
     }
 
 }

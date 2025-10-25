@@ -15,14 +15,17 @@
  */
 package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 
+import brave.Tracing;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiTotalCountMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.interceptor.ApiMonitorInterceptor;
-import io.github.smart.cloud.starter.monitor.api.listener.monitor.ApiMonitorListener;
+import io.github.smart.cloud.starter.monitor.api.listener.monitor.ApiTotalCountMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.pointcut.ApiMonitorPointCut;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -56,8 +59,10 @@ public class ApiMonitorAutoConguration {
     @Bean
     @ConditionalOnMissingBean
     public ApiMonitorInterceptor apiMonitorInterceptor(final ApiMonitorProperties apiMonitorProperties,
-                                                       final ApplicationEventPublisher applicationEventPublisher) {
-        return new ApiMonitorInterceptor(apiMonitorProperties, applicationEventPublisher);
+                                                       final ApplicationEventPublisher applicationEventPublisher,
+                                                       final ApiMonitorCacheManager apiMonitorCacheManager,
+                                                       @Autowired(required = false) Tracing tracing) {
+        return new ApiMonitorInterceptor(apiMonitorProperties, applicationEventPublisher, apiMonitorCacheManager, tracing);
     }
 
     @Bean
@@ -70,16 +75,22 @@ public class ApiMonitorAutoConguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public ApiMonitorListener apiMonitorListener(final ApiMonitorCacheManager apiMonitorCacheManager) {
-        return new ApiMonitorListener(apiMonitorCacheManager);
-    }
-
-    @Bean
     @RefreshScope
     @ConditionalOnMissingBean
     public ApiMonitorCacheManager apiMonitorCacheManager(final ApiMonitorProperties apiMonitorProperties) {
         return new ApiMonitorCacheManager(apiMonitorProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ApiTotalCountMonitorDataProcessor apiTotalCountMonitorDataProcessor(final ApiMonitorCacheManager apiMonitorCacheManager) {
+        return new ApiTotalCountMonitorDataProcessor(apiMonitorCacheManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ApiTotalCountMonitorListener apiMonitorListener(final ApiTotalCountMonitorDataProcessor apiTotalCountMonitorDataProcessor) {
+        return new ApiTotalCountMonitorListener(apiTotalCountMonitorDataProcessor);
     }
 
 }

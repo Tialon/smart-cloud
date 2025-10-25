@@ -19,8 +19,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.concurrent.atomic.LongAdder;
-
 /**
  * 接口请求汇总信息
  *
@@ -35,30 +33,44 @@ public class ApiRequestSummaryDTO {
     /**
      * 请求总数
      */
-    private LongAdder totalCount;
+    private long totalCount = 0L;
 
     // ----start:异常接口信息
     /**
      * 失败数
      */
-    private LongAdder failCount;
+    private long failCount = 0L;
     /**
      * 异常
      */
-    @Setter
-    private volatile Throwable throwable;
+    private Throwable throwable;
+    /**
+     * 异常链路号
+     */
+    private String errorTraceId;
+    /**
+     * 异常是否需要立即提醒
+     */
+    private boolean errorNeedImmediateAlert;
     // ----end:异常接口信息
 
     // ----start:慢接口信息
     /**
      * 慢接口数
      */
-    private LongAdder slowCount;
+    private long slowCount = 0L;
     /**
      * 最大耗时（毫秒）
      */
-    @Setter
-    private volatile Long maxCost;
+    private long maxCost = 0L;
+    /**
+     * 慢接口链路号
+     */
+    private String slowTraceId;
+    /**
+     * 慢接口是否需要立即提醒
+     */
+    private boolean slowNeedImmediateAlert;
     // ----end:慢接口信息
 
 }

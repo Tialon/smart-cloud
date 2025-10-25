@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.core;
+package io.github.smart.cloud.starter.monitor.api.core.data;
 
-import io.github.smart.cloud.starter.monitor.api.dto.ApiAlertCommonDTO;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
-
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * 接口监控数据处理器
+ * 接口监控请求总数信息处理
  *
- * @param <T>
- * @author collin.li
- * @datge 2025-09-19
+ * @author collin
+ * @date 2025-09-20
  */
-public interface IApiMonitorDataProccessor<T extends ApiAlertCommonDTO> {
+@RequiredArgsConstructor
+public class ApiTotalCountMonitorDataProcessor {
+
+    private final ApiMonitorCacheManager apiMonitorCacheManager;
 
     /**
-     * 设置接口访问信息
+     * 保存接口访问记录
      *
      * @param event
      */
-    void process(ApiMonitorEvent event);
-
-    /**
-     * 查询需要告警的接口信息
-     *
-     * @return
-     */
-    List<T> getAlertRecords();
+    public void process(ApiMonitorEvent event) {
+        ApiRequestSummaryDTO apiRequestSummary = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
+        apiRequestSummary.setTotalCount(apiRequestSummary.getTotalCount() + 1);
+    }
 
 }

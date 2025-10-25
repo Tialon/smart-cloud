@@ -45,19 +45,8 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
      * 接口访问记录
      */
     @Getter
-    private final ConcurrentMap<String, ApiRequestSummaryDTO> apiRequestSummaryMap = new ConcurrentHashMap<>();
-    private final InitApiRequestSummaryFunction initApiRequestSummaryFunction = new InitApiRequestSummaryFunction();
+    private final ConcurrentMap<String, ApiRequestSummaryDTO> apiRequestSummaryCache = new ConcurrentHashMap<>();
     private ScheduledExecutorService cleanSchedule;
-
-    /**
-     * 保存接口访问记录
-     *
-     * @param event
-     */
-    public void process(ApiMonitorEvent event) {
-        ApiRequestSummaryDTO apiRequestSummary = getApiRequestSummaryDTO(event.getApiName());
-        apiRequestSummary.getTotalCount().increment();
-    }
 
     /**
      * 获取单个接口访问记录
@@ -66,7 +55,16 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
      * @return
      */
     public ApiRequestSummaryDTO getApiRequestSummaryDTO(String apiName) {
-        return apiRequestSummaryMap.computeIfAbsent(apiName, initApiRequestSummaryFunction);
+        return apiRequestSummaryCache.computeIfAbsent(apiName, key -> new ApiRequestSummaryDTO());
+    }
+
+    /**
+     * 是否超过最大缓存大小
+     *
+     * @return
+     */
+    public boolean isExceedCacheSize() {
+        return apiRequestSummaryCache.size() >= apiMonitorProperties.getApiRequestSummaryCacheMaxSize();
     }
 
     @Override
@@ -79,40 +77,20 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
     @Override
     public void destroy() throws Exception {
         if (cleanSchedule != null) {
-            cleanSchedule.shutdown();
+            cleanSchedule.shutdownNow();
         }
 
         clearApiRecords();
     }
 
     public void clearApiRecords() {
-        apiRequestSummaryMap.clear();
+        apiRequestSummaryCache.clear();
     }
 
     @Override
     public void onApplicationEvent(RefreshScopeRefreshedEvent event) {
         // 处理“@RefreshScope会导致ScheduledExecutorService失效”的问题
         // do nothing
-    }
-
-    /**
-     * 初始化ApiRequestSummaryDTO
-     *
-     * @author collin
-     * @date 2024-01-7
-     */
-    private class InitApiRequestSummaryFunction implements Function<String, ApiRequestSummaryDTO> {
-
-        @Override
-        public ApiRequestSummaryDTO apply(String s) {
-            ApiRequestSummaryDTO apiRequestSummary = new ApiRequestSummaryDTO();
-            apiRequestSummary.setTotalCount(new LongAdder());
-            apiRequestSummary.setFailCount(new LongAdder());
-            apiRequestSummary.setSlowCount(new LongAdder());
-            apiRequestSummary.setMaxCost(0L);
-            return apiRequestSummary;
-        }
-
     }
 
 }

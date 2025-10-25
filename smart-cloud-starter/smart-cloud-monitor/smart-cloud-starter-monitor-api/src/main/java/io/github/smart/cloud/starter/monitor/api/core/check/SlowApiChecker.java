@@ -15,9 +15,9 @@
  */
 package io.github.smart.cloud.starter.monitor.api.core.check;
 
-import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
-import io.github.smart.cloud.starter.monitor.api.event.SlowApiAlertEvent;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.SlowApiMonitorProperties;
 import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class SlowApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    private final SlowApiMonitorDataProccessor slowApiMonitorRepository;
+    private final SlowApiMonitorDataProcessor slowApiMonitorRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private ScheduledExecutorService slowApiCheckSchedule;
 
@@ -59,7 +59,7 @@ public class SlowApiChecker implements InitializingBean, DisposableBean, Applica
     @Override
     public void destroy() throws Exception {
         if (slowApiCheckSchedule != null) {
-            slowApiCheckSchedule.shutdown();
+            slowApiCheckSchedule.shutdownNow();
         }
     }
 
@@ -72,7 +72,7 @@ public class SlowApiChecker implements InitializingBean, DisposableBean, Applica
             return;
         }
 
-        applicationEventPublisher.publishEvent(new SlowApiAlertEvent(this, apiSlowAlerts));
+        applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildSummaryEvents(this, apiSlowAlerts));
     }
 
     @Override

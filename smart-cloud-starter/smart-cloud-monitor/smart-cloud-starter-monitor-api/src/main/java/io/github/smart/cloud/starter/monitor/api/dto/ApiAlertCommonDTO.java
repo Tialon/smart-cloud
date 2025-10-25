@@ -38,5 +38,13 @@ public class ApiAlertCommonDTO {
      * 总访问数
      */
     private Long totalCount;
+    /**
+     * 链路号
+     */
+    private String traceId;
+    /**
+     * 是否@提醒
+     */
+    private boolean needAtSomeone;
 
 }

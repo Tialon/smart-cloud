@@ -16,27 +16,32 @@
 package io.github.smart.cloud.starter.monitor.api.core.data;
 
 import io.github.smart.cloud.exception.AbstractBaseException;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.util.PercentUtil;
+import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.DigestUtils;
 import sun.security.provider.certpath.SunCertPathBuilderException;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.cert.CertPathValidatorException;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * 异常接口监控处理处理器
@@ -46,11 +51,16 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccessor<ApiExceptionAlertDTO>, InitializingBean {
+public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcessor<ApiExceptionAlertDTO>, InitializingBean {
 
     private final ApiMonitorProperties apiMonitorProperties;
     private final ApiMonitorCacheManager apiMonitorCacheManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private Set<String> needAlertExceptionClassNames;
+    /**
+     * 上次异常接口汇总的md5值（如果md5值未改变，则不发送消息）
+     */
+    private String lastExceptionApiSummaryMd5;
 
     /**
      * 添加接口访问记录
@@ -70,30 +80,55 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
             }
 
             ApiRequestSummaryDTO apiRequestSummaryDTO = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
-            apiRequestSummaryDTO.getFailCount().increment();
-            Throwable throwable = apiRequestSummaryDTO.getThrowable();
-            synchronized (apiRequestSummaryDTO) {
-                if (throwable == null) {
-                    apiRequestSummaryDTO.setThrowable(event.getThrowable());
-                } else {
-                    // 如果当前异常为需要提醒的类或code，则不更新
-                    Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
-                    if (needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
-                        return;
-                    }
-                    if (throwable instanceof AbstractBaseException) {
-                        Set<String> needAlertExceptionCodes = exceptionApiMonitorProperties.getNeedAlertExceptionCodes();
-                        if (needAlertExceptionCodes.contains(((AbstractBaseException) throwable).getCode())) {
-                            return;
-                        }
-                    }
+            apiRequestSummaryDTO.setFailCount(apiRequestSummaryDTO.getFailCount() + 1);
 
-                    apiRequestSummaryDTO.setThrowable(event.getThrowable());
-                }
+            if (apiRequestSummaryDTO.isErrorNeedImmediateAlert()) {
+                return;
+            }
+
+            apiRequestSummaryDTO.setThrowable(event.getThrowable());
+            if (event.getTraceId() != null) {
+                apiRequestSummaryDTO.setErrorTraceId(event.getTraceId());
+            }
+
+            // 是否需要立即发告警
+            boolean needImmediateAlert = isImmediateAlertException(event.getThrowable());
+            if (needImmediateAlert) {
+                apiRequestSummaryDTO.setErrorNeedImmediateAlert(true);
+
+                ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
+                apiExceptionAlertDTO.setName(event.getApiName());
+                apiExceptionAlertDTO.setThrowable(event.getThrowable());
+                apiExceptionAlertDTO.setTraceId(event.getTraceId());
+                applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiExceptionAlertDTO));
             }
         } catch (Throwable e) {
             log.error("api health info add error|name={}", event.getApiName(), e);
         }
+    }
+
+    /**
+     * 是否是需要立即提醒的异常
+     *
+     * @param throwable
+     * @return
+     */
+    private boolean isImmediateAlertException(Throwable throwable) {
+        ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
+        Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
+        if (needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
+            return true;
+        }
+
+        Set<String> needAlertExceptionCodes = exceptionApiMonitorProperties.getNeedAlertExceptionCodes();
+        if (!CollectionUtils.isEmpty(needAlertExceptionCodes)) {
+            String exceptionCode = ExceptionCodeProcessor.getExceptionCode(throwable);
+            if (exceptionCode != null && needAlertExceptionCodes.contains(exceptionCode)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -103,24 +138,24 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
      */
     @Override
     public List<ApiExceptionAlertDTO> getAlertRecords() {
-        ConcurrentMap<String, ApiRequestSummaryDTO> apiRequestSummaryMap = apiMonitorCacheManager.getApiRequestSummaryMap();
-        if (apiRequestSummaryMap.isEmpty()) {
+        Map<String, ApiRequestSummaryDTO> apiRequestSummaryCache = apiMonitorCacheManager.getApiRequestSummaryCache();
+        if (apiRequestSummaryCache.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<ApiExceptionAlertDTO> apiExceptions = new ArrayList<>(0);
-        for (Map.Entry<String, ApiRequestSummaryDTO> entry : apiRequestSummaryMap.entrySet()) {
+        for (Map.Entry<String, ApiRequestSummaryDTO> entry : apiRequestSummaryCache.entrySet()) {
             String name = entry.getKey();
             ApiRequestSummaryDTO apiRequestSummary = entry.getValue();
-            long failCountSum = apiRequestSummary.getFailCount().sum();
-            if (failCountSum == 0) {
+            long failCountCount = apiRequestSummary.getFailCount();
+            if (failCountCount == 0) {
                 continue;
             }
 
-            BigDecimal failCount = BigDecimal.valueOf(failCountSum);
-            BigDecimal total = BigDecimal.valueOf(apiRequestSummary.getTotalCount().sum());
+            BigDecimal failCount = BigDecimal.valueOf(failCountCount);
+            BigDecimal total = BigDecimal.valueOf(apiRequestSummary.getTotalCount());
             BigDecimal failRate = failCount.divide(total, 4, RoundingMode.HALF_UP);
-            ApiExceptionRemindType remindType = match(name, total, failRate, apiRequestSummary.getThrowable());
+            ApiExceptionRemindType remindType = match(name, total, failRate, apiRequestSummary.isErrorNeedImmediateAlert());
             if (remindType != ApiExceptionRemindType.NONE) {
                 ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
                 apiExceptionAlertDTO.setName(name);
@@ -128,13 +163,24 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
                 apiExceptionAlertDTO.setFailCount(failCount.longValue());
                 apiExceptionAlertDTO.setFailRate(PercentUtil.format(failRate));
                 apiExceptionAlertDTO.setThrowable(apiRequestSummary.getThrowable());
+                apiExceptionAlertDTO.setTraceId(apiRequestSummary.getErrorTraceId());
                 apiExceptionAlertDTO.setRemindType(remindType);
+                apiExceptionAlertDTO.setNeedAtSomeone(ApiExceptionRemindType.FAIL_RATE == remindType);
                 apiExceptions.add(apiExceptionAlertDTO);
             }
         }
 
         if (!apiExceptions.isEmpty()) {
+            // 计算当前异常汇总的md5值，与上次对比，未变化则不发送消息
+            if (StringUtils.isNotBlank(lastExceptionApiSummaryMd5)) {
+                String currentExceptionApiSummaryMd5 = DigestUtils.md5DigestAsHex(JacksonUtil.toBytes(apiExceptions));
+                if (StringUtils.equals(currentExceptionApiSummaryMd5, lastExceptionApiSummaryMd5)) {
+                    return Collections.emptyList();
+                }
+            }
+
             ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
+            // 异常接口超过最大上报数量时，进行裁剪
             if (apiExceptions.size() > exceptionApiMonitorProperties.getApiReportMaxCount()) {
                 Collections.sort(apiExceptions, (o1, o2) -> {
                     ApiExceptionRemindType remindType1 = o1.getRemindType();
@@ -162,34 +208,18 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
      * @param total
      * @param name
      * @param failRate
-     * @param throwable
+     * @param errorNeedImmediateAlert
      * @return
      */
-    private ApiExceptionRemindType match(String name, BigDecimal total, BigDecimal failRate, Throwable throwable) {
-        ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
-        if (exceptionApiMonitorProperties.getAlertExceptionMarked()) {
-            if (!CollectionUtils.isEmpty(exceptionApiMonitorProperties.getNeedAlertExceptionCodes())) {
-                if (throwable instanceof AbstractBaseException) {
-                    AbstractBaseException exception = (AbstractBaseException) throwable;
-                    if (exceptionApiMonitorProperties.getNeedAlertExceptionCodes().contains(exception.getCode())) {
-                        return ApiExceptionRemindType.EXCEPTION_INFO;
-                    }
-                }
-            }
-
-            if (!CollectionUtils.isEmpty(needAlertExceptionClassNames)) {
-                for (String needAlertExceptionClassName : needAlertExceptionClassNames) {
-                    if (throwable.toString().contains(needAlertExceptionClassName)) {
-                        return ApiExceptionRemindType.EXCEPTION_INFO;
-                    }
-                }
-            }
+    private ApiExceptionRemindType match(String name, BigDecimal total, BigDecimal failRate, boolean errorNeedImmediateAlert) {
+        if (errorNeedImmediateAlert) {
+            return ApiExceptionRemindType.EXCEPTION_INFO;
         }
 
+        ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
         BigDecimal failRateThreshold = exceptionApiMonitorProperties.getFailRateThresholds().getOrDefault(name, exceptionApiMonitorProperties.getDefaultFailRateThreshold());
         if (total.intValue() >= exceptionApiMonitorProperties.getMatchMinCount() && failRate.compareTo(failRateThreshold) >= 0) {
             return ApiExceptionRemindType.FAIL_RATE;
-
         }
         return ApiExceptionRemindType.NONE;
     }
@@ -199,6 +229,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
         ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
         needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
         if (CollectionUtils.isEmpty(needAlertExceptionClassNames)) {
+            // 默认需要@提醒的异常类型
             Set<String> defaultNeedAlertExceptionClassNames = new HashSet<>(32);
             defaultNeedAlertExceptionClassNames.add(SQLException.class.getSimpleName());
             defaultNeedAlertExceptionClassNames.add(SQLTimeoutException.class.getSimpleName());
@@ -219,6 +250,60 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProccess
             defaultNeedAlertExceptionClassNames.add(NoSuchElementException.class.getSimpleName());
 
             needAlertExceptionClassNames = defaultNeedAlertExceptionClassNames;
+        }
+    }
+
+    private static class ExceptionCodeProcessor {
+
+        /**
+         * 缓存getCode方法
+         */
+        private static final ClassValue<Method> codeMethodClassValue = new ClassValue<Method>() {
+            @Override
+            protected Method computeValue(Class<?> type) {
+                try {
+                    // 首次访问时，反射查找getCode方法（无参）
+                    return type.getMethod("getCode");
+                } catch (NoSuchMethodException e) {
+                    return null; // 无此方法，返回null
+                }
+            }
+        };
+
+        /**
+         * 从异常类中获取异常code
+         *
+         * @param throwable
+         * @return
+         */
+        private static String getExceptionCode(Throwable throwable) {
+            if (throwable == null) {
+                return null;
+            }
+
+            if (throwable instanceof AbstractBaseException) {
+                AbstractBaseException baseException = (AbstractBaseException) throwable;
+                return baseException.getCode();
+            }
+
+            // 非AbstractBaseException子类，尝试反射调用getCode方法
+            Method method = codeMethodClassValue.get(throwable.getClass());
+            if (method == null) {
+                return null;
+            }
+
+            try {
+                // 优化：设置accessible为true，减少安全检查开销
+                method.setAccessible(true);
+                Object code = method.invoke(throwable);
+                if (code instanceof String) {
+                    return (String) code;
+                }
+                return code == null ? null : String.valueOf(code);
+            } catch (Exception e) {
+                log.error("get exception code fail|throwable={}", throwable, e);
+                return null;
+            }
         }
     }
 

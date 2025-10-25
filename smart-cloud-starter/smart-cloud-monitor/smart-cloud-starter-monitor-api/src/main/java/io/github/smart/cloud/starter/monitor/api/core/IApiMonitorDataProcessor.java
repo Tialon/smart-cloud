@@ -13,41 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.event;
+package io.github.smart.cloud.starter.monitor.api.core;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.context.ApplicationEvent;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiAlertCommonDTO;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
+
+import java.util.List;
 
 /**
- * 接口监控事件
+ * 接口监控数据处理器
  *
- * @author collin
- * @date 2025-08-30
+ * @param <T>
+ * @author collin.li
+ * @datge 2025-09-19
  */
-@Getter
-@Setter
-public class ApiMonitorEvent extends ApplicationEvent {
+public interface IApiMonitorDataProcessor<T extends ApiAlertCommonDTO> {
 
     /**
-     * 接口名
+     * 设置接口访问信息
+     *
+     * @param event
      */
-    private String apiName;
-    /**
-     * 接口耗时（单位：毫秒）
-     */
-    private long cost;
-    /**
-     * 接口异常信息
-     */
-    private Throwable throwable;
-    /**
-     * 链路号
-     */
-    private String traceId;
+    void process(ApiMonitorEvent event);
 
-    public ApiMonitorEvent(Object source) {
-        super(source);
-    }
+    /**
+     * 查询需要告警的接口信息
+     *
+     * @return
+     */
+    List<T> getAlertRecords();
 
 }

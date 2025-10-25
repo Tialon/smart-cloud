@@ -18,11 +18,12 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
-import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionWeworkAlertListener;
+import io.github.smart.cloud.starter.monitor.api.core.message.ApiExceptionMessageFactory;
+import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionMonitorWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.ExceptionApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,13 +47,14 @@ public class ExceptionApiMonitorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ExceptionApiMonitorDataProcessor exceptionApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
-                                                                          final ApiMonitorCacheManager apiMonitorCacheManager) {
-        return new ExceptionApiMonitorDataProcessor(apiMonitorProperties, apiMonitorCacheManager);
+                                                                          final ApiMonitorCacheManager apiMonitorCacheManager,
+                                                                          final ApplicationEventPublisher applicationEventPublisher) {
+        return new ExceptionApiMonitorDataProcessor(apiMonitorProperties, apiMonitorCacheManager, applicationEventPublisher);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ExceptionApiMonitorListener exceptionApiMonitorListener(final IApiMonitorDataProccessor exceptionApiMonitorRepository) {
+    public ExceptionApiMonitorListener exceptionApiMonitorListener(final IApiMonitorDataProcessor exceptionApiMonitorRepository) {
         return new ExceptionApiMonitorListener(exceptionApiMonitorRepository);
     }
 
@@ -68,9 +70,17 @@ public class ExceptionApiMonitorAutoConfiguration {
     @Bean
     @ConditionWeworkRobotNotice
     @ConditionalOnMissingBean
-    public ApiExceptionWeworkAlertListener apiExceptionWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
-                                                                           final ApiMonitorProperties apiMonitorProperties) {
-        return new ApiExceptionWeworkAlertListener(weworkRobotAgent, apiMonitorProperties);
+    public ApiExceptionMessageFactory apiExceptionMessageFactory(final ApiMonitorProperties apiMonitorProperties) {
+        return new ApiExceptionMessageFactory(apiMonitorProperties);
+    }
+
+    @Bean
+    @ConditionWeworkRobotNotice
+    @ConditionalOnMissingBean
+    public ApiExceptionMonitorWeworkAlertListener apiExceptionMonitorWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
+                                                                                         final ApiMonitorProperties apiMonitorProperties,
+                                                                                         final ApiExceptionMessageFactory apiExceptionMessageFactory) {
+        return new ApiExceptionMonitorWeworkAlertListener(weworkRobotAgent, apiMonitorProperties, apiExceptionMessageFactory);
     }
 
 }

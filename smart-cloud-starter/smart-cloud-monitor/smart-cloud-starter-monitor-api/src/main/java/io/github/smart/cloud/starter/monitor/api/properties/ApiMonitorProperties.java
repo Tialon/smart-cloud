@@ -45,9 +45,17 @@ public class ApiMonitorProperties {
     public static final String PREFIX = "smart.api-monitor";
 
     /**
+     * 应用名（不配置，则取spring.application.name的值）
+     */
+    private String appName;
+    /**
      * 接口监控事件队列大小
      */
     private int apiMonitorEventQueueSize = 4096;
+    /**
+     * 接口请求汇总缓存最大数量
+     */
+    private int apiRequestSummaryCacheMaxSize = 2048;
 
     /**
      * 清理间隔时间（单位：秒）

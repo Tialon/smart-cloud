@@ -15,7 +15,11 @@
  */
 package io.github.smart.cloud.starter.monitor.api.interceptor;
 
+import brave.Tracing;
+import brave.propagation.CurrentTraceContext;
+import brave.propagation.TraceContext;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +32,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 接口健康监控
@@ -42,7 +47,9 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
 
     private final ApiMonitorProperties apiMonitorProperties;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private ArrayBlockingQueue<ApiMonitorEvent> apiMonitorEventQueue = null;
+    private final ApiMonitorCacheManager apiMonitorCacheManager;
+    private final Tracing tracing;
+    private LinkedBlockingQueue<ApiMonitorEvent> apiMonitorEventQueue = null;
     private Thread apiMonitorEventQueueConsumerThread = null;
 
     @Override
@@ -58,10 +65,17 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
             throw e;
         } finally {
             try {
+                String traceId = Optional.ofNullable(tracing)
+                        .map(Tracing::currentTraceContext)
+                        .map(CurrentTraceContext::get)
+                        .map(TraceContext::traceIdString)
+                        .orElse(null);
+
                 ApiMonitorEvent apiMonitorEvent = new ApiMonitorEvent(this);
                 apiMonitorEvent.setApiName(apiName);
                 apiMonitorEvent.setCost(System.currentTimeMillis() - startTime);
                 apiMonitorEvent.setThrowable(throwable);
+                apiMonitorEvent.setTraceId(traceId);
                 if (!apiMonitorEventQueue.offer(apiMonitorEvent)) {
                     log.warn("ApiMonitorEvent queue is full, discard event: {}", apiMonitorEvent);
                 }
@@ -75,7 +89,7 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        apiMonitorEventQueue = new ArrayBlockingQueue<>(apiMonitorProperties.getApiMonitorEventQueueSize());
+        apiMonitorEventQueue = new LinkedBlockingQueue<>(apiMonitorProperties.getApiMonitorEventQueueSize());
 
         // 消费队列
         apiMonitorEventQueueConsumerThread = new Thread(() -> {
@@ -83,6 +97,10 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
                 try {
                     // 从队列中取日志（阻塞等待，直到有数据）
                     ApiMonitorEvent apiMonitorEvent = apiMonitorEventQueue.take();
+                    if (apiMonitorCacheManager.isExceedCacheSize()) {
+                        log.warn("ApiRequestSummary cache size exceed max size[{}], discard event: {}", apiMonitorProperties.getApiRequestSummaryCacheMaxSize(), apiMonitorEvent);
+                        continue;
+                    }
                     applicationEventPublisher.publishEvent(apiMonitorEvent);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

@@ -18,11 +18,12 @@ package io.github.smart.cloud.starter.monitor.api.autoconfigure;
 import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.annotation.ConditionWeworkRobotNotice;
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
-import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProccessor;
-import io.github.smart.cloud.starter.monitor.api.listener.alert.SlowApiWeworkAlertListener;
+import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProcessor;
+import io.github.smart.cloud.starter.monitor.api.core.message.SlowApiMessageFactory;
+import io.github.smart.cloud.starter.monitor.api.listener.alert.SlowAbstractApiMonitorWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.SlowApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,14 +47,15 @@ public class SlowApiMonitorAutoConfiguration {
     @Bean
     @RefreshScope
     @ConditionalOnMissingBean
-    public SlowApiMonitorDataProccessor slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
-                                                                 final ApiMonitorCacheManager apiMonitorCacheManager) {
-        return new SlowApiMonitorDataProccessor(apiMonitorProperties, apiMonitorCacheManager);
+    public SlowApiMonitorDataProcessor slowApiMonitorRepository(final ApiMonitorProperties apiMonitorProperties,
+                                                                final ApiMonitorCacheManager apiMonitorCacheManager,
+                                                                final ApplicationEventPublisher applicationEventPublisher) {
+        return new SlowApiMonitorDataProcessor(apiMonitorProperties, apiMonitorCacheManager, applicationEventPublisher);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public SlowApiMonitorListener slowApiMonitorListener(final IApiMonitorDataProccessor slowApiMonitorRepository) {
+    public SlowApiMonitorListener slowApiMonitorListener(final IApiMonitorDataProcessor slowApiMonitorRepository) {
         return new SlowApiMonitorListener(slowApiMonitorRepository);
     }
 
@@ -61,17 +63,24 @@ public class SlowApiMonitorAutoConfiguration {
     @RefreshScope
     @ConditionalOnMissingBean
     public SlowApiChecker slowApiChecker(final ApiMonitorProperties apiMonitorProperties,
-                                         final SlowApiMonitorDataProccessor slowApiMonitorRepository,
+                                         final SlowApiMonitorDataProcessor slowApiMonitorRepository,
                                          final ApplicationEventPublisher applicationEventPublisher) {
         return new SlowApiChecker(apiMonitorProperties, slowApiMonitorRepository, applicationEventPublisher);
     }
 
     @Bean
     @ConditionWeworkRobotNotice
+    public SlowApiMessageFactory slowApiMessageFactory(final ApiMonitorProperties apiMonitorProperties) {
+        return new SlowApiMessageFactory(apiMonitorProperties);
+    }
+
+    @Bean
+    @ConditionWeworkRobotNotice
     @ConditionalOnMissingBean
-    public SlowApiWeworkAlertListener slowApiWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
-                                                                 final ApiMonitorProperties apiMonitorProperties) {
-        return new SlowApiWeworkAlertListener(weworkRobotAgent, apiMonitorProperties);
+    public SlowAbstractApiMonitorWeworkAlertListener slowApiMonitorWeworkAlertListener(final WeworkRobotAgent weworkRobotAgent,
+                                                                                       final ApiMonitorProperties apiMonitorProperties,
+                                                                                       final SlowApiMessageFactory slowApiMessageFactory) {
+        return new SlowAbstractApiMonitorWeworkAlertListener(weworkRobotAgent, apiMonitorProperties, slowApiMessageFactory);
     }
 
 }

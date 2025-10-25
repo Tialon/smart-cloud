@@ -63,6 +63,10 @@ public class SlowApiMonitorProperties {
      * 特定接口慢接口率阈值
      */
     private Map<String, BigDecimal> slowRateThresholds = new HashMap<>();
+    /**
+     * 特定慢接口告警@某人提醒默认阈值，单位：毫秒
+     */
+    private Map<String, Long> atSomeoneCostThresholds = new HashMap<>();
     // -------企业微信通知配置 start
     /**
      * 慢接口通知间隔时间（单位：秒）
@@ -100,6 +104,20 @@ public class SlowApiMonitorProperties {
      */
     public BigDecimal getSlowRateThreshold(String apiName) {
         return slowRateThresholds.getOrDefault(apiName, defaultSlowRateThreshold);
+    }
+
+    /**
+     * 特定慢接口告警@某人提醒默认阈值
+     *
+     * @param apiName
+     * @return
+     */
+    public Long getAtSomeoneCostThresholds(String apiName) {
+        Long costThreshold = atSomeoneCostThresholds.get(apiName);
+        if (costThreshold != null) {
+            return costThreshold;
+        }
+        return atSomeoneCostThreshold;
     }
 
 }

@@ -15,9 +15,9 @@
  */
 package io.github.smart.cloud.starter.monitor.api.core.check;
 
-import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProccessor;
+import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
-import io.github.smart.cloud.starter.monitor.api.event.ApiExceptionAlertEvent;
+import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
 import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 public class ExceptionApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    private final IApiMonitorDataProccessor exceptionApiMonitorRepository;
+    private final IApiMonitorDataProcessor exceptionApiMonitorRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private ScheduledExecutorService exceptionApiCheckSchedule;
 
@@ -65,13 +65,13 @@ public class ExceptionApiChecker implements InitializingBean, DisposableBean, Ap
             return;
         }
 
-        applicationEventPublisher.publishEvent(new ApiExceptionAlertEvent(this, apiExceptions));
+        applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildSummaryEvents(this, apiExceptions));
     }
 
     @Override
     public void destroy() throws Exception {
         if (exceptionApiCheckSchedule != null) {
-            exceptionApiCheckSchedule.shutdown();
+            exceptionApiCheckSchedule.shutdownNow();
         }
     }
 

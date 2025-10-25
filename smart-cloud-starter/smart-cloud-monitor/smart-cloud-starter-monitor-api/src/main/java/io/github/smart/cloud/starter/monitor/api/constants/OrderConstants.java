@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.constants;
 
-import io.github.smart.cloud.starter.monitor.api.listener.monitor.ApiMonitorListener;
+import io.github.smart.cloud.starter.monitor.api.listener.monitor.ApiTotalCountMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.ExceptionApiMonitorListener;
 import io.github.smart.cloud.starter.monitor.api.listener.monitor.SlowApiMonitorListener;
 
@@ -28,18 +28,18 @@ import io.github.smart.cloud.starter.monitor.api.listener.monitor.SlowApiMonitor
 public interface OrderConstants {
 
     /**
-     * {@link ApiMonitorListener}执行优先级
+     * {@link ApiTotalCountMonitorListener}执行优先级
      */
-    int API_MONITOR_LISTENER = 1;
+    int API_TOTAL_COUNT_MONITOR_LISTENER = 1;
 
     /**
      * {@link ExceptionApiMonitorListener}执行优先级
      */
-    int EXCEPTION_API_MONITOR_LISTENER = API_MONITOR_LISTENER + 1;
+    int EXCEPTION_API_MONITOR_LISTENER = API_TOTAL_COUNT_MONITOR_LISTENER + 10;
 
     /**
      * {@link SlowApiMonitorListener}执行优先级
      */
-    int SLOW_API_MONITOR_LISTENER = EXCEPTION_API_MONITOR_LISTENER + 1;
+    int SLOW_API_MONITOR_LISTENER = EXCEPTION_API_MONITOR_LISTENER + 10;
 
 }

@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.listener.alert;
+package io.github.smart.cloud.starter.monitor.api.core.message;
 
+import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.utility.NetworkUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 /**
- * 企业微信告警监听器抽象类
+ * 抽象消息工厂
  *
  * @author collin.li
- * @date 2024-06-16
+ * @date 2025-10-22
  */
-public abstract class AbstractWeworkAlertListener implements EnvironmentAware, InitializingBean {
+@RequiredArgsConstructor
+public abstract class AbstractMessageFactory implements EnvironmentAware, InitializingBean {
 
+    protected final ApiMonitorProperties apiMonitorProperties;
     private Environment environment;
     /**
      * 本机IP地址
