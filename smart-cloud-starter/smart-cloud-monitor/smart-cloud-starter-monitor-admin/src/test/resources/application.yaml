@@ -20,7 +20,7 @@ spring:
         password: ${spring.security.user.password}
 
 smart:
-  monitor:
+  admin-monitor:
     robotKey: 79445cd5-4f18-4d44-a84a-01ff147d11ae
     filterEventTs: 0
 management:

@@ -143,7 +143,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
     public Double getThreshold(String serviceName) {
         Map<String, ServiceInfoProperties> serviceInfos = monitorProperties.getServiceInfos();
         if (serviceInfos != null && serviceInfos.containsKey(serviceName)) {
-            MetricItemAlertProperties<Double> metricItemAlert = serviceInfos.get(serviceName).getMetric().getGc();
+            MetricItemAlertProperties<Double> metricItemAlert = serviceInfos.get(serviceName).getMetric().getCpu();
             if (metricItemAlert.getThreshold() != null) {
                 return metricItemAlert.getThreshold();
             }

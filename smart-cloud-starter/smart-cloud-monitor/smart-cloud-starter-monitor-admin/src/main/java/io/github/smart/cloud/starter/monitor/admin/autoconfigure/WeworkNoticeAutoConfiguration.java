@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2024-05-06
  */
 @Configuration
-@ConditionalOnProperty(name = "smart.monitor.wework.enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "smart.admin-monitor.wework.enable", havingValue = "true", matchIfMissing = true)
 public class WeworkNoticeAutoConfiguration {
 
     @Bean

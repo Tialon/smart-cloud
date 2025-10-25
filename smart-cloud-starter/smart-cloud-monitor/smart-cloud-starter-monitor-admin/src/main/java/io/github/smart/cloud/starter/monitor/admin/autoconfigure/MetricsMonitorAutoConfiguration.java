@@ -44,7 +44,7 @@ public class MetricsMonitorAutoConfiguration {
     /**
      * 监控指标前缀
      */
-    public static final String MONITOR_METRICS_PREFIX = "smart.cloud.monitor.metrics";
+    public static final String MONITOR_METRICS_PREFIX = "smart.admin-monitor.metrics";
 
     @Bean
     @RefreshScope

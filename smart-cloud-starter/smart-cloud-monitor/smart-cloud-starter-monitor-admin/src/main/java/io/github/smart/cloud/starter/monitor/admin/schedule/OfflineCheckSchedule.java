@@ -86,7 +86,7 @@ public class OfflineCheckSchedule implements InitializingBean, ApplicationListen
     @Override
     public void destroy() throws Exception {
         if (checkOfflineSchedule != null) {
-            checkOfflineSchedule.shutdown();
+            checkOfflineSchedule.shutdownNow();
         }
     }
 
