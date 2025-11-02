@@ -43,8 +43,12 @@ public class ApiAlertCommonDTO {
      */
     private String traceId;
     /**
-     * 是否@提醒
+     * 是否需要@提醒
      */
     private boolean needAtSomeone;
+    /**
+     * 接口是否通知已告警
+     */
+    private boolean alerted;
 
 }

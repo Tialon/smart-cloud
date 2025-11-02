@@ -62,9 +62,10 @@ public class ExceptionApiMonitorAutoConfiguration {
     @RefreshScope
     @ConditionalOnMissingBean
     public ExceptionApiChecker exceptionApiChecker(final ApiMonitorProperties apiMonitorProperties,
+                                                   final ApiMonitorCacheManager apiMonitorCacheManager,
                                                    final ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor,
                                                    final ApplicationEventPublisher applicationEventPublisher) {
-        return new ExceptionApiChecker(apiMonitorProperties, exceptionApiMonitorDataProcessor, applicationEventPublisher);
+        return new ExceptionApiChecker(apiMonitorProperties, apiMonitorCacheManager, exceptionApiMonitorDataProcessor, applicationEventPublisher);
     }
 
     @Bean

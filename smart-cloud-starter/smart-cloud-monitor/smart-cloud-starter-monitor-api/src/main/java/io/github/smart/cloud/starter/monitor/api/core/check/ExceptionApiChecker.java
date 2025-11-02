@@ -16,7 +16,9 @@
 package io.github.smart.cloud.starter.monitor.api.core.check;
 
 import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
@@ -43,7 +45,8 @@ import java.util.concurrent.TimeUnit;
 public class ExceptionApiChecker implements InitializingBean, DisposableBean, ApplicationListener<RefreshScopeRefreshedEvent> {
 
     private final ApiMonitorProperties apiMonitorProperties;
-    private final IApiMonitorDataProcessor exceptionApiMonitorRepository;
+    private final ApiMonitorCacheManager apiMonitorCacheManager;
+    private final IApiMonitorDataProcessor exceptionApiMonitorDataProcessor;
     private final ApplicationEventPublisher applicationEventPublisher;
     private ScheduledExecutorService exceptionApiCheckSchedule;
 
@@ -60,10 +63,26 @@ public class ExceptionApiChecker implements InitializingBean, DisposableBean, Ap
      * 检测异常接口，并发送通知
      */
     public void checkExceptionApiAndNotice() {
-        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorRepository.getAlertRecords();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         if (apiExceptions.isEmpty()) {
             return;
         }
+
+        boolean needAlert = apiExceptions.stream()
+                .filter(e -> !e.isAlerted())
+                .findFirst()
+                .isPresent();
+        if (!needAlert) {
+            return;
+        }
+
+        // 标记已告警
+        apiExceptions.forEach(e -> {
+            ApiRequestSummaryDTO apiRequestSummary = apiMonitorCacheManager.getApiRequestSummaryDTO(e.getName());
+            if (!apiRequestSummary.isErrorAlerted()) {
+                apiRequestSummary.setErrorAlerted(true);
+            }
+        });
 
         applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildSummaryEvents(this, apiExceptions));
     }

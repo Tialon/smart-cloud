@@ -15,20 +15,25 @@
  */
 package io.github.smart.cloud.starter.monitor.api.core.data;
 
+import io.github.smart.cloud.constants.SymbolConstant;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
-import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
 import org.springframework.context.ApplicationListener;
 
+import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 接口监控信息存储
@@ -70,7 +75,7 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
     @Override
     public void afterPropertiesSet() throws Exception {
         cleanSchedule = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("clean-api-record-cache"));
-        cleanSchedule.scheduleWithFixedDelay(this::clearApiRecords, apiMonitorProperties.getCleanIntervalSeconds(),
+        cleanSchedule.scheduleWithFixedDelay(this::clearCache, apiMonitorProperties.getCleanIntervalSeconds(),
                 apiMonitorProperties.getCleanIntervalSeconds(), TimeUnit.SECONDS);
     }
 
@@ -80,10 +85,10 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
             cleanSchedule.shutdownNow();
         }
 
-        clearApiRecords();
+        clearCache();
     }
 
-    public void clearApiRecords() {
+    public void clearCache() {
         apiRequestSummaryCache.clear();
     }
 

@@ -45,7 +45,7 @@ public abstract class AbstractTest {
         mockMvc = MockMvcBuilders.webAppContextSetup((WebApplicationContext) applicationContext).addFilters(filters).build();
 
         ApiMonitorCacheManager apiMonitorCacheManager = applicationContext.getBean(ApiMonitorCacheManager.class);
-        apiMonitorCacheManager.clearApiRecords();
+        apiMonitorCacheManager.clearCache();
     }
 
 }

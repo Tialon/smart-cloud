@@ -63,9 +63,10 @@ public class SlowApiMonitorAutoConfiguration {
     @RefreshScope
     @ConditionalOnMissingBean
     public SlowApiChecker slowApiChecker(final ApiMonitorProperties apiMonitorProperties,
+                                         final ApiMonitorCacheManager apiMonitorCacheManager,
                                          final SlowApiMonitorDataProcessor slowApiMonitorRepository,
                                          final ApplicationEventPublisher applicationEventPublisher) {
-        return new SlowApiChecker(apiMonitorProperties, slowApiMonitorRepository, applicationEventPublisher);
+        return new SlowApiChecker(apiMonitorProperties, apiMonitorCacheManager, slowApiMonitorRepository, applicationEventPublisher);
     }
 
     @Bean

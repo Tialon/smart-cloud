@@ -49,9 +49,9 @@ public class ApiRequestSummaryDTO {
      */
     private String errorTraceId;
     /**
-     * 异常是否需要立即提醒
+     * 异常接口通知已告警
      */
-    private boolean errorNeedImmediateAlert;
+    private boolean errorAlerted;
     // ----end:异常接口信息
 
     // ----start:慢接口信息
@@ -68,9 +68,9 @@ public class ApiRequestSummaryDTO {
      */
     private String slowTraceId;
     /**
-     * 慢接口是否需要立即提醒
+     * 慢接口通知已告警
      */
-    private boolean slowNeedImmediateAlert;
+    private boolean slowAlerted;
     // ----end:慢接口信息
 
 }

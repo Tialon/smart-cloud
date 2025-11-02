@@ -18,11 +18,9 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.listener.alert.ApiExceptionMonitorWeworkAlertListener;
-import io.github.smart.cloud.starter.monitor.api.listener.alert.SlowAbstractApiMonitorWeworkAlertListener;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +37,6 @@ public class AlertListenerTest {
     // 用@SpyBean包装监听器，保留原功能并允许验证
     @SpyBean
     private ApiExceptionMonitorWeworkAlertListener apiExceptionMonitorWeworkAlertListener;
-    @SpyBean
-    private SlowAbstractApiMonitorWeworkAlertListener slowAbstractApiMonitorWeworkAlertListener;
 
     @Test
     void testEvent() {
@@ -50,7 +46,7 @@ public class AlertListenerTest {
 
         ApiMonitorAlertEvent<ApiExceptionAlertDTO> event = ApiMonitorAlertEvent.buildImmediateEvent(this, apiExceptionAlertDTO);
         applicationEventPublisher.publishEvent(event);
-        // 2. 验证监听器的onApplicationEvent方法被调用（参数为发布的事件）
+        // 验证监听器的onApplicationEvent方法被调用（参数为发布的事件）
         Mockito.verify(apiExceptionMonitorWeworkAlertListener, Mockito.times(1))
                 .onApplicationEvent(Mockito.eq(event));
     }

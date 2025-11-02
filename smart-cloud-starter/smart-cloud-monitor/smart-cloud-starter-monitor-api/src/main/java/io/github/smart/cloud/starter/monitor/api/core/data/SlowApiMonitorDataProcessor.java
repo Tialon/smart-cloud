@@ -22,19 +22,14 @@ import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.SlowApiMonitorProperties;
-import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.util.DigestUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 慢接口监控数据处理器
@@ -49,10 +44,6 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
     private final ApiMonitorProperties apiMonitorProperties;
     private final ApiMonitorCacheManager apiMonitorCacheManager;
     private final ApplicationEventPublisher applicationEventPublisher;
-    /**
-     * 上次慢接口汇总的md5值（如果md5值未改变，则不发送消息）
-     */
-    private String lastSlowApiSummaryMd5;
 
     @Override
     public void process(ApiMonitorEvent event) {
@@ -76,8 +67,13 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                     apiRequestSummary.setSlowTraceId(event.getTraceId());
                 }
             }
-            if (!apiRequestSummary.isSlowNeedImmediateAlert() && cost >= slowApiMonitorProperties.getAtSomeoneCostThresholds(apiName)) {
-                apiRequestSummary.setSlowNeedImmediateAlert(true);
+
+            if (apiRequestSummary.isSlowAlerted()) {
+                return;
+            }
+
+            if (cost >= slowApiMonitorProperties.getAtSomeoneCostThresholds(apiName)) {
+                apiRequestSummary.setSlowAlerted(true);
 
                 // 超过@提醒值，立即发告警
                 ApiSlowAlertDTO apiSlowAlert = new ApiSlowAlertDTO();
@@ -85,7 +81,6 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 apiSlowAlert.setNeedAtSomeone(true);
                 apiSlowAlert.setName(apiName);
                 apiSlowAlert.setTraceId(event.getTraceId());
-
                 applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiSlowAlert));
             }
         } catch (Throwable e) {
@@ -118,6 +113,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
                 apiSlowAlert.setTraceId(apiRequestSummary.getSlowTraceId());
                 apiSlowAlert.setNeedAtSomeone(false);
+                apiSlowAlert.setAlerted(apiRequestSummary.isSlowAlerted());
 
                 apiSlowAlerts.add(apiSlowAlert);
                 continue;
@@ -136,19 +132,12 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
             apiSlowAlert.setSlowRate(slowRate);
             apiSlowAlert.setTraceId(apiRequestSummary.getSlowTraceId());
             apiSlowAlert.setNeedAtSomeone(slowRate.compareTo(slowRateThreshold) >= 0);
+            apiSlowAlert.setAlerted(apiRequestSummary.isSlowAlerted());
 
             apiSlowAlerts.add(apiSlowAlert);
         }
 
         if (!apiSlowAlerts.isEmpty()) {
-            // 计算当前慢接口汇总的md5值，与上次对比，未变化则不发送消息
-            if (StringUtils.isNotBlank(lastSlowApiSummaryMd5)) {
-                String currentSlowApiSummaryMd5 = DigestUtils.md5DigestAsHex(JacksonUtil.toBytes(apiSlowAlerts));
-                if (StringUtils.equals(currentSlowApiSummaryMd5, lastSlowApiSummaryMd5)) {
-                    return Collections.emptyList();
-                }
-            }
-
             if (apiSlowAlerts.size() > slowApiMonitorProperties.getApiReportMaxCount()) {
                 /**
                  * slowRate为null的排前面，不为null的排后面

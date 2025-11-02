@@ -25,14 +25,12 @@ import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorProperties;
 import io.github.smart.cloud.starter.monitor.api.util.PercentUtil;
-import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.DigestUtils;
 import sun.security.provider.certpath.SunCertPathBuilderException;
 
 import java.lang.reflect.Method;
@@ -57,10 +55,6 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
     private final ApiMonitorCacheManager apiMonitorCacheManager;
     private final ApplicationEventPublisher applicationEventPublisher;
     private Set<String> needAlertExceptionClassNames;
-    /**
-     * 上次异常接口汇总的md5值（如果md5值未改变，则不发送消息）
-     */
-    private String lastExceptionApiSummaryMd5;
 
     /**
      * 添加接口访问记录
@@ -82,7 +76,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
             ApiRequestSummaryDTO apiRequestSummaryDTO = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
             apiRequestSummaryDTO.setFailCount(apiRequestSummaryDTO.getFailCount() + 1);
 
-            if (apiRequestSummaryDTO.isErrorNeedImmediateAlert()) {
+            if (apiRequestSummaryDTO.isErrorAlerted()) {
                 return;
             }
 
@@ -91,16 +85,23 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
                 apiRequestSummaryDTO.setErrorTraceId(event.getTraceId());
             }
 
-            // 是否需要立即发告警
-            boolean needImmediateAlert = isImmediateAlertException(event.getThrowable());
-            if (needImmediateAlert) {
-                apiRequestSummaryDTO.setErrorNeedImmediateAlert(true);
+            if (apiRequestSummaryDTO.isErrorAlerted()) {
+                return;
+            }
 
-                ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
-                apiExceptionAlertDTO.setName(event.getApiName());
-                apiExceptionAlertDTO.setThrowable(event.getThrowable());
-                apiExceptionAlertDTO.setTraceId(event.getTraceId());
-                applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiExceptionAlertDTO));
+            if (exceptionApiMonitorProperties.getAlertExceptionMarked()) {
+                // 是否需要立即发告警
+                boolean isSpecialException = isSpecialException(event.getThrowable());
+                if (isSpecialException) {
+                    apiRequestSummaryDTO.setErrorAlerted(true);
+
+                    // 发送立即告警
+                    ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
+                    apiExceptionAlertDTO.setName(event.getApiName());
+                    apiExceptionAlertDTO.setThrowable(event.getThrowable());
+                    apiExceptionAlertDTO.setTraceId(event.getTraceId());
+                    applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiExceptionAlertDTO));
+                }
             }
         } catch (Throwable e) {
             log.error("api health info add error|name={}", event.getApiName(), e);
@@ -108,12 +109,12 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
     }
 
     /**
-     * 是否是需要立即提醒的异常
+     * 是否是特殊异常
      *
      * @param throwable
      * @return
      */
-    private boolean isImmediateAlertException(Throwable throwable) {
+    private boolean isSpecialException(Throwable throwable) {
         ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
         Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
         if (needAlertExceptionClassNames.contains(throwable.getClass().getSimpleName())) {
@@ -155,7 +156,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
             BigDecimal failCount = BigDecimal.valueOf(failCountCount);
             BigDecimal total = BigDecimal.valueOf(apiRequestSummary.getTotalCount());
             BigDecimal failRate = failCount.divide(total, 4, RoundingMode.HALF_UP);
-            ApiExceptionRemindType remindType = match(name, total, failRate, apiRequestSummary.isErrorNeedImmediateAlert());
+            ApiExceptionRemindType remindType = match(name, total, failRate, apiRequestSummary.getThrowable());
             if (remindType != ApiExceptionRemindType.NONE) {
                 ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
                 apiExceptionAlertDTO.setName(name);
@@ -166,19 +167,12 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
                 apiExceptionAlertDTO.setTraceId(apiRequestSummary.getErrorTraceId());
                 apiExceptionAlertDTO.setRemindType(remindType);
                 apiExceptionAlertDTO.setNeedAtSomeone(ApiExceptionRemindType.FAIL_RATE == remindType);
+                apiExceptionAlertDTO.setAlerted(apiRequestSummary.isErrorAlerted());
                 apiExceptions.add(apiExceptionAlertDTO);
             }
         }
 
         if (!apiExceptions.isEmpty()) {
-            // 计算当前异常汇总的md5值，与上次对比，未变化则不发送消息
-            if (StringUtils.isNotBlank(lastExceptionApiSummaryMd5)) {
-                String currentExceptionApiSummaryMd5 = DigestUtils.md5DigestAsHex(JacksonUtil.toBytes(apiExceptions));
-                if (StringUtils.equals(currentExceptionApiSummaryMd5, lastExceptionApiSummaryMd5)) {
-                    return Collections.emptyList();
-                }
-            }
-
             ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
             // 异常接口超过最大上报数量时，进行裁剪
             if (apiExceptions.size() > exceptionApiMonitorProperties.getApiReportMaxCount()) {
@@ -208,15 +202,17 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
      * @param total
      * @param name
      * @param failRate
-     * @param errorNeedImmediateAlert
+     * @param throwable
      * @return
      */
-    private ApiExceptionRemindType match(String name, BigDecimal total, BigDecimal failRate, boolean errorNeedImmediateAlert) {
-        if (errorNeedImmediateAlert) {
-            return ApiExceptionRemindType.EXCEPTION_INFO;
+    private ApiExceptionRemindType match(String name, BigDecimal total, BigDecimal failRate, Throwable throwable) {
+        ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
+        if (exceptionApiMonitorProperties.getAlertExceptionMarked()) {
+            if (isSpecialException(throwable)) {
+                return ApiExceptionRemindType.EXCEPTION_INFO;
+            }
         }
 
-        ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
         BigDecimal failRateThreshold = exceptionApiMonitorProperties.getFailRateThresholds().getOrDefault(name, exceptionApiMonitorProperties.getDefaultFailRateThreshold());
         if (total.intValue() >= exceptionApiMonitorProperties.getMatchMinCount() && failRate.compareTo(failRateThreshold) >= 0) {
             return ApiExceptionRemindType.FAIL_RATE;
