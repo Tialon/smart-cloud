@@ -69,6 +69,7 @@ public class ExceptionApiMonitorAutoConfiguration {
     }
 
     @Bean
+    @RefreshScope
     @ConditionWeworkRobotNotice
     @ConditionalOnMissingBean
     public ApiExceptionMessageFactory apiExceptionMessageFactory(final ApiMonitorProperties apiMonitorProperties) {

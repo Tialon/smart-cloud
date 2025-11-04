@@ -70,7 +70,9 @@ public class SlowApiMonitorAutoConfiguration {
     }
 
     @Bean
+    @RefreshScope
     @ConditionWeworkRobotNotice
+    @ConditionalOnMissingBean
     public SlowApiMessageFactory slowApiMessageFactory(final ApiMonitorProperties apiMonitorProperties) {
         return new SlowApiMessageFactory(apiMonitorProperties);
     }
