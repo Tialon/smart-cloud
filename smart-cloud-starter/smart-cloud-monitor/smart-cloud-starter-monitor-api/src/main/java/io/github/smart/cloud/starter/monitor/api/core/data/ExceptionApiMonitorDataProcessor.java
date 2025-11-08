@@ -27,7 +27,6 @@ import io.github.smart.cloud.starter.monitor.api.properties.ExceptionApiMonitorP
 import io.github.smart.cloud.starter.monitor.api.util.PercentUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
@@ -54,7 +53,6 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
     private final ApiMonitorProperties apiMonitorProperties;
     private final ApiMonitorCacheManager apiMonitorCacheManager;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private Set<String> needAlertExceptionClassNames;
 
     /**
      * 添加接口访问记录
@@ -223,30 +221,35 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
     @Override
     public void afterPropertiesSet() {
         ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
-        needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
-        if (CollectionUtils.isEmpty(needAlertExceptionClassNames)) {
-            // 默认需要@提醒的异常类型
-            Set<String> defaultNeedAlertExceptionClassNames = new HashSet<>(32);
-            defaultNeedAlertExceptionClassNames.add(SQLException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(SQLTimeoutException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(NumberFormatException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(ConcurrentModificationException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(NullPointerException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(IndexOutOfBoundsException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(ArrayIndexOutOfBoundsException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(StringIndexOutOfBoundsException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(ArrayStoreException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(ClassCastException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(ClassNotFoundException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(StackOverflowError.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(OutOfMemoryError.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(IllegalMonitorStateException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(CertPathValidatorException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(SunCertPathBuilderException.class.getSimpleName());
-            defaultNeedAlertExceptionClassNames.add(NoSuchElementException.class.getSimpleName());
+        Set<String> needAlertExceptionClassNames = exceptionApiMonitorProperties.getNeedAlertExceptionClassNames();
+        needAlertExceptionClassNames.addAll(buildDefaultNeedAlertExceptionClassNames());
+    }
 
-            needAlertExceptionClassNames = defaultNeedAlertExceptionClassNames;
-        }
+    /**
+     * 构建默认需要@提醒的异常类型
+     *
+     * @return
+     */
+    private Set<String> buildDefaultNeedAlertExceptionClassNames() {
+        Set<String> defaultNeedAlertExceptionClassNames = new HashSet<>(32);
+        defaultNeedAlertExceptionClassNames.add(SQLException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(SQLTimeoutException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(NumberFormatException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(ConcurrentModificationException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(NullPointerException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(IndexOutOfBoundsException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(ArrayIndexOutOfBoundsException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(StringIndexOutOfBoundsException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(ArrayStoreException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(ClassCastException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(ClassNotFoundException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(StackOverflowError.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(OutOfMemoryError.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(IllegalMonitorStateException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(CertPathValidatorException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(SunCertPathBuilderException.class.getSimpleName());
+        defaultNeedAlertExceptionClassNames.add(NoSuchElementException.class.getSimpleName());
+        return defaultNeedAlertExceptionClassNames;
     }
 
     private static class ExceptionCodeProcessor {
