@@ -26,8 +26,8 @@ smart:
       robotKey: 79445cd5-4f18-4d44-a84a-01ff147d11ae
       apiWhiteList:
         - ProductController#whitelist
-      defaultCostThreshold: 100
-      apiReportMaxCount: 1
+      defaultCostThreshold: 50
+      apiReportMaxCount: 2
 management:
   endpoint:
     health:

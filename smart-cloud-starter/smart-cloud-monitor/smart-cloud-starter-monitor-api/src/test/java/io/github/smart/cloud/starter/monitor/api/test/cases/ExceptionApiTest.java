@@ -17,6 +17,7 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
+import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
@@ -26,6 +27,7 @@ import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.excepti
 import io.github.smart.cloud.starter.monitor.api.test.prepare.openfeign.IOrderFeign;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.service.ProductService;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,13 @@ public class ExceptionApiTest extends AbstractTest {
     private ExceptionApiChecker exceptionApiChecker;
     @Autowired
     private ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor;
+    @Autowired
+    private ApiMonitorCacheManager apiMonitorCacheManager;
+
+    @BeforeEach
+    public void clean(){
+        apiMonitorCacheManager.getApiRequestSummaryCache().clear();
+    }
 
     /**
      * 特定异常监控
