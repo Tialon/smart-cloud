@@ -74,17 +74,13 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
             ApiRequestSummaryDTO apiRequestSummaryDTO = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
             apiRequestSummaryDTO.setFailCount(apiRequestSummaryDTO.getFailCount() + 1);
 
-            if (apiRequestSummaryDTO.isErrorAlerted()) {
+            if (apiRequestSummaryDTO.getErrorAlerted()) {
                 return;
             }
 
             apiRequestSummaryDTO.setThrowable(event.getThrowable());
             if (event.getTraceId() != null) {
                 apiRequestSummaryDTO.setErrorTraceId(event.getTraceId());
-            }
-
-            if (apiRequestSummaryDTO.isErrorAlerted()) {
-                return;
             }
 
             if (exceptionApiMonitorProperties.getAlertExceptionMarked()) {
@@ -165,7 +161,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
                 apiExceptionAlertDTO.setTraceId(apiRequestSummary.getErrorTraceId());
                 apiExceptionAlertDTO.setRemindType(remindType);
                 apiExceptionAlertDTO.setNeedAtSomeone(ApiExceptionRemindType.FAIL_RATE == remindType);
-                apiExceptionAlertDTO.setAlerted(apiRequestSummary.isErrorAlerted());
+                apiExceptionAlertDTO.setAlerted(apiRequestSummary.getErrorAlerted());
                 apiExceptions.add(apiExceptionAlertDTO);
             }
         }

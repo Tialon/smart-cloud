@@ -51,18 +51,18 @@ public class ApiRequestSummaryDTO {
     /**
      * 异常接口通知已告警
      */
-    private boolean errorAlerted;
+    private Boolean errorAlerted;
     // ----end:异常接口信息
 
     // ----start:慢接口信息
     /**
      * 慢接口数
      */
-    private long slowCount = 0L;
+    private Long slowCount = 0L;
     /**
      * 最大耗时（毫秒）
      */
-    private long maxCost = 0L;
+    private Long maxCost = 0L;
     /**
      * 慢接口链路号
      */
@@ -70,7 +70,7 @@ public class ApiRequestSummaryDTO {
     /**
      * 慢接口通知已告警
      */
-    private boolean slowAlerted;
+    private Boolean slowAlerted;
     // ----end:慢接口信息
 
 }

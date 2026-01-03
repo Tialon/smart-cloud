@@ -76,7 +76,7 @@ public class SlowApiChecker implements InitializingBean, DisposableBean, Applica
         }
 
         boolean needAlert = apiSlowAlerts.stream()
-                .filter(e -> !e.isAlerted())
+                .filter(e -> !e.getAlerted())
                 .findFirst()
                 .isPresent();
         if (!needAlert) {
@@ -86,7 +86,7 @@ public class SlowApiChecker implements InitializingBean, DisposableBean, Applica
         // 标记已告警
         apiSlowAlerts.forEach(e -> {
             ApiRequestSummaryDTO apiRequestSummary = apiMonitorCacheManager.getApiRequestSummaryDTO(e.getName());
-            if (!apiRequestSummary.isSlowAlerted()) {
+            if (!apiRequestSummary.getSlowAlerted()) {
                 apiRequestSummary.setSlowAlerted(true);
             }
         });

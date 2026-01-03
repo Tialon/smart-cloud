@@ -137,7 +137,7 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
                         .append(apiException.getThrowable().toString())
                         .append(isExceptionRemindType ? "</font>" : StringUtils.EMPTY);
             }
-            needMention |= apiException.isNeedAtSomeone();
+            needMention |= apiException.getNeedAtSomeone();
         }
 
         if (needMention && !CollectionUtils.isEmpty(exceptionApiMonitor.getReminders())) {
@@ -179,7 +179,7 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
                 boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO;
                 content.append("\n").append(isExceptionRemindType ? "⚠" : StringUtils.EMPTY).append("【异常信息】：").append(apiException.getThrowable().toString());
             }
-            needMention |= apiException.isNeedAtSomeone();
+            needMention |= apiException.getNeedAtSomeone();
         }
 
         Set<String> mentionedMobileList = needMention ? apiMonitorProperties.getExceptionApiMonitor().getReminders() : null;

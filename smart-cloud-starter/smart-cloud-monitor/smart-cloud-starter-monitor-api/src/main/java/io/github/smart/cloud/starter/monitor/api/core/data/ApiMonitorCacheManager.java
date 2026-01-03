@@ -15,25 +15,17 @@
  */
 package io.github.smart.cloud.starter.monitor.api.core.data;
 
-import io.github.smart.cloud.constants.SymbolConstant;
-import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
-import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
 import org.springframework.context.ApplicationListener;
 
-import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /**
  * 接口监控信息存储
@@ -60,7 +52,12 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
      * @return
      */
     public ApiRequestSummaryDTO getApiRequestSummaryDTO(String apiName) {
-        return apiRequestSummaryCache.computeIfAbsent(apiName, key -> new ApiRequestSummaryDTO());
+        return apiRequestSummaryCache.computeIfAbsent(apiName, key -> {
+            ApiRequestSummaryDTO apiRequestSummary = new ApiRequestSummaryDTO();
+            apiRequestSummary.setErrorAlerted(false);
+            apiRequestSummary.setSlowAlerted(false);
+            return apiRequestSummary;
+        });
     }
 
     /**

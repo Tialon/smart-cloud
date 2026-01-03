@@ -45,10 +45,10 @@ public class ApiAlertCommonDTO {
     /**
      * 是否需要@提醒
      */
-    private boolean needAtSomeone;
+    private Boolean needAtSomeone;
     /**
      * 接口是否通知已告警
      */
-    private boolean alerted;
+    private Boolean alerted;
 
 }

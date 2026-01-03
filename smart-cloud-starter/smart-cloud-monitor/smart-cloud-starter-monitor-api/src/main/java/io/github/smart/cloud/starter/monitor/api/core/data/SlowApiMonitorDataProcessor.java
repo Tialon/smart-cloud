@@ -68,7 +68,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 }
             }
 
-            if (apiRequestSummary.isSlowAlerted()) {
+            if (apiRequestSummary.getSlowAlerted()) {
                 return;
             }
 
@@ -113,7 +113,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
                 apiSlowAlert.setTraceId(apiRequestSummary.getSlowTraceId());
                 apiSlowAlert.setNeedAtSomeone(false);
-                apiSlowAlert.setAlerted(apiRequestSummary.isSlowAlerted());
+                apiSlowAlert.setAlerted(apiRequestSummary.getSlowAlerted());
 
                 apiSlowAlerts.add(apiSlowAlert);
                 continue;
@@ -132,7 +132,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
             apiSlowAlert.setSlowRate(slowRate);
             apiSlowAlert.setTraceId(apiRequestSummary.getSlowTraceId());
             apiSlowAlert.setNeedAtSomeone(slowRate.compareTo(slowRateThreshold) >= 0);
-            apiSlowAlert.setAlerted(apiRequestSummary.isSlowAlerted());
+            apiSlowAlert.setAlerted(apiRequestSummary.getSlowAlerted());
 
             apiSlowAlerts.add(apiSlowAlert);
         }

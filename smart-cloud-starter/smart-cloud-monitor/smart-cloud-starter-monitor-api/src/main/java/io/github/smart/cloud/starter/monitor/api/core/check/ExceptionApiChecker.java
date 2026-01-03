@@ -69,7 +69,7 @@ public class ExceptionApiChecker implements InitializingBean, DisposableBean, Ap
         }
 
         boolean needAlert = apiExceptions.stream()
-                .filter(e -> !e.isAlerted())
+                .filter(e -> !e.getAlerted())
                 .findFirst()
                 .isPresent();
         if (!needAlert) {
@@ -79,7 +79,7 @@ public class ExceptionApiChecker implements InitializingBean, DisposableBean, Ap
         // 标记已告警
         apiExceptions.forEach(e -> {
             ApiRequestSummaryDTO apiRequestSummary = apiMonitorCacheManager.getApiRequestSummaryDTO(e.getName());
-            if (!apiRequestSummary.isErrorAlerted()) {
+            if (!apiRequestSummary.getErrorAlerted()) {
                 apiRequestSummary.setErrorAlerted(true);
             }
         });
