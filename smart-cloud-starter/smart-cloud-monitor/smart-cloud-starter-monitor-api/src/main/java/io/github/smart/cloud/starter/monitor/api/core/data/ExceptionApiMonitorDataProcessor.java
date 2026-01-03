@@ -168,22 +168,22 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
 
         if (!apiExceptions.isEmpty()) {
             ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
+            Collections.sort(apiExceptions, (o1, o2) -> {
+                ApiExceptionRemindType remindType1 = o1.getRemindType();
+                ApiExceptionRemindType remindType2 = o2.getRemindType();
+                // 异常信息类型排在前
+                if (ApiExceptionRemindType.EXCEPTION_INFO == remindType1 && ApiExceptionRemindType.EXCEPTION_INFO != remindType2) {
+                    return 1;
+                }
+                if (ApiExceptionRemindType.EXCEPTION_INFO != remindType1 && ApiExceptionRemindType.EXCEPTION_INFO == remindType2) {
+                    return -1;
+                }
+
+                // 按失败率倒叙排序
+                return (int) (o2.getFailCount() * o1.getTotalCount() - o1.getFailCount() * o2.getTotalCount());
+            });
             // 异常接口超过最大上报数量时，进行裁剪
             if (apiExceptions.size() > exceptionApiMonitorProperties.getApiReportMaxCount()) {
-                Collections.sort(apiExceptions, (o1, o2) -> {
-                    ApiExceptionRemindType remindType1 = o1.getRemindType();
-                    ApiExceptionRemindType remindType2 = o2.getRemindType();
-                    // 异常信息类型排在前
-                    if (ApiExceptionRemindType.EXCEPTION_INFO == remindType1 && ApiExceptionRemindType.EXCEPTION_INFO != remindType2) {
-                        return 1;
-                    }
-                    if (ApiExceptionRemindType.EXCEPTION_INFO != remindType1 && ApiExceptionRemindType.EXCEPTION_INFO == remindType2) {
-                        return -1;
-                    }
-
-                    // 按失败率倒叙排序
-                    return (int) (o2.getFailCount() * o1.getTotalCount() - o1.getFailCount() * o2.getTotalCount());
-                });
                 return apiExceptions.subList(0, exceptionApiMonitorProperties.getApiReportMaxCount());
             }
         }
