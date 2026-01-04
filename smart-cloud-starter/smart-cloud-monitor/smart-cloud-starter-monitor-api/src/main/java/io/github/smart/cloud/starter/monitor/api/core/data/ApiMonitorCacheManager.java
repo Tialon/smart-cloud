@@ -54,6 +54,12 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
     public ApiRequestSummaryDTO getApiRequestSummaryDTO(String apiName) {
         return apiRequestSummaryCache.computeIfAbsent(apiName, key -> {
             ApiRequestSummaryDTO apiRequestSummary = new ApiRequestSummaryDTO();
+            apiRequestSummary.setTotalCount(0L);
+            apiRequestSummary.setFailCount(0L);
+
+            apiRequestSummary.setSlowCount(0L);
+            apiRequestSummary.setMaxCost(0L);
+
             apiRequestSummary.setErrorAlerted(false);
             apiRequestSummary.setSlowAlerted(false);
             return apiRequestSummary;

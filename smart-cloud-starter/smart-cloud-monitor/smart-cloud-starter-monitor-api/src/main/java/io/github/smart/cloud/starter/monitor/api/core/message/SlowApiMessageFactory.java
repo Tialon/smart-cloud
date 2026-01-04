@@ -124,7 +124,7 @@ public class SlowApiMessageFactory extends AbstractMessageFactory implements IMe
             }
             content.append("\n>**最大耗时**：").append(apiSlowAlert.getMaxCost()).append("ms");
 
-            needAtSomeone |= apiSlowAlert.isNeedAtSomeone();
+            needAtSomeone |= apiSlowAlert.getNeedAtSomeone();
         }
 
         Set<String> reminders = apiMonitorProperties.getSlowApiMonitor().getReminders();
@@ -163,7 +163,7 @@ public class SlowApiMessageFactory extends AbstractMessageFactory implements IMe
                 content.append("\n【traceId】：").append(apiSlowAlert.getTraceId());
             }
             content.append("\n【最大耗时】：").append(apiSlowAlert.getMaxCost()).append("ms");
-            needAtSomeone |= apiSlowAlert.isNeedAtSomeone();
+            needAtSomeone |= apiSlowAlert.getNeedAtSomeone();
         }
 
         Set<String> mentionedMobileList = needAtSomeone ? apiMonitorProperties.getSlowApiMonitor().getReminders() : null;

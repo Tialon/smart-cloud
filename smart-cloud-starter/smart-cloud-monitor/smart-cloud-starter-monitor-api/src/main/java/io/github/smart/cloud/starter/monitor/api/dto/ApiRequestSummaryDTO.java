@@ -33,13 +33,13 @@ public class ApiRequestSummaryDTO {
     /**
      * 请求总数
      */
-    private long totalCount = 0L;
+    private Long totalCount;
 
     // ----start:异常接口信息
     /**
      * 失败数
      */
-    private long failCount = 0L;
+    private Long failCount;
     /**
      * 异常
      */
@@ -58,11 +58,11 @@ public class ApiRequestSummaryDTO {
     /**
      * 慢接口数
      */
-    private Long slowCount = 0L;
+    private Long slowCount;
     /**
      * 最大耗时（毫秒）
      */
-    private Long maxCost = 0L;
+    private Long maxCost;
     /**
      * 慢接口链路号
      */

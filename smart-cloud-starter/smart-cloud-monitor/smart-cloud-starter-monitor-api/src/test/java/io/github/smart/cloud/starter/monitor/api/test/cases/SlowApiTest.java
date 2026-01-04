@@ -60,8 +60,8 @@ public class SlowApiTest extends AbstractTest {
         productController.update(3);
         productController.update(5);
 
-        // 接口监控切面异步处理，此处等待1秒钟
-        TimeUnit.SECONDS.sleep(1);
+        // 接口监控切面异步处理，此处等待2秒钟
+        TimeUnit.SECONDS.sleep(2);
         List<ApiSlowAlertDTO> apiSlowAlerts = slowApiMonitorRepository.getAlertRecords();
         Assertions.assertThat(apiSlowAlerts).hasSize(2);
     }

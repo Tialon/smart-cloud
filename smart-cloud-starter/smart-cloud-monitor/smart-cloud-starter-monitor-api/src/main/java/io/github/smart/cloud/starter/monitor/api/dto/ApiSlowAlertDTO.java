@@ -48,6 +48,6 @@ public class ApiSlowAlertDTO extends ApiAlertCommonDTO {
     /**
      * 是否@提醒
      */
-    private boolean needAtSomeone;
+    private Boolean needAtSomeone;
 
 }

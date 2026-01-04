@@ -253,7 +253,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
         /**
          * 缓存getCode方法
          */
-        private static final ClassValue<Method> codeMethodClassValue = new ClassValue<Method>() {
+        private static final ClassValue<Method> CODE_METHOD_CLASS_VALUE = new ClassValue<Method>() {
             @Override
             protected Method computeValue(Class<?> type) {
                 try {
@@ -282,7 +282,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
             }
 
             // 非AbstractBaseException子类，尝试反射调用getCode方法
-            Method method = codeMethodClassValue.get(throwable.getClass());
+            Method method = CODE_METHOD_CLASS_VALUE.get(throwable.getClass());
             if (method == null) {
                 return null;
             }

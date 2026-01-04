@@ -22,6 +22,7 @@ import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
+import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -33,7 +34,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * 接口健康监控
@@ -50,7 +51,8 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
     private final ApiMonitorCacheManager apiMonitorCacheManager;
     private final Tracing tracing;
     private LinkedBlockingQueue<ApiMonitorEvent> apiMonitorEventQueue = null;
-    private Thread apiMonitorEventQueueConsumerThread = null;
+    private ThreadPoolExecutor apiMonitorEventConsumerThreadPool = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(),
+            new NamedThreadFactory("api-monitor-event-consumer"), new ThreadPoolExecutor.AbortPolicy());
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -92,7 +94,7 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
         apiMonitorEventQueue = new LinkedBlockingQueue<>(apiMonitorProperties.getApiMonitorEventQueueSize());
 
         // 消费队列
-        apiMonitorEventQueueConsumerThread = new Thread(() -> {
+        apiMonitorEventConsumerThreadPool.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     // 从队列中取日志（阻塞等待，直到有数据）
@@ -109,9 +111,7 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
                     log.error("publishEvent apiMonitorEvent fail", e);
                 }
             }
-        }, "api-monitor-event-consumer-thread");
-
-        apiMonitorEventQueueConsumerThread.start();
+        });
     }
 
     /**
