@@ -34,5 +34,5 @@ jobs:
           nexus_username: ${{ secrets.OSSRH_USER }}
           nexus_password: ${{ secrets.OSSRH_PASSWORD }}
           maven_goals_phases: clean deploy
-          maven_args: -Dmaven.test.skip=true -T 8
+          maven_args: -Dmaven.test.skip=true -T 4
           maven_profiles: deploy

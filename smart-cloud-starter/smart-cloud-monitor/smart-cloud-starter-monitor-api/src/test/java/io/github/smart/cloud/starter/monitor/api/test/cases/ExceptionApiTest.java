@@ -17,9 +17,9 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
+import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
-import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.exception.NullPointExceptionController;
@@ -27,7 +27,9 @@ import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.excepti
 import io.github.smart.cloud.starter.monitor.api.test.prepare.openfeign.IOrderFeign;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.service.ProductService;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,8 @@ public class ExceptionApiTest extends AbstractTest {
     private ApiMonitorCacheManager apiMonitorCacheManager;
 
     @BeforeEach
-    public void clean(){
+    @AfterEach
+    public void clean() {
         apiMonitorCacheManager.getApiRequestSummaryCache().clear();
     }
 
@@ -59,6 +62,7 @@ public class ExceptionApiTest extends AbstractTest {
      * 特定异常监控
      */
     @Test
+    @Order(10)
     void testNullPointerException() throws InterruptedException {
         NullPointExceptionController nullPointExceptionController = applicationContext.getBean(NullPointExceptionController.class);
         for (int i = 0; i < 100; i++) {
@@ -78,6 +82,7 @@ public class ExceptionApiTest extends AbstractTest {
     }
 
     @Test
+    @Order(20)
     void testErrorCode() throws InterruptedException {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 0; i < 100; i++) {
@@ -102,6 +107,7 @@ public class ExceptionApiTest extends AbstractTest {
      * @throws Exception
      */
     @Test
+    @Order(30)
     void testExceptionApiCheck() throws Exception {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 1; i <= 6; i++) {
@@ -129,7 +135,7 @@ public class ExceptionApiTest extends AbstractTest {
         }
 
         // 接口监控切面异步处理，此处等待1秒钟
-        TimeUnit.SECONDS.sleep(1);
+        TimeUnit.SECONDS.sleep(2);
 
         // 失败率倒叙测试
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
@@ -150,6 +156,7 @@ public class ExceptionApiTest extends AbstractTest {
      * @see ApiMonitor
      */
     @Test
+    @Order(40)
     void testApiMonitor() throws InterruptedException {
         ProductService productService = applicationContext.getBean(ProductService.class);
         int[] ids = {5, 5, 1};

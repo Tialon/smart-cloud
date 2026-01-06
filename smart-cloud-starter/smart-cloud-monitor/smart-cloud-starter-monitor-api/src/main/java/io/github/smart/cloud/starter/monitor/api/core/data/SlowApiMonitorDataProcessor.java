@@ -24,12 +24,14 @@ import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties
 import io.github.smart.cloud.starter.monitor.api.properties.SlowApiMonitorProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 慢接口监控数据处理器
