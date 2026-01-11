@@ -20,6 +20,7 @@ import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiRequestSummaryDTO;
 import io.github.smart.cloud.starter.monitor.api.enums.ApiExceptionRemindType;
+import io.github.smart.cloud.starter.monitor.api.enums.DefaultRemindExceptionType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorAlertEvent;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
@@ -30,14 +31,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.CollectionUtils;
-import sun.security.provider.certpath.SunCertPathBuilderException;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.cert.CertPathValidatorException;
-import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
 import java.util.*;
 
 /**
@@ -228,23 +225,10 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
      */
     private Set<String> buildDefaultNeedAlertExceptionClassNames() {
         Set<String> defaultNeedAlertExceptionClassNames = new HashSet<>(32);
-        defaultNeedAlertExceptionClassNames.add(SQLException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(SQLTimeoutException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(NumberFormatException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(ConcurrentModificationException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(NullPointerException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(IndexOutOfBoundsException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(ArrayIndexOutOfBoundsException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(StringIndexOutOfBoundsException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(ArrayStoreException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(ClassCastException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(ClassNotFoundException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(StackOverflowError.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(OutOfMemoryError.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(IllegalMonitorStateException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(CertPathValidatorException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(SunCertPathBuilderException.class.getSimpleName());
-        defaultNeedAlertExceptionClassNames.add(NoSuchElementException.class.getSimpleName());
+        DefaultRemindExceptionType[] defaultRemindExceptionTypes = DefaultRemindExceptionType.values();
+        for (DefaultRemindExceptionType remindExceptionType : defaultRemindExceptionTypes) {
+            defaultNeedAlertExceptionClassNames.add(remindExceptionType.getName());
+        }
         return defaultNeedAlertExceptionClassNames;
     }
 
