@@ -16,6 +16,7 @@
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,6 +32,8 @@ public abstract class AbstractTest {
     protected MockMvc mockMvc;
     @Autowired
     protected ApplicationContext applicationContext;
+    @Autowired
+    private ApiMonitorCacheManager apiMonitorCacheManager;
 
     @BeforeEach
     public void initMock() {
@@ -44,8 +47,11 @@ public abstract class AbstractTest {
 
         mockMvc = MockMvcBuilders.webAppContextSetup((WebApplicationContext) applicationContext).addFilters(filters).build();
 
-        ApiMonitorCacheManager apiMonitorCacheManager = applicationContext.getBean(ApiMonitorCacheManager.class);
         apiMonitorCacheManager.clearCache();
     }
 
+    @AfterEach
+    public void clean() throws InterruptedException {
+        apiMonitorCacheManager.getApiRequestSummaryCache().clear();
+    }
 }

@@ -83,10 +83,10 @@ public class ApiMonitorPointCut extends StaticMethodMatcherPointcut {
                 isPointCutSupportMappingAnnotation
                         // 1.类
                         // 1.1web接口
-                        && (c != null && (AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), CONTROLLER_ANNOTATION_NAME)
+                        && (AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), CONTROLLER_ANNOTATION_NAME)
                         || AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), REST_CONTROLLER_ANNOTATION_NAME)
                         // 1.2openfeign接口
-                        || AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), FEIGN_CLIENT_ANNOTATION_NAME)))
+                        || AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), FEIGN_CLIENT_ANNOTATION_NAME))
                         // 2.方法
                         && (AnnotatedElementUtils.isAnnotated(method, REQUEST_MAPPING_ANNOTATION_NAME)
                         || AnnotatedElementUtils.isAnnotated(method, GET_MAPPING_ANNOTATION_NAME)

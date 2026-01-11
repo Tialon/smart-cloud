@@ -18,7 +18,6 @@ package io.github.smart.cloud.starter.monitor.api.test.cases;
 import io.github.smart.cloud.exception.ServerException;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
-import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
 import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
@@ -27,8 +26,6 @@ import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.excepti
 import io.github.smart.cloud.starter.monitor.api.test.prepare.openfeign.IOrderFeign;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.service.ProductService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,14 +46,6 @@ public class ExceptionApiTest extends AbstractTest {
     private ExceptionApiChecker exceptionApiChecker;
     @Autowired
     private ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor;
-    @Autowired
-    private ApiMonitorCacheManager apiMonitorCacheManager;
-
-    @BeforeEach
-    @AfterEach
-    public void clean() {
-        apiMonitorCacheManager.getApiRequestSummaryCache().clear();
-    }
 
     /**
      * 特定异常监控
@@ -73,8 +62,8 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        // 接口监控切面异步处理，此处等待1秒钟
-        TimeUnit.SECONDS.sleep(1);
+        // 接口监控切面异步处理，此处等待一会
+        TimeUnit.SECONDS.sleep(3);
 
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
@@ -93,8 +82,8 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        // 接口监控切面异步处理，此处等待1秒钟
-        TimeUnit.SECONDS.sleep(1);
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
 
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
@@ -134,8 +123,8 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        // 接口监控切面异步处理，此处等待1秒钟
-        TimeUnit.SECONDS.sleep(2);
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
 
         // 失败率倒叙测试
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
@@ -167,8 +156,8 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        // 接口监控切面异步处理，此处等待1秒钟
-        TimeUnit.SECONDS.sleep(1);
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
 
         List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);

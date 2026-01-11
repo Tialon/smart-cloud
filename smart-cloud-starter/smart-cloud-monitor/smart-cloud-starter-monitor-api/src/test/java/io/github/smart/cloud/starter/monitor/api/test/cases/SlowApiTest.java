@@ -15,7 +15,6 @@
  */
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
-import io.github.smart.cloud.starter.monitor.api.core.check.SlowApiChecker;
 import io.github.smart.cloud.starter.monitor.api.core.data.SlowApiMonitorDataProcessor;
 import io.github.smart.cloud.starter.monitor.api.dto.ApiSlowAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
@@ -34,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SlowApiTest extends AbstractTest {
 
-    @Autowired
-    private SlowApiChecker slowApiChecker;
     @Autowired
     private SlowApiMonitorDataProcessor slowApiMonitorRepository;
 
@@ -60,8 +57,8 @@ public class SlowApiTest extends AbstractTest {
         productController.update(3);
         productController.update(5);
 
-        // 接口监控切面异步处理，此处等待2秒钟
-        TimeUnit.SECONDS.sleep(2);
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
         List<ApiSlowAlertDTO> apiSlowAlerts = slowApiMonitorRepository.getAlertRecords();
         Assertions.assertThat(apiSlowAlerts).hasSize(2);
     }
