@@ -52,7 +52,7 @@ public class ExceptionApiTest extends AbstractTest {
      */
     @Test
     @Order(10)
-    void testNullPointerException() throws InterruptedException {
+    synchronized void testNullPointerException() throws InterruptedException {
         NullPointExceptionController nullPointExceptionController = applicationContext.getBean(NullPointExceptionController.class);
         for (int i = 0; i < 100; i++) {
             try {
@@ -72,7 +72,7 @@ public class ExceptionApiTest extends AbstractTest {
 
     @Test
     @Order(20)
-    void testErrorCode() throws InterruptedException {
+    synchronized void testErrorCode() throws InterruptedException {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 0; i < 100; i++) {
             try {
@@ -97,7 +97,7 @@ public class ExceptionApiTest extends AbstractTest {
      */
     @Test
     @Order(30)
-    void testExceptionApiCheck() throws Exception {
+    synchronized void testExceptionApiCheck() throws Exception {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 1; i <= 6; i++) {
             try {
@@ -146,7 +146,7 @@ public class ExceptionApiTest extends AbstractTest {
      */
     @Test
     @Order(40)
-    void testApiMonitor() throws InterruptedException {
+    synchronized void testApiMonitor() throws InterruptedException {
         ProductService productService = applicationContext.getBean(ProductService.class);
         int[] ids = {5, 5, 1};
         for (int id : ids) {
