@@ -17,6 +17,7 @@ package io.github.smart.cloud.starter.monitor.api.listener.monitor;
 
 import io.github.smart.cloud.starter.monitor.api.constants.OrderConstants;
 import io.github.smart.cloud.starter.monitor.api.core.IApiMonitorDataProcessor;
+import io.github.smart.cloud.starter.monitor.api.enums.MonitorType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
@@ -35,7 +36,10 @@ public class ExceptionApiMonitorListener implements ApplicationListener<ApiMonit
 
     @Override
     public void onApplicationEvent(ApiMonitorEvent event) {
-        exceptionApiMonitorRepository.process(event);
+        MonitorType monitorType = event.getMonitorType();
+        if (MonitorType.ALL == monitorType || MonitorType.SLOW == monitorType) {
+            exceptionApiMonitorRepository.process(event);
+        }
     }
 
     @Override

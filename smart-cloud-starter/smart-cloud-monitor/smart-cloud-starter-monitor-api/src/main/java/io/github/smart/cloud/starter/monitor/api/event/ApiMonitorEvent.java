@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.starter.monitor.api.event;
 
+import io.github.smart.cloud.starter.monitor.api.enums.MonitorType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
@@ -45,6 +46,10 @@ public class ApiMonitorEvent extends ApplicationEvent {
      * 链路号
      */
     private String traceId;
+    /**
+     * 监控类型
+     */
+    private MonitorType monitorType;
 
     public ApiMonitorEvent(Object source) {
         super(source);

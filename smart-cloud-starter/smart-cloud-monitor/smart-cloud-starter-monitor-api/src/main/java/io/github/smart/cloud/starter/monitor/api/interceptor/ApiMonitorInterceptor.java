@@ -20,6 +20,7 @@ import brave.propagation.CurrentTraceContext;
 import brave.propagation.TraceContext;
 import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import io.github.smart.cloud.starter.monitor.api.core.data.ApiMonitorCacheManager;
+import io.github.smart.cloud.starter.monitor.api.enums.MonitorType;
 import io.github.smart.cloud.starter.monitor.api.event.ApiMonitorEvent;
 import io.github.smart.cloud.starter.monitor.api.properties.ApiMonitorProperties;
 import io.github.smart.cloud.utility.concurrent.NamedThreadFactory;
@@ -34,7 +35,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 接口健康监控
@@ -57,7 +61,6 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         long startTime = System.currentTimeMillis();
-        String apiName = getApiName(invocation.getMethod());
         Object result = null;
         Throwable throwable = null;
         try {
@@ -73,11 +76,16 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
                         .map(TraceContext::traceIdString)
                         .orElse(null);
 
+                Method method = invocation.getMethod();
+                ApiMonitor apiMonitor = AnnotationUtils.findAnnotation(method, ApiMonitor.class);
+                String apiName = getApiName(method, apiMonitor);
+
                 ApiMonitorEvent apiMonitorEvent = new ApiMonitorEvent(this);
                 apiMonitorEvent.setApiName(apiName);
                 apiMonitorEvent.setCost(System.currentTimeMillis() - startTime);
                 apiMonitorEvent.setThrowable(throwable);
                 apiMonitorEvent.setTraceId(traceId);
+                apiMonitorEvent.setMonitorType(apiMonitor == null ? MonitorType.ALL : apiMonitor.monitorType());
                 if (!apiMonitorEventQueue.offer(apiMonitorEvent)) {
                     log.warn("ApiMonitorEvent queue is full, discard event: {}", apiMonitorEvent);
                 }
@@ -118,11 +126,11 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
      * 获取类标志符
      *
      * @param method
+     * @param apiMonitor
      * @return
      */
-    private String getApiName(Method method) {
+    private String getApiName(Method method, ApiMonitor apiMonitor) {
         String methodName = method.getName();
-        ApiMonitor apiMonitor = AnnotationUtils.findAnnotation(method, ApiMonitor.class);
         if (apiMonitor != null && StringUtils.isNotBlank(apiMonitor.apiName())) {
             methodName = apiMonitor.apiName();
         }

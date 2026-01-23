@@ -13,36 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.monitor.api.annotation;
-
-import io.github.smart.cloud.starter.monitor.api.enums.MonitorType;
-
-import java.lang.annotation.*;
+package io.github.smart.cloud.starter.monitor.api.enums;
 
 /**
- * 接口（异常接口、慢接口）监控注解
+ * 监控类型
  *
- * @author collin
- * @date 2024-04-28
+ * @author collin.li
+ * @date 2026-01-23
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ApiMonitor {
+public enum MonitorType {
 
     /**
-     * 指定接口名称
-     * <p>适用于url路径中带有参数的接口</p>
-     *
-     * @return
+     * 只监控接口异常
      */
-    String apiName() default "";
-
+    EXCEPTION,
     /**
-     * 监控类型
-     *
-     * @return
+     * 只监控慢接口
      */
-    MonitorType monitorType() default MonitorType.ALL;
+    SLOW,
+    /**
+     * 异常接口、慢接口都监控
+     */
+    ALL;
 
 }
