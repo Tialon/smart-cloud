@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.intercept;
 
-import io.github.smart.cloud.design.pattern.utility.chain.HandlerResult;
-import io.github.smart.cloud.design.pattern.utility.chain.OrderedHandler;
+import io.github.smart.cloud.starter.trace.debug.enums.EnumTraceDebugType;
+import io.github.smart.cloud.starter.trace.debug.util.TraceTypeContext;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 
 /**
+ * 请求跟踪切面
+ *
  * @author collin.li
- * @date 2025-10-11
+ * @date 2025-12-03
  */
-public class EmailCheckHandler implements OrderedHandler<ChainContext> {
+public class TraceDebugInterceptor implements MethodInterceptor {
 
     @Override
-    public HandlerResult handle(ChainContext context) {
-        User u = context.getUser();
-        if (!u.getEmail().contains("@")) {
-            return HandlerResult.fail("邮箱格式不正确");
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        EnumTraceDebugType traceType = TraceTypeContext.get();
+        if (traceType == null) {
+            return invocation.proceed();
         }
-        return HandlerResult.success();
+
+        return traceType.apply(invocation);
     }
 
-    @Override
-    public int getOrder() {
-        return 1;
-    }
 }

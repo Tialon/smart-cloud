@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.constants;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.github.smart.cloud.starter.trace.debug.enums.EnumTraceDebugType;
+import io.github.smart.cloud.starter.trace.debug.filter.TraceDebugHttpHeaderArgsParseFilter;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * 链路调试常量
+ *
+ * @author collin.li
+ * @date 2026-02-27
+ */
+public class TraceDebugConstants {
 
-@Getter
-@Setter
-public class User {
-
-    private String username;
-    private String email;
-    private String password;
+    /**
+     * 方法耗时打印日志开关请求头
+     *
+     * @see TraceDebugHttpHeaderArgsParseFilter
+     * @see EnumTraceDebugType
+     */
+    public static final String TRACE_DEBUG_TYPE = "smart-trace-debug-type";
 
 }

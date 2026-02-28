@@ -105,6 +105,7 @@
         <logstash-logback-encoder>8.0</logstash-logback-encoder>
         <bcpkix-jdk15on>1.68</bcpkix-jdk15on>
         <spotbugs-annotations>4.8.6</spotbugs-annotations>
+        <transmittable-thread-local>2.14.5</transmittable-thread-local>
     </properties>
 
     <dependencyManagement>
@@ -300,6 +301,12 @@
             <dependency>
                 <groupId>io.github.smart-cloud</groupId>
                 <artifactId>smart-cloud-starter-static-discovery</artifactId>
+                <version>${smart-cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.smart-cloud</groupId>
+                <artifactId>smart-cloud-starter-trace-debug</artifactId>
                 <version>${smart-cloud.version}</version>
             </dependency>
 
@@ -579,6 +586,12 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
                 <version>${spotbugs-annotations}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

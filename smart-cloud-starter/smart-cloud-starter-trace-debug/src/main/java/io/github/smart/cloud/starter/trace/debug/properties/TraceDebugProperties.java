@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.properties;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * 方法链路日志打印配置
+ *
+ * @author collin.li
+ * @date 2025-12-03
+ */
 @Getter
 @Setter
-public class User {
+@ToString
+public class TraceDebugProperties {
 
-    private String username;
-    private String email;
-    private String password;
+    /**
+     * 打印方法耗时开关
+     */
+    private boolean open = false;
 
 }

@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.test;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.jupiter.api.Disabled;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Getter
-@Setter
-public class User {
-
-    private String username;
-    private String email;
-    private String password;
+@Disabled
+@RunWith(JUnitPlatform.class)
+@SelectPackages({"io.github.smart.cloud.starter.trace.debug.test.cases"})
+public class SuiteTest {
 
 }

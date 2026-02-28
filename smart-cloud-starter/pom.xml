@@ -47,8 +47,9 @@
 		<module>smart-cloud-starter-rate-limit</module>
 		<module>smart-cloud-starter-redis</module>
 		<module>smart-cloud-starter-static-discovery</module>
+		<module>smart-cloud-starter-trace-debug</module>
 		<module>smart-cloud-starter-web</module>
-    </modules>
+	</modules>
 
 	<dependencies>
 		<dependency>

@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.test.prepare.controller;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+@RestController
+@RequestMapping("order")
+public class OrderController {
 
-@Getter
-@Setter
-public class User {
-
-    private String username;
-    private String email;
-    private String password;
+    @GetMapping("query")
+    public ResponseEntity<String> query(int id) {
+        return ResponseEntity.ok("success1");
+    }
 
 }

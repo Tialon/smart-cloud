@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.test.prepare;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-import java.util.ArrayList;
-import java.util.List;
+@EnableFeignClients
+@SpringBootApplication
+public class App {
 
-@Getter
-@Setter
-public class User {
-
-    private String username;
-    private String email;
-    private String password;
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
 
 }

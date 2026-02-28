@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.design.pattern.utility.test.chain.impl;
+package io.github.smart.cloud.starter.trace.debug.annotation;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * 链路调试注解
+ *
+ * @author collin.li
+ * @date 2026-02-27
+ */
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface TraceDebug {
 
-@Getter
-@Setter
-public class User {
-
-    private String username;
-    private String email;
-    private String password;
+    /**
+     * 是否启用
+     *
+     * @return
+     */
+    boolean enable() default true;
 
 }
