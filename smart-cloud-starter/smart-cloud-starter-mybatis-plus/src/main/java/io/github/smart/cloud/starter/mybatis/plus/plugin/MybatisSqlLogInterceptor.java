@@ -15,7 +15,6 @@
  */
 package io.github.smart.cloud.starter.mybatis.plus.plugin;
 
-import io.github.smart.cloud.constants.LogLevel;
 import io.github.smart.cloud.mask.util.LogUtil;
 import io.github.smart.cloud.mask.util.MaskUtil;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
@@ -138,13 +137,8 @@ public class MybatisSqlLogInterceptor implements Interceptor {
                 .append(separator)
                 .append(MaskUtil.mask(returnValue));
 
-        String logLevel = smartProperties.getMybatis().getLogLevel();
-        if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
-            log.debug(LogUtil.truncate(str.toString()));
-        } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(LogUtil.truncate(str.toString()));
-        } else if (LogLevel.WARN.equals(logLevel)) {
-            log.warn(LogUtil.truncate(str.toString()));
         }
     }
 

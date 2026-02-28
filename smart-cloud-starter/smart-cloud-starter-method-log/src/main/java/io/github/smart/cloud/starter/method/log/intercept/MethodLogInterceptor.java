@@ -64,12 +64,12 @@ public class MethodLogInterceptor implements MethodInterceptor {
                     log.warn(SLOW_LOG_PATTERN, getTag(invocation.getMethod()), cost, LogUtil.truncate(MaskUtil.mask(invocation.getArguments())), LogUtil.truncate(mastResult));
                 } else {
                     MethodLog methodLog = invocation.getMethod().getAnnotation(MethodLog.class);
-                    String logLevel = LogLevel.getFinalLevel(methodLog.level(), methodLogProperties.getLevel());
-                    if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
+                    LogLevel logLevel = methodLog.level();
+                    if (LogLevel.DEBUG == logLevel && log.isDebugEnabled()) {
                         log.debug(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result));
-                    } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
+                    } else if (LogLevel.INFO == logLevel && log.isInfoEnabled()) {
                         log.info(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result));
-                    } else if (LogLevel.WARN.equals(logLevel)) {
+                    } else if (LogLevel.WARN == logLevel) {
                         log.warn(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result));
                     }
                 }

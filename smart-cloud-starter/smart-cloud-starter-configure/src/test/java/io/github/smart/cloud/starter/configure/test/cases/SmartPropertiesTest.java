@@ -56,19 +56,16 @@ class SmartPropertiesTest {
         // log
         Assertions.assertThat(smartProperties.getApiLog()).isNotNull();
         Assertions.assertThat(smartProperties.getApiLog().isEnable()).isTrue();
-        Assertions.assertThat(smartProperties.getApiLog().getLevel()).isEqualTo(LogLevel.INFO);
         Assertions.assertThat(smartProperties.getApiLog().getSlowApiMinCost()).isEqualTo(4000);
 
         Assertions.assertThat(smartProperties.getFeign()).isNotNull();
         Assertions.assertThat(smartProperties.getFeign().getLog()).isNotNull();
         Assertions.assertThat(smartProperties.getFeign().getLog().isEnable()).isTrue();
-        Assertions.assertThat(smartProperties.getFeign().getLog().getLevel()).isEqualTo(LogLevel.WARN);
         Assertions.assertThat(smartProperties.getFeign().getLog().getSlowApiMinCost()).isEqualTo(2500);
         Assertions.assertThat(smartProperties.getFeign().getTransferHeaderNames()).contains("smart-user");
 
         Assertions.assertThat(smartProperties.getMethodLog()).isNotNull();
         Assertions.assertThat(smartProperties.getMethodLog().isEnable()).isTrue();
-        Assertions.assertThat(smartProperties.getMethodLog().getLevel()).isEqualTo(LogLevel.DEBUG);
         Assertions.assertThat(smartProperties.getMethodLog().getSlowApiMinCost()).isEqualTo(3100);
 
         // xxl-job
@@ -96,12 +93,7 @@ class SmartPropertiesTest {
         // mybatis
         Assertions.assertThat(smartProperties.getMybatis()).isNotNull();
         Assertions.assertThat(smartProperties.getMybatis().isEnable()).isTrue();
-        Assertions.assertThat(smartProperties.getMybatis().getLogLevel()).isEqualTo("warn");
         Assertions.assertThat(smartProperties.getMybatis().getCryptKeys()).isNotEmpty();
-
-        // rabbitmq
-        Assertions.assertThat(smartProperties.getRabbitmq()).isNotNull();
-        Assertions.assertThat(smartProperties.getRabbitmq().getLevel()).isEqualTo("info");
     }
 
 }

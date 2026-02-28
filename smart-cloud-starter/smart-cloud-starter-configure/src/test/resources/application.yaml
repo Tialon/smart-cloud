@@ -1,17 +1,14 @@
 smart:
   apiLog:
     enable: true
-    level: info
     slow-api-min-cost: 4000
   feign:
     log:
       enable: true
-      level: warn
       slow-api-min-cost: 2500
     transferHeaderNames: smart-user
   methodLog:
     enable: true
-    level: debug
     slow-api-min-cost: 3100
   xxlJob:
     admin-addresses: 192.168.1.15
@@ -32,9 +29,6 @@ smart:
       - yyyy.submit
   mybatis:
     enable: true
-    logLevel: warn
     cryptKeys:
       'io.github.smart.cloud.starter.mybatis.plus.common.CryptField': 123456abc
       'io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.repository.DescCryptField': 123xx456
-  rabbitmq:
-    level: info

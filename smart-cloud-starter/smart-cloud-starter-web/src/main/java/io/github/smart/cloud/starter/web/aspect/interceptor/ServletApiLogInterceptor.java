@@ -94,12 +94,12 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
                     Set<String> ignoreUrls = apiLogProperties.getIgnoreUrls();
                     if (ignoreUrls == null || !ignoreUrls.contains(WebServletUtil.getHttpServletRequest().getPathInfo())) {
                         ApiLog apiLog = invocation.getMethod().getAnnotation(ApiLog.class);
-                        String logLevel = LogLevel.getFinalLevel((apiLog == null ? null : apiLog.level()), apiLogProperties.getLevel());
-                        if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
+                        LogLevel logLevel = (apiLog == null) ? LogLevel.INFO : apiLog.level();
+                        if (LogLevel.DEBUG == logLevel && log.isDebugEnabled()) {
                             log.debug(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
-                        } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
+                        } else if (LogLevel.INFO == logLevel && log.isInfoEnabled()) {
                             log.info(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
-                        } else if (LogLevel.WARN.equals(logLevel) && log.isWarnEnabled()) {
+                        } else if (LogLevel.WARN == logLevel && log.isWarnEnabled()) {
                             log.warn(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
                         }
                     }
