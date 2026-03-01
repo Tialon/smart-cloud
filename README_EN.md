@@ -42,7 +42,6 @@ smart-cloud
 ├──smart-common-web -- web module public processing
 ├──smart-constants -- constant module
 ├──smart-exception -- exception module
-├──smart-mask -- Sensitive data obfuscation
 ├──smart-design-pattern-utility -- Design-pattern tools
 ├──smart-utility -- Tools
 ├──smart-test -- test package

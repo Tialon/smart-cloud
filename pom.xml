@@ -65,7 +65,6 @@
         <module>smart-constants</module>
         <module>smart-design-pattern-utility</module>
         <module>smart-exception</module>
-        <module>smart-mask</module>
         <module>smart-test</module>
         <module>smart-utility</module>
     </modules>
@@ -127,12 +126,6 @@
             <dependency>
                 <groupId>io.github.smart-cloud</groupId>
                 <artifactId>smart-user-context</artifactId>
-                <version>${smart-cloud.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.smart-cloud</groupId>
-                <artifactId>smart-mask</artifactId>
                 <version>${smart-cloud.version}</version>
             </dependency>
 
