@@ -53,7 +53,6 @@ public class EntityRespVoSourceFileGenerateStrategy extends AbstractSourceFileGe
     @Override
     protected BaseRespBO buildTemplateParams(TemplateBuildParamContext context) {
         TableMetaDataBO tableMetaData = context.getTableMetaData();
-        Map<String, Map<String, String>> mask = context.getCode().getMask();
         List<ColumnMetaDataBO> columnMetaDatas = context.getColumnMetaDatas();
 
         BaseRespBO baseResp = new BaseRespBO();
@@ -72,7 +71,6 @@ public class EntityRespVoSourceFileGenerateStrategy extends AbstractSourceFileGe
             FieldAttributeBO entityAttribute = new FieldAttributeBO();
             entityAttribute.setName(TableUtil.getAttibuteName(columnMetaData.getName()));
             entityAttribute.setComment(columnMetaData.getComment());
-            entityAttribute.setMaskRule(CodeGenerateUtil.getMaskRule(mask, tableMetaData.getName(), columnMetaData.getName()));
             entityAttribute.setJavaType(JavaTypeUtil.getByJdbcType(columnMetaData.getJdbcType(), columnMetaData.getLength()));
 
             attributes.add(entityAttribute);

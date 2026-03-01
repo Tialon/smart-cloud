@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.logback.test.prepare;
+package io.github.smart.cloud.starter.log.mask.test;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.junit.jupiter.api.Disabled;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectPackages;
+import org.junit.runner.RunWith;
 
-@SpringBootApplication
-public class Application {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+@Disabled
+@RunWith(JUnitPlatform.class)
+@SelectPackages("io.github.smart.cloud.starter.log.mask.test.cases")
+public class SuiteTest {
 
 }

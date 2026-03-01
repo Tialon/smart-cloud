@@ -101,7 +101,6 @@ public class CodeGenerateUtil {
     }
 
     public static Set<String> buildEntityImportPackages(TemplateBuildParamContext context) {
-        Map<String, Map<String, String>> mask = context.getCode().getMask();
         TableMetaDataBO tableMetaData = context.getTableMetaData();
         Set<String> encryptFields = TableUtil.getEncryptFields(tableMetaData.getName(), context.getCode());
 
@@ -112,13 +111,6 @@ public class CodeGenerateUtil {
             }
             if (columnMetaData.getPrimaryKey()) {
                 importPackages.add(ClassConstants.TABLEID_PACKAGE);
-            }
-
-            // mask信息
-            String maskRule = getMaskRule(mask, tableMetaData.getName(), columnMetaData.getName());
-            if (maskRule != null && !importPackages.contains(Config.MaskPackage.MASK_RULE)) {
-                importPackages.add(Config.MaskPackage.MASK_RULE);
-                importPackages.add(Config.MaskPackage.MASK_LOG);
             }
 
             // 加密字段
@@ -132,17 +124,6 @@ public class CodeGenerateUtil {
             }
         }
         return importPackages;
-    }
-
-    public static String getMaskRule(Map<String, Map<String, String>> mask, String tableName, String column) {
-        if (mask == null) {
-            return null;
-        }
-        Map<String, String> maskRuleMap = mask.get(tableName);
-        if (maskRuleMap == null) {
-            return null;
-        }
-        return maskRuleMap.get(column);
     }
 
 }

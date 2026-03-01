@@ -43,5 +43,9 @@ public class MethodLogProperties implements Serializable {
      * 慢接口时间（单位：毫秒，默认3000毫秒）
      */
     private int slowApiMinCost = 3000;
+    /**
+     * 切面日志打印最大长度
+     */
+    private Integer logMaxLength;
 
 }

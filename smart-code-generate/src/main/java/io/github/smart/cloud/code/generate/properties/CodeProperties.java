@@ -45,10 +45,6 @@ public class CodeProperties {
      */
     private String specifiedTables;
     /**
-     * 表字段脱敏规则
-     */
-    private Map<String, Map<String, String>> mask;
-    /**
      * 表字段加密配置
      */
     private Map<String, Set<String>> encrypts;

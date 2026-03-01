@@ -19,15 +19,16 @@ import io.github.smart.cloud.common.web.pojo.LogAspectDO;
 import io.github.smart.cloud.common.web.util.WebServletUtil;
 import io.github.smart.cloud.constants.LogLevel;
 import io.github.smart.cloud.constants.OrderConstant;
-import io.github.smart.cloud.mask.util.LogUtil;
 import io.github.smart.cloud.starter.configure.properties.ApiLogProperties;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
 import io.github.smart.cloud.starter.web.annotation.ApiLog;
+import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.validation.DataBinder;
@@ -50,6 +51,10 @@ import java.util.stream.Stream;
 public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
 
     private final SmartProperties smartProperties;
+    /**
+     * 默认日志最大长度
+     */
+    private static final int DEFAULT_LOG_MAX_LENGTH = 2048;
     /**
      * 慢日志
      */
@@ -81,7 +86,7 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
             result = invocation.proceed();
         } catch (Exception e) {
             long cost = System.currentTimeMillis() - startTime;
-            log.error(LogUtil.truncate(ERROR_LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)), e);
+            log.error(ERROR_LOG_PATTERN, truncate(buildLogAspectDO(invocation.getArguments(), result, cost), apiLogProperties.getLogMaxLength()), e);
             throw e;
         }
 
@@ -89,18 +94,18 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
             if (log.isWarnEnabled()) {
                 long cost = System.currentTimeMillis() - startTime;
                 if (cost >= apiLogProperties.getSlowApiMinCost()) {
-                    log.warn(LogUtil.truncate(SLOW_LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                    log.warn(SLOW_LOG_PATTERN, truncate(buildLogAspectDO(invocation.getArguments(), result, cost), apiLogProperties.getLogMaxLength()));
                 } else {
                     Set<String> ignoreUrls = apiLogProperties.getIgnoreUrls();
                     if (ignoreUrls == null || !ignoreUrls.contains(WebServletUtil.getHttpServletRequest().getPathInfo())) {
                         ApiLog apiLog = invocation.getMethod().getAnnotation(ApiLog.class);
                         LogLevel logLevel = (apiLog == null) ? LogLevel.INFO : apiLog.level();
                         if (LogLevel.DEBUG == logLevel && log.isDebugEnabled()) {
-                            log.debug(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                            log.debug(LOG_PATTERN, truncate(buildLogAspectDO(invocation.getArguments(), result, cost), apiLogProperties.getLogMaxLength()));
                         } else if (LogLevel.INFO == logLevel && log.isInfoEnabled()) {
-                            log.info(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                            log.info(LOG_PATTERN, truncate(buildLogAspectDO(invocation.getArguments(), result, cost), apiLogProperties.getLogMaxLength()));
                         } else if (LogLevel.WARN == logLevel && log.isWarnEnabled()) {
-                            log.warn(LogUtil.truncate(LOG_PATTERN, apiLogProperties.getLogMaxLength(), buildLogAspectDO(invocation.getArguments(), result, cost)));
+                            log.warn(LOG_PATTERN, truncate(buildLogAspectDO(invocation.getArguments(), result, cost), apiLogProperties.getLogMaxLength()));
                         }
                     }
                 }
@@ -110,6 +115,19 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
         }
 
         return result;
+    }
+
+    /**
+     * 日志超长截取
+     *
+     * @param logAspectDO
+     * @param logMaxLength
+     * @return
+     */
+    private String truncate(LogAspectDO logAspectDO, Integer logMaxLength) {
+        logMaxLength = logMaxLength == null ? DEFAULT_LOG_MAX_LENGTH : logMaxLength;
+        String content = JacksonUtil.toJson(logAspectDO);
+        return StringUtils.truncate(content, logMaxLength);
     }
 
     private LogAspectDO buildLogAspectDO(Object[] args, Object result, long cost) {

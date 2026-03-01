@@ -15,9 +15,6 @@
  */
 package io.github.smart.cloud.code.generate.config;
 
-import io.github.smart.cloud.mask.MaskLog;
-import io.github.smart.cloud.mask.MaskRule;
-
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -68,22 +65,5 @@ public class Config {
      * 多个表用隔开的分隔符
      */
     public static final String TABLES_SEPARATOR = ",";
-
-    /**
-     * mask相关包名
-     */
-    public static class MaskPackage {
-        /**
-         * MaskRule包名
-         */
-        public static final String MASK_RULE = MaskRule.class.getTypeName();
-        /**
-         * MaskLog包名
-         */
-        public static final String MASK_LOG = MaskLog.class.getTypeName();
-
-        private MaskPackage() {
-        }
-    }
 
 }

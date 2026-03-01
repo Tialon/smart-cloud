@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.smart.cloud.starter.log4j2.test.unit;
+package io.github.smart.cloud.starter.log4j2.test.cases;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

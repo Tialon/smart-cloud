@@ -55,7 +55,6 @@ public class EntitySourceFileGenerateStrategy extends AbstractSourceFileGenerate
     @Override
     protected EntityBO buildTemplateParams(TemplateBuildParamContext context) {
         TableMetaDataBO tableMetaData = context.getTableMetaData();
-        Map<String, Map<String, String>> mask = context.getCode().getMask();
         Set<String> encryptFields = TableUtil.getEncryptFields(tableMetaData.getName(), context.getCode());
 
 
@@ -80,9 +79,6 @@ public class EntitySourceFileGenerateStrategy extends AbstractSourceFileGenerate
 
             // 主键
             entityAttribute.setPrimaryKey(columnMetaData.getPrimaryKey());
-
-            // mask信息
-            entityAttribute.setMaskRule(CodeGenerateUtil.getMaskRule(mask, tableMetaData.getName(), columnMetaData.getName()));
 
             // 加密字段
             if (encryptFields.contains(columnMetaData.getName())) {

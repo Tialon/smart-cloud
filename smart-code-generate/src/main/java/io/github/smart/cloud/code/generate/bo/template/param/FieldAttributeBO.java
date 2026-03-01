@@ -50,9 +50,5 @@ public class FieldAttributeBO {
      * 备注
      */
     private String comment;
-    /**
-     * mask规则
-     */
-    private String maskRule;
 
 }

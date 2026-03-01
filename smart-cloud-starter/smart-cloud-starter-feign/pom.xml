@@ -37,11 +37,6 @@
 
 		<dependency>
 			<groupId>io.github.smart-cloud</groupId>
-			<artifactId>smart-mask</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.github.smart-cloud</groupId>
 			<artifactId>smart-common-web</artifactId>
 		</dependency>
 

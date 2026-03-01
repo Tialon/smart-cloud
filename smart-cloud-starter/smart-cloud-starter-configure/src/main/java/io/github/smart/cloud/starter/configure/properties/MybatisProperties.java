@@ -40,6 +40,10 @@ public class MybatisProperties implements Serializable {
      * mybatis日志开关 （默认true）
      */
     private boolean enable = true;
+    /**
+     * 切面日志打印最大长度
+     */
+    private Integer logMaxLength;
 
     /**
      * 加解密密钥信息<加解密字段类全类名, 加解密秘钥>
