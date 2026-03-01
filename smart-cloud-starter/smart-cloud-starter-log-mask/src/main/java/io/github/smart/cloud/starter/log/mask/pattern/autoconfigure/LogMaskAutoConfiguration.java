@@ -27,10 +27,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+/**
+ * 日志脱敏自动配置类
+ *
+ * @author collin.li
+ * @date 2026-03-01
+ */
 @Configuration
 public class LogMaskAutoConfiguration {
 
-    // 设置高优先级，尽早初始化配置信息
     @Bean
     @RefreshScope
     @Order(Ordered.HIGHEST_PRECEDENCE)

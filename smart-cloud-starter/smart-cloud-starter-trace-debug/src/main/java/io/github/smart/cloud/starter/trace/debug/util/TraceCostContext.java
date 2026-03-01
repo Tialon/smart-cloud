@@ -19,6 +19,7 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -100,6 +101,7 @@ public class TraceCostContext {
 
     @Getter
     @Setter
+    @ToString
     static class CostSummaryDTO {
         /**
          * 方法名称
@@ -108,23 +110,23 @@ public class TraceCostContext {
         /**
          * 请求总数
          */
-        private int count;
+        private Integer count;
         /**
          * 最小耗时（单位：毫秒）
          */
-        private double minCost;
+        private Double minCost;
         /**
          * 最大耗时（单位：毫秒）
          */
-        private double maxCost;
+        private Double maxCost;
         /**
          * 平均耗时（单位：毫秒）
          */
-        private double averageCost;
+        private Double averageCost;
         /**
          * 总耗时（单位：毫秒）
          */
-        private double totalCost;
+        private Double totalCost;
     }
 
 }

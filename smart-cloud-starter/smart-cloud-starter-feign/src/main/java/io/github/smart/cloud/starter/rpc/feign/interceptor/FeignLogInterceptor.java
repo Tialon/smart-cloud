@@ -22,7 +22,7 @@ import io.github.smart.cloud.constants.OrderConstant;
 import io.github.smart.cloud.constants.SymbolConstant;
 import io.github.smart.cloud.starter.configure.properties.FeignLogProperties;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
-import io.github.smart.cloud.starter.rpc.feign.pojo.FeignLogAspectDO;
+import io.github.smart.cloud.starter.rpc.feign.pojo.FeignLogAspectDTO;
 import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,20 +86,20 @@ public class FeignLogInterceptor implements MethodInterceptor, RequestIntercepto
     /**
      * 日志超长截取
      *
-     * @param feignLogAspectDO
+     * @param feignLogAspectDTO
      * @param logMaxLength
      * @return
      */
-    private String truncate(FeignLogAspectDO feignLogAspectDO, Integer logMaxLength) {
+    private String truncate(FeignLogAspectDTO feignLogAspectDTO, Integer logMaxLength) {
         logMaxLength = logMaxLength == null ? DEFAULT_LOG_MAX_LENGTH : logMaxLength;
-        String content = JacksonUtil.toJson(feignLogAspectDO);
+        String content = JacksonUtil.toJson(feignLogAspectDTO);
         return StringUtils.truncate(content, logMaxLength);
     }
 
-    private FeignLogAspectDO buildFeignLogAspectDO(Method method, Object[] args, Object result, long cost) {
+    private FeignLogAspectDTO buildFeignLogAspectDO(Method method, Object[] args, Object result, long cost) {
         String classMethod = method.getDeclaringClass().getSimpleName() + SymbolConstant.DOT + method.getName();
 
-        FeignLogAspectDO logDO = new FeignLogAspectDO();
+        FeignLogAspectDTO logDO = new FeignLogAspectDTO();
         logDO.setClassMethod(classMethod);
         logDO.setParams(WebUtil.getRequestArgs(args));
         logDO.setResult(result);

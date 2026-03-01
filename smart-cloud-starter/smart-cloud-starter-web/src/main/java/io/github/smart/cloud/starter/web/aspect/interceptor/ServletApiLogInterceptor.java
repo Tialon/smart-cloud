@@ -15,7 +15,7 @@
  */
 package io.github.smart.cloud.starter.web.aspect.interceptor;
 
-import io.github.smart.cloud.common.web.pojo.LogAspectDO;
+import io.github.smart.cloud.common.web.pojo.LogAspectDTO;
 import io.github.smart.cloud.common.web.util.WebServletUtil;
 import io.github.smart.cloud.constants.LogLevel;
 import io.github.smart.cloud.constants.OrderConstant;
@@ -120,19 +120,19 @@ public class ServletApiLogInterceptor implements MethodInterceptor, Ordered {
     /**
      * 日志超长截取
      *
-     * @param logAspectDO
+     * @param logAspectDTO
      * @param logMaxLength
      * @return
      */
-    private String truncate(LogAspectDO logAspectDO, Integer logMaxLength) {
+    private String truncate(LogAspectDTO logAspectDTO, Integer logMaxLength) {
         logMaxLength = logMaxLength == null ? DEFAULT_LOG_MAX_LENGTH : logMaxLength;
-        String content = JacksonUtil.toJson(logAspectDO);
+        String content = JacksonUtil.toJson(logAspectDTO);
         return StringUtils.truncate(content, logMaxLength);
     }
 
-    private LogAspectDO buildLogAspectDO(Object[] args, Object result, long cost) {
+    private LogAspectDTO buildLogAspectDO(Object[] args, Object result, long cost) {
         HttpServletRequest request = WebServletUtil.getHttpServletRequest();
-        return LogAspectDO.builder()
+        return LogAspectDTO.builder()
                 .url(request.getPathInfo())
                 .method(request.getMethod())
                 .head(getHeaders(request))

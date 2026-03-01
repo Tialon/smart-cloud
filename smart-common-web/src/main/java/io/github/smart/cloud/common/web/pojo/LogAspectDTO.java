@@ -38,7 +38,7 @@ import java.io.Serializable;
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"url", "method", "cost", "head", "queryParams", "args", "result"})
-public class LogAspectDO implements Serializable {
+public class LogAspectDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -34,7 +34,7 @@ import java.io.Serializable;
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"classMethod", "cost", "params", "headers", "result"})
-public class FeignLogAspectDO implements Serializable {
+public class FeignLogAspectDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
