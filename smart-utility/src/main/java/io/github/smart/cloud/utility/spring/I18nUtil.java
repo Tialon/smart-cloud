@@ -30,7 +30,7 @@ import java.util.Locale;
  */
 public class I18nUtil implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static MessageSource messageSource;
+    private static volatile MessageSource messageSource;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {

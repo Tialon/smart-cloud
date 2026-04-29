@@ -42,7 +42,7 @@ public final class MqUtil {
      * 消费失败后是否能重试
      */
     @Setter
-    private static boolean enableRetryAfterConsumerFail = false;
+    private static volatile boolean enableRetryAfterConsumerFail = false;
 
     private MqUtil() {
     }
