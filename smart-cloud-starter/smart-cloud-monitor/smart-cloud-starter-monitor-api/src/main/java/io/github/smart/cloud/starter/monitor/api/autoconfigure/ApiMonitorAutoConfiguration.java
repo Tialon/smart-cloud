@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionApiMonitor
-public class ApiMonitorAutoConguration {
+public class ApiMonitorAutoConfiguration {
 
     @Bean
     @RefreshScope
