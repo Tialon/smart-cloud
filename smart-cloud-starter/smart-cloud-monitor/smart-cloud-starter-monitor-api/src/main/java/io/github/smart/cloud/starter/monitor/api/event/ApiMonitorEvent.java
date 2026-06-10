@@ -39,6 +39,10 @@ public class ApiMonitorEvent extends ApplicationEvent {
      */
     private long cost;
     /**
+     * 慢接口耗时阈值（单位：毫秒，-1表示未指定）
+     */
+    private long costThreshold = -1;
+    /**
      * 接口异常信息
      */
     private Throwable throwable;

@@ -56,7 +56,8 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 return;
             }
             long cost = event.getCost();
-            if (cost < slowApiMonitorProperties.getCostThreshold(apiName)) {
+            long costThreshold = event.getCostThreshold() > 0 ? event.getCostThreshold() : slowApiMonitorProperties.getCostThreshold(apiName);
+            if (cost < costThreshold) {
                 return;
             }
 

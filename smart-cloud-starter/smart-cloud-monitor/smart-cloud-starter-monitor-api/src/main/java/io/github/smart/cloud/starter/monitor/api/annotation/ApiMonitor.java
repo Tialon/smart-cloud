@@ -45,4 +45,14 @@ public @interface ApiMonitor {
      */
     MonitorType monitorType() default MonitorType.ALL;
 
+    /**
+     * 慢接口耗时阈值（单位：毫秒）
+     * <p>
+     * 默认值-1表示不指定，使用配置文件中的慢接口阈值配置
+     * </p>
+     *
+     * @return
+     */
+    long costThreshold() default -1;
+
 }

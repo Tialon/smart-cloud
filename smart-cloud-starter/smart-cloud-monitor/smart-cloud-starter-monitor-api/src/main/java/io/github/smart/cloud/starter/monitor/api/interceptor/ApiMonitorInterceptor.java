@@ -92,6 +92,9 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
                 apiMonitorEvent.setTraceId(traceId);
                 apiMonitorEvent.setSpanId(spanId);
                 apiMonitorEvent.setMonitorType(apiMonitor == null ? MonitorType.ALL : apiMonitor.monitorType());
+                if (apiMonitor != null && apiMonitor.costThreshold() > 0) {
+                    apiMonitorEvent.setCostThreshold(apiMonitor.costThreshold());
+                }
                 if (!apiMonitorEventQueue.offer(apiMonitorEvent)) {
                     log.warn("ApiMonitorEvent queue is full, discard event: {}", apiMonitorEvent);
                 }
