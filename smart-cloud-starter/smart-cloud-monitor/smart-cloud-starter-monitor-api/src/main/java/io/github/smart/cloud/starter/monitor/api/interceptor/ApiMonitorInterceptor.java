@@ -70,11 +70,16 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
             throw e;
         } finally {
             try {
-                String traceId = Optional.ofNullable(tracing)
+                TraceContext traceContext = Optional.ofNullable(tracing)
                         .map(Tracing::currentTraceContext)
                         .map(CurrentTraceContext::get)
-                        .map(TraceContext::traceIdString)
                         .orElse(null);
+                String traceId = null;
+                String spanId = null;
+                if (traceContext != null) {
+                    traceId = traceContext.traceIdString();
+                    spanId = traceContext.spanIdString();
+                }
 
                 Method method = invocation.getMethod();
                 ApiMonitor apiMonitor = AnnotationUtils.findAnnotation(method, ApiMonitor.class);
@@ -85,6 +90,7 @@ public class ApiMonitorInterceptor implements MethodInterceptor, InitializingBea
                 apiMonitorEvent.setCost(System.currentTimeMillis() - startTime);
                 apiMonitorEvent.setThrowable(throwable);
                 apiMonitorEvent.setTraceId(traceId);
+                apiMonitorEvent.setSpanId(spanId);
                 apiMonitorEvent.setMonitorType(apiMonitor == null ? MonitorType.ALL : apiMonitor.monitorType());
                 if (!apiMonitorEventQueue.offer(apiMonitorEvent)) {
                     log.warn("ApiMonitorEvent queue is full, discard event: {}", apiMonitorEvent);

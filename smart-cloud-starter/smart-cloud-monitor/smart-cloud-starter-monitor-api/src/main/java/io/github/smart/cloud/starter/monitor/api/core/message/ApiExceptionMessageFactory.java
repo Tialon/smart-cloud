@@ -77,6 +77,9 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
             if (apiExceptionAlert.getTraceId() != null) {
                 content.append("\n**traceId**：").append(apiExceptionAlert.getTraceId());
             }
+            if (apiExceptionAlert.getSpanId() != null) {
+                content.append("\n**spanId**：").append(apiExceptionAlert.getSpanId());
+            }
             content.append("\n**异常信息**：")
                     .append("<font color=\"warning\">")
                     .append(apiExceptionAlert.getThrowable().toString())
@@ -95,6 +98,9 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
                     .append("\n【接口】：").append(apiExceptionAlert.getName());
             if (apiExceptionAlert.getTraceId() != null) {
                 content.append("\n【traceId】：").append(apiExceptionAlert.getTraceId());
+            }
+            if (apiExceptionAlert.getSpanId() != null) {
+                content.append("\n【spanId】：").append(apiExceptionAlert.getSpanId());
             }
             content.append("\n⚠【异常信息】：").append(apiExceptionAlert.getThrowable().toString());
             return new WeworkRobotTextMessageDTO(content.toString(), apiMonitorProperties.getExceptionApiMonitor().getReminders());
@@ -129,6 +135,9 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
                     .append(isFailRateRemindType ? "</font>" : StringUtils.EMPTY);
             if (apiException.getTraceId() != null) {
                 content.append("\n>**traceId**：").append(apiException.getTraceId());
+            }
+            if (apiException.getSpanId() != null) {
+                content.append("\n>**spanId**：").append(apiException.getSpanId());
             }
             if (apiException.getThrowable() != null) {
                 boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO;
@@ -174,6 +183,9 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
                     .append("\n").append(isFailRateRemindType ? "⚠" : StringUtils.EMPTY).append("【失败率】：").append(apiException.getFailRate());
             if (apiException.getTraceId() != null) {
                 content.append("\n【traceId】：").append(apiException.getTraceId());
+            }
+            if (apiException.getSpanId() != null) {
+                content.append("\n【spanId】：").append(apiException.getSpanId());
             }
             if (apiException.getThrowable() != null) {
                 boolean isExceptionRemindType = apiException.getRemindType() == ApiExceptionRemindType.EXCEPTION_INFO;

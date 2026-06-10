@@ -79,6 +79,9 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
             if (event.getTraceId() != null) {
                 apiRequestSummaryDTO.setErrorTraceId(event.getTraceId());
             }
+            if (event.getSpanId() != null) {
+                apiRequestSummaryDTO.setErrorSpanId(event.getSpanId());
+            }
 
             if (exceptionApiMonitorProperties.getAlertExceptionMarked()) {
                 // 是否需要立即发告警
@@ -91,6 +94,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
                     apiExceptionAlertDTO.setName(event.getApiName());
                     apiExceptionAlertDTO.setThrowable(event.getThrowable());
                     apiExceptionAlertDTO.setTraceId(event.getTraceId());
+                    apiExceptionAlertDTO.setSpanId(event.getSpanId());
                     applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiExceptionAlertDTO));
                 }
             }
@@ -156,6 +160,7 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
                 apiExceptionAlertDTO.setFailRate(PercentUtil.format(failRate));
                 apiExceptionAlertDTO.setThrowable(apiRequestSummary.getThrowable());
                 apiExceptionAlertDTO.setTraceId(apiRequestSummary.getErrorTraceId());
+                apiExceptionAlertDTO.setSpanId(apiRequestSummary.getErrorSpanId());
                 apiExceptionAlertDTO.setRemindType(remindType);
                 apiExceptionAlertDTO.setNeedAtSomeone(ApiExceptionRemindType.FAIL_RATE == remindType);
                 apiExceptionAlertDTO.setAlerted(apiRequestSummary.getErrorAlerted());

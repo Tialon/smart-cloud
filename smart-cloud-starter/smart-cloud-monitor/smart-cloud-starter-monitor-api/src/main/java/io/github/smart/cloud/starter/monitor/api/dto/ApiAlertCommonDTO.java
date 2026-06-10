@@ -43,6 +43,10 @@ public class ApiAlertCommonDTO {
      */
     private String traceId;
     /**
+     * 跨度号
+     */
+    private String spanId;
+    /**
      * 是否需要@提醒
      */
     private Boolean needAtSomeone;

@@ -68,6 +68,9 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 if (event.getTraceId() != null) {
                     apiRequestSummary.setSlowTraceId(event.getTraceId());
                 }
+                if (event.getSpanId() != null) {
+                    apiRequestSummary.setSlowSpanId(event.getSpanId());
+                }
             }
 
             if (apiRequestSummary.getSlowAlerted()) {
@@ -83,6 +86,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 apiSlowAlert.setNeedAtSomeone(true);
                 apiSlowAlert.setName(apiName);
                 apiSlowAlert.setTraceId(event.getTraceId());
+                apiSlowAlert.setSpanId(event.getSpanId());
                 applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiSlowAlert));
             }
         } catch (Throwable e) {
@@ -114,6 +118,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
                 apiSlowAlert.setTotalCount(apiRequestSummary.getTotalCount());
                 apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
                 apiSlowAlert.setTraceId(apiRequestSummary.getSlowTraceId());
+                apiSlowAlert.setSpanId(apiRequestSummary.getSlowSpanId());
                 apiSlowAlert.setNeedAtSomeone(false);
                 apiSlowAlert.setAlerted(apiRequestSummary.getSlowAlerted());
 
@@ -133,6 +138,7 @@ public class SlowApiMonitorDataProcessor implements IApiMonitorDataProcessor<Api
             apiSlowAlert.setMaxCost(apiRequestSummary.getMaxCost());
             apiSlowAlert.setSlowRate(slowRate);
             apiSlowAlert.setTraceId(apiRequestSummary.getSlowTraceId());
+            apiSlowAlert.setSpanId(apiRequestSummary.getSlowSpanId());
             apiSlowAlert.setNeedAtSomeone(slowRate.compareTo(slowRateThreshold) >= 0);
             apiSlowAlert.setAlerted(apiRequestSummary.getSlowAlerted());
 

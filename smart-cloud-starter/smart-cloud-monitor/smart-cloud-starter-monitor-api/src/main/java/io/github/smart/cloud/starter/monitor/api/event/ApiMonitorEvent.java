@@ -47,6 +47,10 @@ public class ApiMonitorEvent extends ApplicationEvent {
      */
     private String traceId;
     /**
+     * 跨度号
+     */
+    private String spanId;
+    /**
      * 监控类型
      */
     private MonitorType monitorType;

@@ -49,6 +49,10 @@ public class ApiRequestSummaryDTO {
      */
     private String errorTraceId;
     /**
+     * 异常跨度号
+     */
+    private String errorSpanId;
+    /**
      * 异常接口通知已告警
      */
     private Boolean errorAlerted;
@@ -67,6 +71,10 @@ public class ApiRequestSummaryDTO {
      * 慢接口链路号
      */
     private String slowTraceId;
+    /**
+     * 慢接口跨度号
+     */
+    private String slowSpanId;
     /**
      * 慢接口通知已告警
      */

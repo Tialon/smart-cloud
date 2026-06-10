@@ -76,6 +76,9 @@ public class SlowApiMessageFactory extends AbstractMessageFactory implements IMe
             if (apiSlowAlert.getTraceId() != null) {
                 content.append("\n>**traceId**：").append(apiSlowAlert.getTraceId());
             }
+            if (apiSlowAlert.getSpanId() != null) {
+                content.append("\n>**spanId**：").append(apiSlowAlert.getSpanId());
+            }
             content.append("\n>**耗时**：").append(apiSlowAlert.getMaxCost()).append("ms");
 
             Set<String> reminders = apiMonitorProperties.getSlowApiMonitor().getReminders();
@@ -92,6 +95,9 @@ public class SlowApiMessageFactory extends AbstractMessageFactory implements IMe
             content.append("\n【接口】：").append(apiSlowAlert.getName());
             if (apiSlowAlert.getTraceId() != null) {
                 content.append("\n【traceId】：").append(apiSlowAlert.getTraceId());
+            }
+            if (apiSlowAlert.getSpanId() != null) {
+                content.append("\n【spanId】：").append(apiSlowAlert.getSpanId());
             }
             content.append("\n【耗时】：").append(apiSlowAlert.getMaxCost()).append("ms");
 
@@ -121,6 +127,9 @@ public class SlowApiMessageFactory extends AbstractMessageFactory implements IMe
                     .append("\n>**慢接口率**：").append(PercentUtil.format(apiSlowAlert.getSlowRate()));
             if (apiSlowAlert.getTraceId() != null) {
                 content.append("\n>**traceId**：").append(apiSlowAlert.getTraceId());
+            }
+            if (apiSlowAlert.getSpanId() != null) {
+                content.append("\n>**spanId**：").append(apiSlowAlert.getSpanId());
             }
             content.append("\n>**最大耗时**：").append(apiSlowAlert.getMaxCost()).append("ms");
 
@@ -161,6 +170,9 @@ public class SlowApiMessageFactory extends AbstractMessageFactory implements IMe
                     .append("\n【慢接口率】：").append(PercentUtil.format(apiSlowAlert.getSlowRate()));
             if (apiSlowAlert.getTraceId() != null) {
                 content.append("\n【traceId】：").append(apiSlowAlert.getTraceId());
+            }
+            if (apiSlowAlert.getSpanId() != null) {
+                content.append("\n【spanId】：").append(apiSlowAlert.getSpanId());
             }
             content.append("\n【最大耗时】：").append(apiSlowAlert.getMaxCost()).append("ms");
             needAtSomeone |= apiSlowAlert.getNeedAtSomeone();
