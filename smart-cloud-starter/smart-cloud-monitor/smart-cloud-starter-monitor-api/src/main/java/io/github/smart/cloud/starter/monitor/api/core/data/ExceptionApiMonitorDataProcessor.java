@@ -58,10 +58,6 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
      */
     @Override
     public void process(ApiMonitorEvent event) {
-        if (event.getThrowable() == null) {
-            return;
-        }
-
         try {
             ExceptionApiMonitorProperties exceptionApiMonitorProperties = apiMonitorProperties.getExceptionApiMonitor();
             if (exceptionApiMonitorProperties.getApiWhiteList().contains(event.getApiName())) {
@@ -69,38 +65,133 @@ public class ExceptionApiMonitorDataProcessor implements IApiMonitorDataProcesso
             }
 
             ApiRequestSummaryDTO apiRequestSummaryDTO = apiMonitorCacheManager.getApiRequestSummaryDTO(event.getApiName());
-            apiRequestSummaryDTO.setFailCount(apiRequestSummaryDTO.getFailCount() + 1);
-
-            if (apiRequestSummaryDTO.getErrorAlerted()) {
-                return;
-            }
-
-            apiRequestSummaryDTO.setThrowable(event.getThrowable());
-            if (event.getTraceId() != null) {
-                apiRequestSummaryDTO.setErrorTraceId(event.getTraceId());
-            }
-            if (event.getSpanId() != null) {
-                apiRequestSummaryDTO.setErrorSpanId(event.getSpanId());
-            }
-
-            if (exceptionApiMonitorProperties.getAlertExceptionMarked()) {
-                // 是否需要立即发告警
-                boolean isSpecialException = isSpecialException(event.getThrowable());
-                if (isSpecialException) {
-                    apiRequestSummaryDTO.setErrorAlerted(true);
-
-                    // 发送立即告警
-                    ApiExceptionAlertDTO apiExceptionAlertDTO = new ApiExceptionAlertDTO();
-                    apiExceptionAlertDTO.setName(event.getApiName());
-                    apiExceptionAlertDTO.setThrowable(event.getThrowable());
-                    apiExceptionAlertDTO.setTraceId(event.getTraceId());
-                    apiExceptionAlertDTO.setSpanId(event.getSpanId());
-                    applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, apiExceptionAlertDTO));
-                }
+            if (event.getThrowable() == null) {
+                processSuccessRequest(apiRequestSummaryDTO);
+            } else {
+                processFailureRequest(event, apiRequestSummaryDTO, exceptionApiMonitorProperties);
             }
         } catch (Throwable e) {
             log.error("api health info add error|name={}", event.getApiName(), e);
         }
+    }
+
+    /**
+     * 处理成功请求，重置连续失败计数
+     *
+     * @param apiRequestSummaryDTO
+     */
+    private void processSuccessRequest(ApiRequestSummaryDTO apiRequestSummaryDTO) {
+        apiRequestSummaryDTO.setConsecutiveFailCount(0);
+        apiRequestSummaryDTO.setConsecutiveFailAlerted(false);
+    }
+
+    /**
+     * 处理失败请求，累加计数并检测是否需要告警
+     *
+     * @param event
+     * @param apiRequestSummaryDTO
+     * @param exceptionApiMonitorProperties
+     */
+    private void processFailureRequest(ApiMonitorEvent event, ApiRequestSummaryDTO apiRequestSummaryDTO,
+                                       ExceptionApiMonitorProperties exceptionApiMonitorProperties) {
+        apiRequestSummaryDTO.setFailCount(apiRequestSummaryDTO.getFailCount() + 1);
+
+        int consecutiveFailCount = apiRequestSummaryDTO.getConsecutiveFailCount() + 1;
+        apiRequestSummaryDTO.setConsecutiveFailCount(consecutiveFailCount);
+
+        if (apiRequestSummaryDTO.getErrorAlerted()) {
+            return;
+        }
+
+        updateErrorSummary(apiRequestSummaryDTO, event);
+
+        // 连续失败熔断告警优先于特殊异常告警
+        if (checkConsecutiveFailureAlert(event, apiRequestSummaryDTO, exceptionApiMonitorProperties, consecutiveFailCount)) {
+            return;
+        }
+        checkSpecialExceptionAlert(event, apiRequestSummaryDTO, exceptionApiMonitorProperties);
+    }
+
+    /**
+     * 更新异常摘要信息（异常对象、traceId、spanId）
+     *
+     * @param apiRequestSummaryDTO
+     * @param event
+     */
+    private void updateErrorSummary(ApiRequestSummaryDTO apiRequestSummaryDTO, ApiMonitorEvent event) {
+        apiRequestSummaryDTO.setThrowable(event.getThrowable());
+        if (event.getTraceId() != null) {
+            apiRequestSummaryDTO.setErrorTraceId(event.getTraceId());
+        }
+        if (event.getSpanId() != null) {
+            apiRequestSummaryDTO.setErrorSpanId(event.getSpanId());
+        }
+    }
+
+    /**
+     * 检测连续失败熔断并触发告警
+     *
+     * @param event
+     * @param apiRequestSummaryDTO
+     * @param exceptionApiMonitorProperties
+     * @param consecutiveFailCount
+     * @return 是否触发了告警
+     */
+    private boolean checkConsecutiveFailureAlert(ApiMonitorEvent event, ApiRequestSummaryDTO apiRequestSummaryDTO,
+                                                 ExceptionApiMonitorProperties exceptionApiMonitorProperties,
+                                                 int consecutiveFailCount) {
+        if (apiRequestSummaryDTO.getConsecutiveFailAlerted()) {
+            return false;
+        }
+
+        int threshold = exceptionApiMonitorProperties.getConsecutiveFailThreshold(event.getApiName());
+        if (consecutiveFailCount < threshold) {
+            return false;
+        }
+
+        apiRequestSummaryDTO.setConsecutiveFailAlerted(true);
+        apiRequestSummaryDTO.setErrorAlerted(true);
+
+        ApiExceptionAlertDTO alertDTO = buildBaseAlertDTO(event);
+        alertDTO.setConsecutiveFailCount(consecutiveFailCount);
+        alertDTO.setRemindType(ApiExceptionRemindType.CONSECUTIVE_FAILURE);
+        alertDTO.setNeedAtSomeone(true);
+        applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, alertDTO));
+        return true;
+    }
+
+    /**
+     * 检测特殊异常并触发立即告警
+     *
+     * @param event
+     * @param apiRequestSummaryDTO
+     * @param exceptionApiMonitorProperties
+     */
+    private void checkSpecialExceptionAlert(ApiMonitorEvent event, ApiRequestSummaryDTO apiRequestSummaryDTO,
+                                            ExceptionApiMonitorProperties exceptionApiMonitorProperties) {
+        if (!exceptionApiMonitorProperties.getAlertExceptionMarked()) {
+            return;
+        }
+
+        if (isSpecialException(event.getThrowable())) {
+            apiRequestSummaryDTO.setErrorAlerted(true);
+            applicationEventPublisher.publishEvent(ApiMonitorAlertEvent.buildImmediateEvent(this, buildBaseAlertDTO(event)));
+        }
+    }
+
+    /**
+     * 构建基础立即告警DTO（接口名、异常、traceId、spanId）
+     *
+     * @param event
+     * @return
+     */
+    private ApiExceptionAlertDTO buildBaseAlertDTO(ApiMonitorEvent event) {
+        ApiExceptionAlertDTO alertDTO = new ApiExceptionAlertDTO();
+        alertDTO.setName(event.getApiName());
+        alertDTO.setThrowable(event.getThrowable());
+        alertDTO.setTraceId(event.getTraceId());
+        alertDTO.setSpanId(event.getSpanId());
+        return alertDTO;
     }
 
     /**

@@ -44,6 +44,10 @@ public class ApiExceptionAlertDTO extends ApiAlertCommonDTO {
      */
     private Throwable throwable;
     /**
+     * 连续失败次数（仅连续失败熔断告警时有值）
+     */
+    private Integer consecutiveFailCount;
+    /**
      * 接口异常提醒类型
      */
     private ApiExceptionRemindType remindType;

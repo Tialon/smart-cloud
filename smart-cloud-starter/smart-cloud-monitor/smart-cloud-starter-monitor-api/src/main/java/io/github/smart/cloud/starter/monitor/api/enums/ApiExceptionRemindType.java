@@ -34,6 +34,10 @@ public enum ApiExceptionRemindType {
     /**
      * 异常信息
      */
-    EXCEPTION_INFO;
+    EXCEPTION_INFO,
+    /**
+     * 连续失败熔断
+     */
+    CONSECUTIVE_FAILURE;
 
 }

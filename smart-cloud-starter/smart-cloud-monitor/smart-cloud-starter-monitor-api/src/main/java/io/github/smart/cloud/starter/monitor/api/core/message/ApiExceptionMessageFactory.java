@@ -80,6 +80,9 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
             if (apiExceptionAlert.getSpanId() != null) {
                 content.append("\n**spanId**：").append(apiExceptionAlert.getSpanId());
             }
+            if (apiExceptionAlert.getRemindType() == ApiExceptionRemindType.CONSECUTIVE_FAILURE) {
+                content.append("\n**连续失败**：").append("<font color=\"warning\">").append(apiExceptionAlert.getConsecutiveFailCount()).append("次</font>");
+            }
             content.append("\n**异常信息**：")
                     .append("<font color=\"warning\">")
                     .append(apiExceptionAlert.getThrowable().toString())
@@ -101,6 +104,9 @@ public class ApiExceptionMessageFactory extends AbstractMessageFactory implement
             }
             if (apiExceptionAlert.getSpanId() != null) {
                 content.append("\n【spanId】：").append(apiExceptionAlert.getSpanId());
+            }
+            if (apiExceptionAlert.getRemindType() == ApiExceptionRemindType.CONSECUTIVE_FAILURE) {
+                content.append("\n⚠【连续失败】：").append(apiExceptionAlert.getConsecutiveFailCount()).append("次");
             }
             content.append("\n⚠【异常信息】：").append(apiExceptionAlert.getThrowable().toString());
             return new WeworkRobotTextMessageDTO(content.toString(), apiMonitorProperties.getExceptionApiMonitor().getReminders());

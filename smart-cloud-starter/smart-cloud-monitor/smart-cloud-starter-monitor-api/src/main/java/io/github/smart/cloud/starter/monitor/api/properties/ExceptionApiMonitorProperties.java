@@ -83,6 +83,28 @@ public class ExceptionApiMonitorProperties {
      * 需要提醒的异常码列表
      */
     private Set<String> needAlertExceptionCodes = new HashSet<>();
+
+    /**
+     * 连续失败熔断告警默认阈值（连续失败多少次触发紧急告警，默认5次）
+     */
+    private int consecutiveFailThreshold = 5;
+    /**
+     * 特定接口连续失败熔断告警阈值
+     * <p>
+     * <接口名, 连续失败阈值>
+     * </p>
+     */
+    private Map<String, Integer> consecutiveFailThresholds = new HashMap<>();
     // -------企业微信通知配置 end
+
+    /**
+     * 获取接口连续失败熔断告警阈值
+     *
+     * @param apiName
+     * @return
+     */
+    public int getConsecutiveFailThreshold(String apiName) {
+        return consecutiveFailThresholds.getOrDefault(apiName, consecutiveFailThreshold);
+    }
 
 }

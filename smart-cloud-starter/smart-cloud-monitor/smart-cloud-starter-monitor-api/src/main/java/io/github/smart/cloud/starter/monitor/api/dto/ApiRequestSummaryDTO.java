@@ -56,6 +56,14 @@ public class ApiRequestSummaryDTO {
      * 异常接口通知已告警
      */
     private Boolean errorAlerted;
+    /**
+     * 连续失败次数
+     */
+    private Integer consecutiveFailCount;
+    /**
+     * 连续失败告警已触发
+     */
+    private Boolean consecutiveFailAlerted;
     // ----end:异常接口信息
 
     // ----start:慢接口信息

@@ -61,6 +61,8 @@ public class ApiMonitorCacheManager implements InitializingBean, DisposableBean,
             apiRequestSummary.setMaxCost(0L);
 
             apiRequestSummary.setErrorAlerted(false);
+            apiRequestSummary.setConsecutiveFailCount(0);
+            apiRequestSummary.setConsecutiveFailAlerted(false);
             apiRequestSummary.setSlowAlerted(false);
             return apiRequestSummary;
         });
