@@ -19,10 +19,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.common.pojo.BasePageResponse;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.DynamicDatasourceMasterSlaveApp;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.biz.ProductInfoOmsBiz;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.repository.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.PageProductReqVO;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoBaseRespVO;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.dynamicdatasourcemasterslave.vo.ProductInfoRespVO;
 import io.github.smart.cloud.utility.NonceUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,16 +41,16 @@ import java.util.List;
 class DynamicDatasourceMasterSlaveTest {
 
     @Autowired
-    private ProductInfoOmsBiz productInfoOmsBiz;
+    private ProductInfoOmsRepository productInfoOmsRepository;
 
     @BeforeEach
     void cleanData() {
-        productInfoOmsBiz.truncate();
+        productInfoOmsRepository.truncate();
     }
 
     @Test
     void testCreate() {
-        boolean success = productInfoOmsBiz.save(create("test"));
+        boolean success = productInfoOmsRepository.save(create("test"));
         Assertions.assertThat(success).isTrue();
     }
 
@@ -60,34 +60,34 @@ class DynamicDatasourceMasterSlaveTest {
         for (int i = 0; i < 10; i++) {
             entities.add(create("test" + i));
         }
-        int successCount = productInfoOmsBiz.insertBatchSomeColumn(entities);
+        int successCount = productInfoOmsRepository.insertBatchSomeColumn(entities);
         Assertions.assertThat(successCount).isEqualTo(entities.size());
     }
 
     @Test
     void testLogicDelete() {
         ProductInfoEntity entity = create("testx");
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
-        Boolean deleteSuccess = productInfoOmsBiz.logicDelete(entity.getId(), 10L);
+        Boolean deleteSuccess = productInfoOmsRepository.logicDelete(entity.getId(), 10L);
         Assertions.assertThat(deleteSuccess).isTrue();
     }
 
     @Test
     void testRemove() {
         ProductInfoEntity entity = create("testx");
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
-        Assertions.assertThat(productInfoOmsBiz.removeById(entity.getId())).isTrue();
+        Assertions.assertThat(productInfoOmsRepository.removeById(entity.getId())).isTrue();
     }
 
     @Test
     void testPage() {
         String name = "testx";
         ProductInfoEntity entity = create(name);
-        boolean createSuccess = productInfoOmsBiz.save(entity);
+        boolean createSuccess = productInfoOmsRepository.save(entity);
         Assertions.assertThat(createSuccess).isTrue();
 
         PageProductReqVO reqVO = new PageProductReqVO();
@@ -100,7 +100,7 @@ class DynamicDatasourceMasterSlaveTest {
         wrapperFromMaster.like(ProductInfoEntity::getName, reqVO.getName());
         wrapperFromMaster.eq(ProductInfoEntity::getDelState, DeleteState.NORMAL);
         wrapperFromMaster.orderByDesc(ProductInfoEntity::getInsertTime);
-        BasePageResponse<ProductInfoBaseRespVO> responseOfMaster = productInfoOmsBiz.page(reqVO, wrapperFromMaster, ProductInfoBaseRespVO.class);
+        BasePageResponse<ProductInfoRespVO> responseOfMaster = productInfoOmsRepository.page(reqVO, wrapperFromMaster, ProductInfoRespVO.class);
 
         Assertions.assertThat(responseOfMaster).isNotNull();
         Assertions.assertThat(responseOfMaster.getDatas()).isNotEmpty();
@@ -110,7 +110,7 @@ class DynamicDatasourceMasterSlaveTest {
         // master--end
 
         // master--start
-        BasePageResponse<ProductInfoBaseRespVO> responseOfSlave = productInfoOmsBiz.selectPage(reqVO);
+        BasePageResponse<ProductInfoRespVO> responseOfSlave = productInfoOmsRepository.selectPage(reqVO);
 
         Assertions.assertThat(responseOfSlave).isNotNull();
         Assertions.assertThat(responseOfSlave.getDatas()).isEmpty();

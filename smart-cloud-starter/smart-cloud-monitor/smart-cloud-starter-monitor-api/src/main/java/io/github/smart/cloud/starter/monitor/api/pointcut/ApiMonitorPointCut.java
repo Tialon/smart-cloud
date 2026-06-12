@@ -15,7 +15,8 @@
  */
 package io.github.smart.cloud.starter.monitor.api.pointcut;
 
-import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -27,7 +28,13 @@ import java.lang.reflect.Method;
  * @author collin
  * @date 2022-07-12
  */
+@RequiredArgsConstructor
 public class ApiMonitorPointCut extends StaticMethodMatcherPointcut {
+
+    /**
+     * 切面是否支持mapping注解
+     */
+    private final boolean isPointCutSupportMappingAnnotation;
     /**
      * RestController注解类名
      */
@@ -67,24 +74,26 @@ public class ApiMonitorPointCut extends StaticMethodMatcherPointcut {
 
     @Override
     public boolean matches(Method method, Class<?> c) {
-        if (AnnotatedElementUtils.isAnnotated(method, ApiHealthMonitor.class)) {
+        if (AnnotatedElementUtils.isAnnotated(method, ApiMonitor.class)) {
             return true;
         }
 
         return
-                // 1.类
-                // 1.1web接口
-                (c != null && (AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), CONTROLLER_ANNOTATION_NAME)
+                // 支持mapping注解
+                isPointCutSupportMappingAnnotation
+                        // 1.类
+                        // 1.1web接口
+                        && (AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), CONTROLLER_ANNOTATION_NAME)
                         || AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), REST_CONTROLLER_ANNOTATION_NAME)
                         // 1.2openfeign接口
-                        || AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), FEIGN_CLIENT_ANNOTATION_NAME))) &&
+                        || AnnotatedElementUtils.isAnnotated(method.getDeclaringClass(), FEIGN_CLIENT_ANNOTATION_NAME))
                         // 2.方法
-                        (AnnotatedElementUtils.isAnnotated(method, REQUEST_MAPPING_ANNOTATION_NAME)
-                                || AnnotatedElementUtils.isAnnotated(method, GET_MAPPING_ANNOTATION_NAME)
-                                || AnnotatedElementUtils.isAnnotated(method, POST_MAPPING_ANNOTATION_NAME)
-                                || AnnotatedElementUtils.isAnnotated(method, DELETE_MAPPING_ANNOTATION_NAME)
-                                || AnnotatedElementUtils.isAnnotated(method, PUT_MAPPING_ANNOTATION_NAME)
-                                || AnnotatedElementUtils.isAnnotated(method, PATCH_MAPPING_ANNOTATION_NAME));
+                        && (AnnotatedElementUtils.isAnnotated(method, REQUEST_MAPPING_ANNOTATION_NAME)
+                        || AnnotatedElementUtils.isAnnotated(method, GET_MAPPING_ANNOTATION_NAME)
+                        || AnnotatedElementUtils.isAnnotated(method, POST_MAPPING_ANNOTATION_NAME)
+                        || AnnotatedElementUtils.isAnnotated(method, DELETE_MAPPING_ANNOTATION_NAME)
+                        || AnnotatedElementUtils.isAnnotated(method, PUT_MAPPING_ANNOTATION_NAME)
+                        || AnnotatedElementUtils.isAnnotated(method, PATCH_MAPPING_ANNOTATION_NAME));
     }
 
 }

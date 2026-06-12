@@ -29,14 +29,22 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum GenerateTypeEnum {
 
-	/** 数据库整个表全部生成 */
-	ALL(1),
-	/** 只生成指定的表 */
-	INCLUDE(2),
-	/** 除了指定的表，全部生成 */
-	EXCLUDE(3);
+    /**
+     * 数据库整个表全部生成
+     */
+    ALL(1),
+    /**
+     * 只生成指定的表
+     */
+    INCLUDE(2),
+    /**
+     * 除了指定的表，全部生成
+     */
+    EXCLUDE(3);
 
-	/** 生成类型 */
-	private Integer type;
+    /**
+     * 生成类型
+     */
+    private Integer type;
 
 }

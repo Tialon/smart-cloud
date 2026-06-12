@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 企业微信机器人消息内容
@@ -38,12 +38,12 @@ public class WeworkRobotTextMessageContentDTO extends WeworkRobotMessageContentD
     /**
      * 提醒人
      */
-    @JsonProperty("mentioned_list")
-    private LinkedHashSet<String> mentionedList;
+    @JsonProperty("mentioned_mobile_list")
+    private Set<String> mentionedMobileList;
 
-    public WeworkRobotTextMessageContentDTO(String content, LinkedHashSet<String> mentionedList) {
+    public WeworkRobotTextMessageContentDTO(String content, Set<String> mentionedMobileList) {
         setContent(content);
-        setMentionedList(mentionedList);
+        setMentionedMobileList(mentionedMobileList);
     }
 
 }

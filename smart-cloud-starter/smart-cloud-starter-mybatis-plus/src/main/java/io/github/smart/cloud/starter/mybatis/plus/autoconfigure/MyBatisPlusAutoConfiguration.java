@@ -17,8 +17,8 @@ package io.github.smart.cloud.starter.mybatis.plus.autoconfigure;
 
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import io.github.smart.cloud.constants.OrderConstant;
 import io.github.smart.cloud.starter.configure.constants.ConfigureConstant;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
 import io.github.smart.cloud.starter.mybatis.plus.injector.SmartSqlInjector;
 import io.github.smart.cloud.starter.mybatis.plus.plugin.DbQueryMonitor;

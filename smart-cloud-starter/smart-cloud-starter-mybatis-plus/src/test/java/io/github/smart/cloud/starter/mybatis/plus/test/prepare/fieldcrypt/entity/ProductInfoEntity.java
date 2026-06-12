@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.github.smart.cloud.starter.mybatis.plus.common.CryptField;
 import io.github.smart.cloud.starter.mybatis.plus.common.entity.BaseEntity;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.biz.DescCryptField;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.repository.DescCryptField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

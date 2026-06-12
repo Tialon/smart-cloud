@@ -15,7 +15,6 @@
  */
 package io.github.smart.cloud.starter.configure.properties;
 
-import io.github.smart.cloud.constants.LogLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -39,13 +38,6 @@ public class FeignLogProperties implements Serializable {
      * feign切面开关 （默认true）
      */
     private boolean enable = true;
-
-    /**
-     * openfeign日志级别（默认DEBUG）
-     *
-     * @see LogLevel
-     */
-    private String level = LogLevel.DEBUG;
 
     /**
      * 慢接口时间（单位：毫秒，默认3000毫秒）

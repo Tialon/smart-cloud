@@ -31,8 +31,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.smart-cloud</groupId>
-            <artifactId>smart-mask</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
         <dependency>

@@ -15,7 +15,6 @@
  */
 package io.github.smart.cloud.starter.configure.properties;
 
-import io.github.smart.cloud.constants.LogLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,13 +40,11 @@ public class MybatisProperties implements Serializable {
      * mybatis日志开关 （默认true）
      */
     private boolean enable = true;
-
     /**
-     * api日志级别（默认DEBUG）
-     *
-     * @see LogLevel
+     * 切面日志打印最大长度
      */
-    private String logLevel = LogLevel.DEBUG;
+    private Integer logMaxLength;
+
     /**
      * 加解密密钥信息<加解密字段类全类名, 加解密秘钥>
      */

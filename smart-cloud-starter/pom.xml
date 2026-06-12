@@ -39,6 +39,7 @@
 		<module>smart-cloud-starter-locale</module>
 		<module>smart-cloud-starter-log4j2</module>
 		<module>smart-cloud-starter-logback</module>
+		<module>smart-cloud-starter-log-mask</module>
 		<module>smart-cloud-starter-method-log</module>
 		<module>smart-cloud-starter-mock</module>
 		<module>smart-cloud-starter-mp-shardingjdbc</module>
@@ -47,8 +48,9 @@
 		<module>smart-cloud-starter-rate-limit</module>
 		<module>smart-cloud-starter-redis</module>
 		<module>smart-cloud-starter-static-discovery</module>
+		<module>smart-cloud-starter-trace-debug</module>
 		<module>smart-cloud-starter-web</module>
-    </modules>
+	</modules>
 
 	<dependencies>
 		<dependency>

@@ -97,7 +97,7 @@ public class ServiceNodeCountCheckSchedule implements InitializingBean, Disposab
     @Override
     public void destroy() throws Exception {
         if (checkServiceNodeCountSchedule != null) {
-            checkServiceNodeCountSchedule.shutdown();
+            checkServiceNodeCountSchedule.shutdownNow();
         }
     }
 

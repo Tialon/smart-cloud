@@ -16,16 +16,17 @@
 package io.github.smart.cloud.starter.monitor.api.test.cases;
 
 import io.github.smart.cloud.exception.ServerException;
-import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
-import io.github.smart.cloud.starter.monitor.api.component.ApiMonitorRepository;
-import io.github.smart.cloud.starter.monitor.api.component.ExceptionApiChecker;
-import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionDTO;
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
+import io.github.smart.cloud.starter.monitor.api.core.check.ExceptionApiChecker;
+import io.github.smart.cloud.starter.monitor.api.core.data.ExceptionApiMonitorDataProcessor;
+import io.github.smart.cloud.starter.monitor.api.dto.ApiExceptionAlertDTO;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.App;
-import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.NullPointExceptionController;
-import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.OrderController;
+import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.exception.NullPointExceptionController;
+import io.github.smart.cloud.starter.monitor.api.test.prepare.controller.exception.OrderController;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.openfeign.IOrderFeign;
 import io.github.smart.cloud.starter.monitor.api.test.prepare.service.ProductService;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -43,13 +45,14 @@ public class ExceptionApiTest extends AbstractTest {
     @Autowired
     private ExceptionApiChecker exceptionApiChecker;
     @Autowired
-    private ApiMonitorRepository apiMonitorRepository;
+    private ExceptionApiMonitorDataProcessor exceptionApiMonitorDataProcessor;
 
     /**
      * 特定异常监控
      */
     @Test
-    void testNullPointerException() {
+    @Order(10)
+    synchronized void testNullPointerException() throws InterruptedException {
         NullPointExceptionController nullPointExceptionController = applicationContext.getBean(NullPointExceptionController.class);
         for (int i = 0; i < 100; i++) {
             try {
@@ -59,13 +62,17 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        List<ApiExceptionDTO> apiExceptions = apiMonitorRepository.getApiExceptions();
+        // 接口监控切面异步处理，此处等待一会
+        TimeUnit.SECONDS.sleep(3);
+
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
         Assertions.assertThat(apiExceptions.get(0).getThrowable()).isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void testErrorCode() {
+    @Order(20)
+    synchronized void testErrorCode() throws InterruptedException {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 0; i < 100; i++) {
             try {
@@ -75,7 +82,10 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
-        List<ApiExceptionDTO> apiExceptions = apiMonitorRepository.getApiExceptions();
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
+
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
         Assertions.assertThat(apiExceptions.get(0).getThrowable()).isInstanceOf(ServerException.class);
     }
@@ -86,7 +96,8 @@ public class ExceptionApiTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    void testExceptionApiCheck() throws Exception {
+    @Order(30)
+    synchronized void testExceptionApiCheck() throws Exception {
         OrderController orderController = applicationContext.getBean(OrderController.class);
         for (int i = 1; i <= 6; i++) {
             try {
@@ -112,14 +123,17 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
+
         // 失败率倒叙测试
-        List<ApiExceptionDTO> apiExceptions = apiMonitorRepository.getApiExceptions();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(2);
 
-        ApiExceptionDTO apiException0 = apiExceptions.get(0);
-        ApiExceptionDTO apiException1 = apiExceptions.get(1);
-        BigDecimal fail0 = BigDecimal.valueOf(apiException0.getFailCount()).divide(BigDecimal.valueOf(apiException0.getTotal()), 10, RoundingMode.HALF_UP);
-        BigDecimal fail1 = BigDecimal.valueOf(apiException1.getFailCount()).divide(BigDecimal.valueOf(apiException1.getTotal()), 10, RoundingMode.HALF_UP);
+        ApiExceptionAlertDTO apiException0 = apiExceptions.get(0);
+        ApiExceptionAlertDTO apiException1 = apiExceptions.get(1);
+        BigDecimal fail0 = BigDecimal.valueOf(apiException0.getFailCount()).divide(BigDecimal.valueOf(apiException0.getTotalCount()), 10, RoundingMode.HALF_UP);
+        BigDecimal fail1 = BigDecimal.valueOf(apiException1.getFailCount()).divide(BigDecimal.valueOf(apiException1.getTotalCount()), 10, RoundingMode.HALF_UP);
         Assertions.assertThat(fail0).isGreaterThanOrEqualTo(fail1);
 
         exceptionApiChecker.checkExceptionApiAndNotice();
@@ -128,10 +142,11 @@ public class ExceptionApiTest extends AbstractTest {
     /**
      * 异常注解
      *
-     * @see ApiHealthMonitor
+     * @see ApiMonitor
      */
     @Test
-    void testApiHealthMonitor() {
+    @Order(40)
+    synchronized void testApiMonitor() throws InterruptedException {
         ProductService productService = applicationContext.getBean(ProductService.class);
         int[] ids = {5, 5, 1};
         for (int id : ids) {
@@ -141,8 +156,10 @@ public class ExceptionApiTest extends AbstractTest {
             }
         }
 
+        // 接口监控切面异步处理，此处等待一会儿
+        TimeUnit.SECONDS.sleep(3);
 
-        List<ApiExceptionDTO> apiExceptions = apiMonitorRepository.getApiExceptions();
+        List<ApiExceptionAlertDTO> apiExceptions = exceptionApiMonitorDataProcessor.getAlertRecords();
         Assertions.assertThat(apiExceptions).hasSize(1);
     }
 

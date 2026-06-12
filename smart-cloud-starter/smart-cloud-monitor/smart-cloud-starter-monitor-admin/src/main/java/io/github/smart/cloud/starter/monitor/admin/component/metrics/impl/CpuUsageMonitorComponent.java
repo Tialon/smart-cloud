@@ -24,7 +24,7 @@ import io.github.smart.cloud.starter.monitor.admin.enums.InstanceMetric;
 import io.github.smart.cloud.starter.monitor.admin.enums.MetricCheckStatus;
 import io.github.smart.cloud.starter.monitor.admin.properties.MetricItemAlertProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
-import io.github.smart.cloud.starter.monitor.admin.util.ActuatorUtil;
+import io.github.smart.cloud.starter.monitor.admin.component.ActuatorAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -47,7 +47,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
 
     @Override
     public MetricCheckResultDTO check(Instance instance) throws IOException {
-        String response = ActuatorUtil.sendGetRequest(instance, getInstanceMetric().getValue());
+        String response = ActuatorAgent.sendGetRequest(instance, getInstanceMetric().getValue());
         if (!StringUtils.hasText(response)) {
             return MetricCheckResultDTO.ok();
         }
@@ -62,7 +62,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
                 return MetricCheckResultDTO.ok();
             }
 
-            JsonNode valueNode = ActuatorUtil.parseValueNode(measurementsNodes, "VALUE");
+            JsonNode valueNode = ActuatorAgent.parseValueNode(measurementsNodes, "VALUE");
             if (valueNode == null) {
                 return MetricCheckResultDTO.ok();
             }
@@ -73,7 +73,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
             // 触发阈值
             if (currentCpuUsage >= alertThreshold) {
                 String alertDesc = String.format("当前值[%.4f]超过预警值[%.4f]", currentCpuUsage, alertThreshold);
-                return MetricCheckResultDTO.error(MetricCheckStatus.THRESHOLD_EXCEPTION, alertDesc);
+                return MetricCheckResultDTO.alert(MetricCheckStatus.THRESHOLD_EXCEPTION, alertDesc);
             }
 
             // 连续新增
@@ -81,7 +81,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
             if (matchIncreaseResult.getMatch()) {
                 String alertDesc = String.format("cpu使用率连续新增超过预警值[%.4f][%d次]，当前使用率[%.4f]", getDiffThreshold(name),
                         getKeepIncreasingCount(name), currentCpuUsage);
-                return MetricCheckResultDTO.error(MetricCheckStatus.KEEP_INCREASING_EXCEPTION, alertDesc);
+                return MetricCheckResultDTO.alert(MetricCheckStatus.KEEP_INCREASING_EXCEPTION, alertDesc);
             }
         } catch (JsonProcessingException e) {
             log.error("parse json error|response={}", response, e);
@@ -143,7 +143,7 @@ public class CpuUsageMonitorComponent extends AbstractInstanceMetricsMonitorComp
     public Double getThreshold(String serviceName) {
         Map<String, ServiceInfoProperties> serviceInfos = monitorProperties.getServiceInfos();
         if (serviceInfos != null && serviceInfos.containsKey(serviceName)) {
-            MetricItemAlertProperties<Double> metricItemAlert = serviceInfos.get(serviceName).getMetric().getGc();
+            MetricItemAlertProperties<Double> metricItemAlert = serviceInfos.get(serviceName).getMetric().getCpu();
             if (metricItemAlert.getThreshold() != null) {
                 return metricItemAlert.getThreshold();
             }

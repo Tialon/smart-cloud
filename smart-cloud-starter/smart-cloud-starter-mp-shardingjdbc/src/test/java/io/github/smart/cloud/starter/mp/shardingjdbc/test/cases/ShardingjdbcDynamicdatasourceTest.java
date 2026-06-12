@@ -16,10 +16,10 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.ShardingJdbcDynamicDatasourceApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.ApiLogBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.OrderBillBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.ProductInfoBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.biz.RpcLogBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.repository.ApiLogRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.repository.OrderBillRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.repository.ProductInfoRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.repository.RpcLogRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ApiLogEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcdynamicdatasource.entity.ProductInfoEntity;
@@ -44,13 +44,13 @@ import java.util.Date;
 class ShardingjdbcDynamicdatasourceTest {
 
     @Autowired
-    private ApiLogBiz apiLogBiz;
+    private ApiLogRepository apiLogRepository;
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillRepository;
     @Autowired
-    private RpcLogBiz rpcLogBiz;
+    private RpcLogRepository rpcLogRepository;
     @Autowired
-    private ProductInfoBiz productInfoBiz;
+    private ProductInfoRepository productInfoRepository;
 
     /**
      * 普通数据源
@@ -62,10 +62,10 @@ class ShardingjdbcDynamicdatasourceTest {
         apiLogEntity.setInsertTime(new Date());
         apiLogEntity.setDelState(DeleteState.NORMAL);
         apiLogEntity.setApiDesc("test");
-        boolean saveResult = apiLogBiz.save(apiLogEntity);
+        boolean saveResult = apiLogRepository.save(apiLogEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        ApiLogEntity entity = apiLogBiz.getById(apiLogEntity.getId());
+        ApiLogEntity entity = apiLogRepository.getById(apiLogEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 
@@ -84,10 +84,10 @@ class ShardingjdbcDynamicdatasourceTest {
         orderBillEntity.setPayState((byte) 1);
         orderBillEntity.setBuyer(1L);
         orderBillEntity.setInsertUser(1L);
-        boolean saveResult = orderBillBiz.save(orderBillEntity);
+        boolean saveResult = orderBillRepository.save(orderBillEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        OrderBillEntity entity = orderBillBiz.getById(orderBillEntity.getId());
+        OrderBillEntity entity = orderBillRepository.getById(orderBillEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 
@@ -101,10 +101,10 @@ class ShardingjdbcDynamicdatasourceTest {
         rpcLogEntity.setInsertTime(new Date());
         rpcLogEntity.setDelState(DeleteState.NORMAL);
         rpcLogEntity.setApiDesc("test");
-        boolean saveResult = rpcLogBiz.save(rpcLogEntity);
+        boolean saveResult = rpcLogRepository.save(rpcLogEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        RpcLogEntity entity = rpcLogBiz.getById(rpcLogEntity.getId());
+        RpcLogEntity entity = rpcLogRepository.getById(rpcLogEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 
@@ -121,10 +121,10 @@ class ShardingjdbcDynamicdatasourceTest {
         productInfoEntity.setSellPrice(100L);
         productInfoEntity.setStock(100L);
         productInfoEntity.setInsertUser(1L);
-        boolean saveResult = productInfoBiz.save(productInfoEntity);
+        boolean saveResult = productInfoRepository.save(productInfoEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        ProductInfoEntity entity = productInfoBiz.getById(productInfoEntity.getId());
+        ProductInfoEntity entity = productInfoRepository.getById(productInfoEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 

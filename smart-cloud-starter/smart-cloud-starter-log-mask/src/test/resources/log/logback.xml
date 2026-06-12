@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <conversionRule conversionWord="mm" converterClass="io.github.smart.cloud.starter.log.mask.pattern.logback.LogbackMaskConverter"/>
+
+    <appender name="MEMORY" class="ch.qos.logback.core.OutputStreamAppender">
+        <encoder charset="UTF-8">
+            <pattern>%d %5level[%thread]%logger{80}#%method %mm%n</pattern>
+        </encoder>
+        <outputStream class="java.io.ByteArrayOutputStream"/>
+    </appender>
+
+    <!-- root -->
+    <root level="INFO">
+        <appender-ref ref="MEMORY"/>
+    </root>
+    <logger name="org.springframework" level="INFO"/>
+</configuration>

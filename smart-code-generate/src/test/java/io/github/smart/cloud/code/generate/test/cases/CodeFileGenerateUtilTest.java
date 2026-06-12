@@ -26,24 +26,29 @@ import java.util.Arrays;
 class CodeFileGenerateUtilTest {
 
     @Test
-    void testInit() throws Exception {
+    void testAuth() throws Exception {
         CodeGenerateUtil.init();
         Iterable<String> classNames = Arrays.asList(
                 // response
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/base/PermissionInfoBaseRespVO.java",
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/base/RoleInfoBaseRespVO.java",
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/base/RolePermissionRelaBaseRespVO.java",
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/base/UserRoleRelaBaseRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/entity/PermissionInfoEntityRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/entity/RoleInfoEntityRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/entity/RolePermissionRelaEntityRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/auth/response/entity/UserRoleRelaEntityRespVO.java",
                 // entity
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/entity/PermissionInfoEntity.java",
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/entity/RoleInfoEntity.java",
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/entity/RolePermissionRelaEntity.java",
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/entity/UserRoleRelaEntity.java",
                 // mapper
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/base/PermissionInfoBaseMapper.java",
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/base/RoleInfoBaseMapper.java",
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/base/RolePermissionRelaBaseMapper.java",
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/base/UserRoleRelaBaseMapper.java"
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/PermissionInfoMapper.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/RoleInfoMapper.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/RolePermissionRelaMapper.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/mapper/UserRoleRelaMapper.java",
+                // repository
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/repository/PermissionInfoRepository.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/repository/RoleInfoRepository.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/repository/RolePermissionRelaRepository.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/auth/repository/UserRoleRelaRepository.java"
         );
         Assertions.assertThat(CompilerUtil.compile(classNames)).isEmpty();
     }
@@ -53,14 +58,17 @@ class CodeFileGenerateUtilTest {
         CodeGenerateUtil.init("config/basic_user.yaml");
         Iterable<String> classNames = Arrays.asList(
                 // response
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/user/response/base/LoginInfoBaseRespVO.java",
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/user/response/base/UserInfoBaseRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/user/response/entity/LoginInfoEntityRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/basic/rpc/user/response/entity/UserInfoEntityRespVO.java",
                 // entity
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/entity/LoginInfoEntity.java",
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/entity/UserInfoEntity.java",
                 // mapper
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/mapper/base/LoginInfoBaseMapper.java",
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/mapper/base/UserInfoBaseMapper.java"
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/mapper/LoginInfoMapper.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/mapper/UserInfoMapper.java",
+                // repository
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/repository/LoginInfoRepository.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/basic/user/repository/UserInfoRepository.java"
         );
         Assertions.assertThat(CompilerUtil.compile(classNames)).isEmpty();
     }
@@ -70,14 +78,17 @@ class CodeFileGenerateUtilTest {
         CodeGenerateUtil.init("config/mall_order.yaml");
         Iterable<String> classNames = Arrays.asList(
                 // response
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/mall/rpc/order/response/base/OrderBillBaseRespVO.java",
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/mall/rpc/order/response/base/OrderDeliveryInfoBaseRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/mall/rpc/order/response/entity/OrderBillEntityRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/mall/rpc/order/response/entity/OrderDeliveryInfoEntityRespVO.java",
                 // entity
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/entity/OrderBillEntity.java",
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/entity/OrderDeliveryInfoEntity.java",
                 // mapper
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/mapper/base/OrderBillBaseMapper.java",
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/mapper/base/OrderDeliveryInfoBaseMapper.java"
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/mapper/OrderBillMapper.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/mapper/OrderDeliveryInfoMapper.java",
+                // repository
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/repository/OrderBillRepository.java",
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/order/repository/OrderDeliveryInfoRepository.java"
         );
         Assertions.assertThat(CompilerUtil.compile(classNames)).isEmpty();
     }
@@ -87,11 +98,13 @@ class CodeFileGenerateUtilTest {
         CodeGenerateUtil.init("config/mall_product.yaml");
         Iterable<String> classNames = Arrays.asList(
                 // response
-                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/mall/rpc/product/response/base/ProductInfoBaseRespVO.java",
+                PathUtil.getDefaultRpcDir() + "src/main/java/org/smartframework/cloud/examples/mall/rpc/product/response/entity/ProductInfoEntityRespVO.java",
                 // entity
                 PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/product/entity/ProductInfoEntity.java",
                 // mapper
-                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/product/mapper/base/ProductInfoBaseMapper.java"
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/product/mapper/ProductInfoMapper.java",
+                // repository
+                PathUtil.getDefaultServiceDir() + "src/main/java/org/smartframework/cloud/examples/mall/product/repository/ProductInfoRepository.java"
         );
         Assertions.assertThat(CompilerUtil.compile(classNames)).isEmpty();
     }

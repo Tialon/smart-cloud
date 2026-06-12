@@ -15,11 +15,9 @@
  */
 package io.github.smart.cloud.starter.mybatis.plus.plugin;
 
-import io.github.smart.cloud.constants.LogLevel;
-import io.github.smart.cloud.mask.util.LogUtil;
-import io.github.smart.cloud.mask.util.MaskUtil;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
 import io.github.smart.cloud.utility.DateUtil;
+import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.CacheKey;
@@ -34,6 +32,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -55,6 +54,10 @@ public class MybatisSqlLogInterceptor implements Interceptor {
      * 参数数组的长度
      */
     private static final int ARGS_LENGTH = 6;
+    /**
+     * 默认日志最大长度
+     */
+    private static final int DEFAULT_LOG_MAX_LENGTH = 2048;
     /**
      * 日志级别
      */
@@ -124,7 +127,7 @@ public class MybatisSqlLogInterceptor implements Interceptor {
             String sql = cleanSql(boundSql.getSql());
             str.append(sql)
                     .append(separator)
-                    .append(MaskUtil.mask(parameterObject));
+                    .append(JacksonUtil.toJson(parameterObject));
         } else {
             String sql = getSql(configuration, boundSql);
             str.append(sql);
@@ -136,15 +139,11 @@ public class MybatisSqlLogInterceptor implements Interceptor {
                 .append(separator)
                 .append("result")
                 .append(separator)
-                .append(MaskUtil.mask(returnValue));
+                .append(JacksonUtil.toJson(returnValue));
 
-        String logLevel = smartProperties.getMybatis().getLogLevel();
-        if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
-            log.debug(LogUtil.truncate(str.toString()));
-        } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
-            log.info(LogUtil.truncate(str.toString()));
-        } else if (LogLevel.WARN.equals(logLevel)) {
-            log.warn(LogUtil.truncate(str.toString()));
+        if (log.isInfoEnabled()) {
+            int maxLength = smartProperties.getMybatis().getLogMaxLength() == null ? DEFAULT_LOG_MAX_LENGTH : smartProperties.getMybatis().getLogMaxLength();
+            log.info(StringUtils.truncate(str.toString(), maxLength));
         }
     }
 

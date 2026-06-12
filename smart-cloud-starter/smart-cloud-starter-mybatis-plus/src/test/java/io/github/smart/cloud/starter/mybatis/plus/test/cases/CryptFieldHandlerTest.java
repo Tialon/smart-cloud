@@ -20,8 +20,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.smart.cloud.starter.mybatis.plus.common.CryptField;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.CryptFieldApp;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.biz.DescCryptField;
-import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.biz.ProductInfoOmsBiz;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.repository.DescCryptField;
+import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.repository.ProductInfoOmsRepository;
 import io.github.smart.cloud.starter.mybatis.plus.test.prepare.fieldcrypt.entity.ProductInfoEntity;
 import io.github.smart.cloud.starter.mybatis.plus.util.FieldCryptUtil;
 import io.github.smart.cloud.utility.NonceUtil;
@@ -43,7 +43,7 @@ import java.util.Date;
 class CryptFieldHandlerTest {
 
     @Autowired
-    private ProductInfoOmsBiz productInfoOmsBiz;
+    private ProductInfoOmsRepository productInfoOmsRepository;
     @Autowired
     private DynamicRoutingDataSource dynamicRoutingDataSource;
     private static final String ORIGINAL_VALUE = "phone6";
@@ -61,11 +61,11 @@ class CryptFieldHandlerTest {
         entity.setUpdTime(new Date());
         entity.setDelTime(new Date());
         entity.setInsertUser(1L);
-        Assertions.assertThat(productInfoOmsBiz.save(entity)).isTrue();
+        Assertions.assertThat(productInfoOmsRepository.save(entity)).isTrue();
 
         Long id = entity.getId();
 
-        ProductInfoEntity dbEntity = productInfoOmsBiz.getById(id);
+        ProductInfoEntity dbEntity = productInfoOmsRepository.getById(id);
         Assertions.assertThat(dbEntity).isNotNull();
         Assertions.assertThat(dbEntity.getName().getValue()).isEqualTo(entity.getName().getValue());
         Assertions.assertThat(dbEntity.getDesc().getValue()).isEqualTo(entity.getDesc().getValue());
@@ -75,7 +75,7 @@ class CryptFieldHandlerTest {
         LambdaQueryWrapper<ProductInfoEntity> condition = new LambdaQueryWrapper<>();
         condition.select(ProductInfoEntity::getId, ProductInfoEntity::getName, ProductInfoEntity::getDesc)
                 .eq(ProductInfoEntity::getName, new CryptField(ORIGINAL_VALUE));
-        ProductInfoEntity productInfoEntity = productInfoOmsBiz.getOne(condition);
+        ProductInfoEntity productInfoEntity = productInfoOmsRepository.getOne(condition);
         Assertions.assertThat(productInfoEntity).isNotNull();
         Assertions.assertThat(productInfoEntity.getName().getValue()).isEqualTo(entity.getName().getValue());
         Assertions.assertThat(productInfoEntity.getDesc().getValue()).isEqualTo(entity.getDesc().getValue());

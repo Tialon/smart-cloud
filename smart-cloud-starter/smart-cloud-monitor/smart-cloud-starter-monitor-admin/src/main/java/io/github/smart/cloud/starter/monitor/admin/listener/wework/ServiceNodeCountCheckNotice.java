@@ -15,13 +15,14 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.listener.wework;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotMarkdownMessageDTO;
+import io.github.smart.cloud.monitor.common.dto.wework.WeworkRobotTextMessageDTO;
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.event.notice.ServiceNodeCountCheckNoticeEvent;
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
-import io.github.smart.cloud.utility.JacksonUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,12 +33,25 @@ import org.springframework.util.StringUtils;
  */
 public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNodeCountCheckNoticeEvent> {
 
-    public ServiceNodeCountCheckNotice(RobotComponent robotComponent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
-        super(robotComponent, monitorProperties, reminderComponent);
+    public ServiceNodeCountCheckNotice(WeworkRobotAgent weworkRobotAgent, MonitorProperties monitorProperties, ReminderComponent reminderComponent) {
+        super(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Override
     public void onApplicationEvent(ServiceNodeCountCheckNoticeEvent event) {
+        if (monitorProperties.getMessageType() == WeworkRobotMessageType.MARKDOWN) {
+            sendMarkdownMessage(event);
+            return;
+        }
+        sendTextMessage(event);
+    }
+
+    /**
+     * 发送markdown格式消息
+     *
+     * @param event
+     */
+    private void sendMarkdownMessage(ServiceNodeCountCheckNoticeEvent event) {
         String name = event.getName();
         String reminders = getReminderParams(name);
         StringBuilder content = new StringBuilder(64);
@@ -55,8 +69,31 @@ public class ServiceNodeCountCheckNotice extends AbstractWeworkNotice<ServiceNod
             content.append(reminders);
         }
 
-        String robotMessage = JacksonUtil.toJson(new WeworkRobotMarkdownMessageDTO(content.toString()));
-        robotComponent.sendWxworkNotice(robotComponent.getRobotKey(name), robotMessage);
+        WeworkRobotMarkdownMessageDTO markdownMessage = new WeworkRobotMarkdownMessageDTO(content.toString());
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), markdownMessage);
+    }
+
+    /**
+     * 发送text格式消息
+     *
+     * @param event
+     */
+    private void sendTextMessage(ServiceNodeCountCheckNoticeEvent event) {
+        String name = event.getName();
+        StringBuilder content = new StringBuilder(64);
+        content.append("【服务】: ").append(name).append('\n');
+
+        ServiceInfoProperties serviceInfoProperties = monitorProperties.getServiceInfos().get(name);
+        if (serviceInfoProperties != null) {
+            Integer nodeCount = serviceInfoProperties.getNodeCount();
+            if (nodeCount != null) {
+                content.append("【期望实例数】: ").append(nodeCount).append('\n');
+            }
+        }
+        content.append("【当前实例数】:").append(event.getNodeCount()).append("⚠\n");
+
+        WeworkRobotTextMessageDTO textMessage = new WeworkRobotTextMessageDTO(content.toString(), getReminders(name));
+        weworkRobotAgent.sendMessage(monitorProperties.getRobotKey(name), textMessage);
     }
 
 }

@@ -15,13 +15,15 @@
  */
 package io.github.smart.cloud.monitor.common.dto.wework;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
-import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 企业微信机器人text类型消息
@@ -39,14 +41,17 @@ public class WeworkRobotTextMessageDTO extends AbstractWeworkRobotMessageDTO imp
     /**
      * 消息内容
      */
+    @JsonProperty("text")
     private WeworkRobotTextMessageContentDTO text;
 
     public WeworkRobotTextMessageDTO(String content) {
         this(content, null);
     }
 
-    public WeworkRobotTextMessageDTO(String content, LinkedHashSet<String> mentionedList) {
-        this.text = new WeworkRobotTextMessageContentDTO(content, mentionedList);
+    public WeworkRobotTextMessageDTO(String content, Set<String> mentionedMobileList) {
+        Assert.notNull(content, "content must not be null");
+
+        this.text = new WeworkRobotTextMessageContentDTO(content, mentionedMobileList);
         setMsgtype(WeworkRobotMessageType.TEXT.getValue());
     }
 

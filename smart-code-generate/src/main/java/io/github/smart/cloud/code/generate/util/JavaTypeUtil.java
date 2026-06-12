@@ -16,7 +16,6 @@
 package io.github.smart.cloud.code.generate.util;
 
 import com.mysql.cj.MysqlType;
-import io.github.smart.cloud.code.generate.config.Config;
 
 import java.util.Date;
 
@@ -60,13 +59,6 @@ public class JavaTypeUtil {
         return className;
     }
 
-    private static boolean isByteType(MysqlType mysqlType, int length) {
-        return length <= 2 && (mysqlType == MysqlType.INT || mysqlType == MysqlType.INT_UNSIGNED
-                || mysqlType == MysqlType.BIT
-                || mysqlType == MysqlType.SMALLINT || mysqlType == MysqlType.SMALLINT_UNSIGNED
-                || mysqlType == MysqlType.TINYINT || mysqlType == MysqlType.TINYINT_UNSIGNED);
-    }
-
     /**
      * 获取要导入的包名
      *
@@ -81,34 +73,11 @@ public class JavaTypeUtil {
         return null;
     }
 
-    /**
-     * 获取entity名
-     *
-     * @param tableName
-     * @return
-     */
-    public static String getEntityName(String tableName) {
-        return TableUtil.getEntityClassName(tableName) + Config.ENTITY_CLASS_SUFFIX;
-    }
-
-    /**
-     * 获取mapper名
-     *
-     * @param tableName
-     * @return
-     */
-    public static String getMapperName(String tableName) {
-        return TableUtil.getEntityClassName(tableName) + Config.MAPPER_CLASS_SUFFIX;
-    }
-
-    /**
-     * 获取RespBody名
-     *
-     * @param tableName
-     * @return
-     */
-    public static String getBaseRespBodyName(String tableName) {
-        return TableUtil.getEntityClassName(tableName) + Config.BASE_RESPVO_CLASS_SUFFIX;
+    private static boolean isByteType(MysqlType mysqlType, int length) {
+        return length <= 2 && (mysqlType == MysqlType.INT || mysqlType == MysqlType.INT_UNSIGNED
+                || mysqlType == MysqlType.BIT
+                || mysqlType == MysqlType.SMALLINT || mysqlType == MysqlType.SMALLINT_UNSIGNED
+                || mysqlType == MysqlType.TINYINT || mysqlType == MysqlType.TINYINT_UNSIGNED);
     }
 
 }

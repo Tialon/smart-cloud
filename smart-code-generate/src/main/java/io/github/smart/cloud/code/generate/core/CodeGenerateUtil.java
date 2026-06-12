@@ -17,16 +17,18 @@ package io.github.smart.cloud.code.generate.core;
 
 import io.github.smart.cloud.code.generate.bo.ColumnMetaDataBO;
 import io.github.smart.cloud.code.generate.bo.TableMetaDataBO;
-import io.github.smart.cloud.code.generate.bo.template.BaseMapperBO;
-import io.github.smart.cloud.code.generate.bo.template.BaseRespBO;
-import io.github.smart.cloud.code.generate.bo.template.ClassCommentBO;
-import io.github.smart.cloud.code.generate.bo.template.EntityBO;
+import io.github.smart.cloud.code.generate.bo.template.buildparam.TemplateBuildParamContext;
+import io.github.smart.cloud.code.generate.bo.template.param.ClassCommentBO;
+import io.github.smart.cloud.code.generate.config.ClassConstants;
+import io.github.smart.cloud.code.generate.config.Config;
+import io.github.smart.cloud.code.generate.enums.DefaultColumnEnum;
+import io.github.smart.cloud.code.generate.enums.FileType;
 import io.github.smart.cloud.code.generate.properties.CodeProperties;
-import io.github.smart.cloud.code.generate.properties.PathProperties;
 import io.github.smart.cloud.code.generate.properties.YamlProperties;
 import io.github.smart.cloud.code.generate.util.*;
 
 import java.sql.Connection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,22 +88,42 @@ public class CodeGenerateUtil {
                                             ClassCommentBO classComment, CodeProperties code) throws Exception {
         List<ColumnMetaDataBO> columnMetaDatas = DbUtil.getTableColumnMetaDatas(connnection, database,
                 tableMetaData.getName());
-        String mainClassPackage = code.getMainClassPackage();
-        PathProperties pathProperties = code.getProject().getPath();
-        String rpcPath = pathProperties.getRpc();
-        String servicePath = pathProperties.getService();
-        Set<String> encryptFields = TableUtil.getEncryptFields(tableMetaData.getName(), code);
 
-        EntityBO entityBO = TemplateUtil.getEntityBO(tableMetaData, columnMetaDatas, classComment, mainClassPackage,
-                code.getMask(), encryptFields);
-        CodeFileGenerateUtil.generateEntity(entityBO, servicePath);
+        TemplateBuildParamContext context = new TemplateBuildParamContext();
+        context.setTableMetaData(tableMetaData);
+        context.setColumnMetaDatas(columnMetaDatas);
+        context.setClassComment(classComment);
+        context.setCode(code);
 
-        BaseRespBO baseResp = TemplateUtil.getBaseRespBodyBO(tableMetaData, columnMetaDatas, classComment, mainClassPackage,
-                entityBO.getImportPackages(), code.getMask());
-        CodeFileGenerateUtil.generateBaseRespVO(baseResp, rpcPath);
+        for (FileType fileType : FileType.values()) {
+            SourceFileGenerateStrategyFactory.generateSourceFile(fileType, context);
+        }
+    }
 
-        BaseMapperBO baseMapperBO = TemplateUtil.getBaseMapperBO(tableMetaData, entityBO, classComment, mainClassPackage);
-        CodeFileGenerateUtil.generateBaseMapper(baseMapperBO, servicePath);
+    public static Set<String> buildEntityImportPackages(TemplateBuildParamContext context) {
+        TableMetaDataBO tableMetaData = context.getTableMetaData();
+        Set<String> encryptFields = TableUtil.getEncryptFields(tableMetaData.getName(), context.getCode());
+
+        Set<String> importPackages = new HashSet<>(2);
+        for (ColumnMetaDataBO columnMetaData : context.getColumnMetaDatas()) {
+            if (DefaultColumnEnum.contains(columnMetaData.getName())) {
+                continue;
+            }
+            if (columnMetaData.getPrimaryKey()) {
+                importPackages.add(ClassConstants.TABLEID_PACKAGE);
+            }
+
+            // 加密字段
+            if (encryptFields.contains(columnMetaData.getName())) {
+                importPackages.add(ClassConstants.CRYPT_FIELD_PACKAGE);
+            } else {
+                String importPackage = JavaTypeUtil.getImportPackage(columnMetaData.getJdbcType());
+                if (importPackage != null) {
+                    importPackages.add(importPackage);
+                }
+            }
+        }
+        return importPackages;
     }
 
 }

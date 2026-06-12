@@ -20,7 +20,7 @@ spring:
         password: ${spring.security.user.password}
 
 smart:
-  monitor:
+  admin-monitor:
     robotKey: 79445cd5-4f18-4d44-a84a-01ff147d11ae
     filterEventTs: 0
     checkOfflineTs: 5000
@@ -61,9 +61,6 @@ smart:
             preHeatHour: 0
             threshold: 0
 management:
-  health:
-    diskspace:
-      threshold: 10GB
   endpoint:
     health:
       show-details: always

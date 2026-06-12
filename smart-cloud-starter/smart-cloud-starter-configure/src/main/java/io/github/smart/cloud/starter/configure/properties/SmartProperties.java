@@ -83,10 +83,5 @@ public class SmartProperties implements Serializable {
      */
     @NestedConfigurationProperty
     private DbQueryMonitorProperties dbQueryMonitor = new DbQueryMonitorProperties();
-    /**
-     * rabbitmq相关配置
-     */
-    @NestedConfigurationProperty
-    private RabbitmqProperties rabbitmq = new RabbitmqProperties();
 
 }
