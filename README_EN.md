@@ -1,238 +1,304 @@
-smart cloud
+<p align="center">
+  <h1 align="center">☁️ Smart Cloud</h1>
+  <p align="center">
+    <strong>A One-Stop Spring Cloud Microservices Scaffolding — Build Microservices Like Lego</strong>
+  </p>
+  <p align="center">
+    Out-of-the-Box · Merge & Split · Security-Enhanced · Full-Stack Observability
+  </p>
+</p>
+
 ---
-[![build](https://github.com/smart-cloud/smart-cloud/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/smart-cloud/smart-cloud/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/smart-cloud/smart-cloud/branch/dev/graph/badge.svg)](https://codecov.io/gh/smart-cloud/smart-cloud)
-[![license](https://img.shields.io/badge/license-Apache%202-green)](https://github.com/smart-cloud/smart-cloud/blob/dev/LICENSE)
-[![Latest release](https://maven-badges.herokuapp.com/maven-central/io.github.smart-cloud/smart-cloud/badge.svg)](https://mvnrepository.com/artifact/io.github.smart-cloud/smart-cloud)
-[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md)
-[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](https://github.com/smart-cloud/smart-cloud#readme)
-# features
 
-**A scaffolding based on spring cloud implementation. The implemented functions are as follows:**
+<p align="center">
+  <a href="https://github.com/smart-cloud/smart-cloud/actions/workflows/build.yml"><img src="https://github.com/smart-cloud/smart-cloud/actions/workflows/build.yml/badge.svg?branch=dev" alt="build"></a>
+  <a href="https://codecov.io/gh/smart-cloud/smart-cloud"><img src="https://codecov.io/gh/smart-cloud/smart-cloud/branch/dev/graph/badge.svg" alt="codecov"></a>
+  <a href="https://github.com/smart-cloud/smart-cloud/blob/dev/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202-green" alt="license"></a>
+  <a href="https://mvnrepository.com/artifact/io.github.smart-cloud/smart-cloud"><img src="https://maven-badges.herokuapp.com/maven-central/io.github.smart-cloud/smart-cloud/badge.svg" alt="Maven Central"></a>
+  <a href="https://github.com/smart-cloud/smart-cloud"><img src="https://img.shields.io/github/stars/smart-cloud/smart-cloud?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md"><img src="https://img.shields.io/badge/document-English-blue.svg" alt="EN doc"></a>
+  <a href="https://github.com/smart-cloud/smart-cloud#readme"><img src="https://img.shields.io/badge/文档-中文版-blue.svg" alt="CN doc"></a>
+</p>
 
-- [The interface document is automatically generated (use the idea yapi plugin to upload to the yapi server)](https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md#api-documentation)
-- [Mock data can be generated to give full play to the role of front-end and back-end separation](https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md#interface-mock-data)
-- [Flexible deployment, services can be merged (after the merged services communicate through internal processes; after separation, through RPC communication) deployment, and can also be deployed separately after merging](https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md#principles-of-service-merger)
-- Automatic generation of business-independent code
-- [The interface supports encryption and signature](https://github.com/smart-cloud/smart-cloud-examples#%E4%BA%8C%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8)
-- Business-related functions (such as log printing, public configuration, common tool classes, etc.) are abstracted as starters
-- Support web interface log, feign log, method annotation log, mybatis log, mq consumer log printing, log level is configurable
-- Support multiple data sources, sharding table and sharding database
-- Supports multiple languages (internationalization)
-- Sensitive configuration information supports encryption, table privacy field encryption and decryption(Multi-key support)
-- The interface traffic is restricted and dynamic refresh is supported in the configuration center
-- Interface multi-version control
-- Annotated distributed lock, cache annotations
-- mq (rabbitmq) consumption fails, retry through custom annotations (put into delayed queue for re-consumption)
-- Service monitoring, slow interface monitoring, abnormal interface monitoring
-- [Log sensitive data desensitization](https://github.com/smart-cloud/smart-cloud/blob/dev/README_EN.md#desensitization-of-log-data)
-- The testing of the single service development phase does not depend on other services (mock test, closing nacos, sentinel, etc.)
+---
 
-See the example project: [smart-cloud-examples](https://github.com/smart-cloud/smart-cloud-examples)
+## 🌟 Why Smart Cloud?
 
-# Module description
+| Pain Point | Smart Cloud Solution |
+|------------|---------------------|
+| Splitting microservices too early is costly; too late hurts performance | **Merge & Split** — merge services by business domain in early stage to save costs; split them when traffic grows to handle high QPS. Merged deployment uses in-process calls; split deployment uses Feign RPC. Switch with one line in pom.xml |
+| API docs are costly to maintain | **Auto-generate YAPI docs** — upload to YAPI Server with one click via IDEA plugin |
+| Frontend-backend integration is slow | **Built-in Mock Engine** — auto-generate responses by type/rules |
+| Sensitive data leak risks | **Full-stack desensitization** — log masking + config encryption + field encryption (multi-key) |
+| Production issues discovered late | **Real-time monitoring & alerts** — slow APIs / error APIs / offline services, instant WeCom notifications |
+| Infrastructure onboarding is tedious | **20+ Starter components** — assemble capabilities like Lego blocks |
+
+> 📦 Example project: [smart-cloud-examples](https://github.com/smart-cloud/smart-cloud-examples) — up and running in 5 minutes
+
+---
+
+## ✨ Key Features
+
+### 🚀 Developer Productivity
+- **Auto API Documentation** — IDEA YAPI plugin one-click upload to YAPI Server
+- **Mock Data Engine** — random data by return type, custom mock rules supported
+- **Code Generation** — auto-generate boilerplate code (VO/DTO/Mapper, etc.)
+- **API Versioning** — manage multiple API versions effortlessly
+
+### 🔒 Security Enhancement
+- **API Encryption & Signature** — auto encrypt/decrypt requests/responses with tamper-proof signature
+- **Config Encryption** — encrypt configuration files via Jasypt
+- **Field-Level Encryption** — auto encrypt/decrypt privacy fields with multi-key support
+- **Log Desensitization** — annotation-driven, auto-mask sensitive data in log output
+
+### 🏗️ Architecture Flexibility
+- **Merge & Split Services** — merge by business domain to save costs early on; split for high traffic later. Merged (in-process) ⇄ split (RPC), flexible switching
+- **Multi-DataSource & Sharding** — MyBatis-Plus + Dynamic-DataSource + ShardingSphere
+- **Rate Limiting & Circuit Breaking** — Sentinel integration with dynamic refresh via config center
+- **MQ Retry on Failure** — custom annotation for delayed queue re-consumption
+
+### 📊 Full Observability
+- **Service Monitoring** — Spring Boot Admin (status/GC/threads/memory/CPU/Tomcat)
+- **API Monitoring** — slow API / error API real-time monitoring + consecutive failure circuit breaking
+- **WeCom Alerts** — instant notification for service offline / health check failure, supports @mention
+- **Full-Stack Logging** — Web/Feign/Method/MyBatis/MQ logs, configurable levels
+- **Request Tracing** — HTTP request input/output params & timing
+
+### 🧪 Testing Friendly
+- **Standalone Testing** — disable Nacos/Sentinel, mock RPC interfaces, develop independently
+- **Integration Test Suite** — H2 database + Embedded Redis + RabbitMQ Mock
+- **Unit Test Utilities** — Mockito + Podam data mocking, improve coverage
+
+---
+
+## 🚀 Quick Start
+
+### 1. Add Parent Dependency
+
+```xml
+<parent>
+    <groupId>io.github.smart-cloud</groupId>
+    <artifactId>smart-cloud</artifactId>
+    <version>${latest-version}</version>
+</parent>
+```
+
+### 2. Add Starters as Needed
+
+```xml
+<!-- Web Service -->
+<dependency>
+    <groupId>io.github.smart-cloud</groupId>
+    <artifactId>smart-cloud-starter-web</artifactId>
+</dependency>
+
+<!-- MyBatis-Plus ORM -->
+<dependency>
+    <groupId>io.github.smart-cloud</groupId>
+    <artifactId>smart-cloud-starter-mybatis-plus</artifactId>
+</dependency>
+
+<!-- Redis Cache & Distributed Lock -->
+<dependency>
+    <groupId>io.github.smart-cloud</groupId>
+    <artifactId>smart-cloud-starter-redis</artifactId>
+</dependency>
+```
+
+### 3. Full Working Example
+
+👉 Head to [smart-cloud-examples](https://github.com/smart-cloud/smart-cloud-examples) for a complete, ready-to-run example project.
+
+---
+
+## 🧩 Module Structure
 
 ```
 smart-cloud
-├──smart-api-core -- Interface permissions, encryption and decryption, signature and other annotations && user context
-│  ├──smart-api-annotation -- Annotation for interface permissions, encryption and decryption, signature, etc.
-│  └──smart-user-context -- user context
-├──smart-code-generate -- code generation
-├──smart-common-pojo -- public object( VO,DTO,BO,DO, etc.)
-├──smart-common-web -- web module public processing
-├──smart-constants -- constant module
-├──smart-exception -- exception module
-├──smart-design-pattern-utility -- Design-pattern tools
-├──smart-utility -- Tools
-├──smart-test -- test package
-│  ├──smart-cloud-starter-test -- test package
-│  ├──smart-cloud-starter-test-mock-rabbitmq -- test rabbitmq module package
-│  ├──smart-cloud-starter-test-mock-redis -- test redis module package
-│  └──smart-cloud-test-core -- test unit test, integration test package
-└──smart-could-starter -- frame encapsulation
-   ├──smart-cloud-starter-api-version -- Interface multi-version control
-   ├──smart-cloud-starter-configure -- Framework configuration property encapsulation
-   ├──smart-cloud-starter-core -- Framework core (custom annotations, exception encapsulation, request and response public parameters, business-related tool classes)
-   ├──smart-cloud-starter-elasticsearch-dynamic-datasource -- elasticsearch dynamic data source
-   ├──smart-cloud-starter-feign -- feign package (removable and reusable, faceted)
-   ├──smart-cloud-starter-global-id -- distributed id generator
-   ├──smart-cloud-starter-job -- Scheduled task
-   ├──smart-cloud-starter-locale -- international
-   ├──smart-cloud-starter-log4j2 -- Log encapsulation (log4j2 log printing, support log sensitive data desensitization)
-   ├──smart-cloud-starter-log-mask -- Log de-identification packaging
-   ├──smart-cloud-starter-logback -- Log encapsulation (logback log printing, support log sensitive data desensitization)
-   ├──smart-cloud-starter-method-log -- 方Method Aspect Log Encapsulation
-   ├──smart-cloud-starter-mock -- Mock encapsulation (mock tool classes, common mock strategies, request interface mock interceptors)
-   ├──smart-cloud-starter-monitor -- Monitor service by spring boot admin, send warning message by WXWork
-   ├──smart-cloud-starter-mp-shardingjdbc -- mybatis plus, dynamic-datasource, shardingjdbc package (supports multiple data sources, sub-database sub-tables; mapper tool class)
-   ├──smart-cloud-starter-mybatis-plus -- mybatis plus, dynamic-datasource encapsulation (supports multiple data sources; mapper tool class, table privacy field encryption and decryption, etc.)
-   ├──smart-cloud-starter-rabbitmq -- rabbitmq encapsulation (consumption failure, automatically put into the delayed queue for re-consumption)
-   ├──smart-cloud-starter-rate-limit -- api rate limit
-   ├──smart-cloud-starter-redis -- redis encapsulation, custom distributed lock annotation
-   ├──smart-cloud-starter-static-discovery -- The service address of the feign client is dynamically obtained from the configuration center (not through the registry)
-   ├──smart-cloud-starter-trace-debug -- Printing of input and output parameters as well as execution time for HTTP request links (for debugging purposes)
-   ├──smart-cloud-starter-web -- web encapsulation (log aspect, exception handling, parameter verification)
-   └──smart-cloud-starter-monitor -- Service monitoring, interface monitoring
-      ├──smart-cloud-monitor-common -- Monitor common code
-      ├──smart-cloud-starter-monitor-api -- Slow interface monitoring, abnormal interface monitoring
-      └──smart-cloud-starter-monitor-admin -- spring boot admin monitoring(Service status, gc, thread count, memory, cpu, tomcat, etc.), wework notifications
+├── smart-api-core                          # API permissions, encryption, signature annotations & user context
+│   ├── smart-api-annotation                #   API permissions, encryption, signature annotations
+│   └── smart-user-context                  #   User context
+├── smart-code-generate                     # Code generation
+├── smart-common-pojo                       # Common objects (VO, DTO, BO, DO)
+├── smart-common-web                        # Web module common processing
+├── smart-constants                         # Constants
+├── smart-exception                         # Exception module
+├── smart-design-pattern-utility            # Design pattern utilities
+├── smart-utility                           # Common utilities
+├── smart-test                              # Testing utilities
+│   ├── smart-cloud-starter-test            #   Test base
+│   ├── smart-cloud-starter-test-mock-rabbitmq  # RabbitMQ Mock
+│   ├── smart-cloud-starter-test-mock-redis     # Redis Mock
+│   └── smart-cloud-test-core               #   Unit / integration test utilities
+└── smart-cloud-starter                     # 🧱 Starter Components
+    ├── smart-cloud-starter-api-version     #   API versioning
+    ├── smart-cloud-starter-configure       #   Framework config properties
+    ├── smart-cloud-starter-core            #   Core (annotations, exceptions, request/response)
+    ├── smart-cloud-starter-elasticsearch-dynamic-datasource  # ES dynamic datasource
+    ├── smart-cloud-starter-feign           #   Feign (merge/split, aspects)
+    ├── smart-cloud-starter-global-id       #   Distributed ID generator
+    ├── smart-cloud-starter-job             #   Scheduled tasks (XXL-Job)
+    ├── smart-cloud-starter-locale          #   Internationalization
+    ├── smart-cloud-starter-log4j2          #   Log4j2 logging (with desensitization)
+    ├── smart-cloud-starter-log-mask        #   Log desensitization
+    ├── smart-cloud-starter-logback         #   Logback logging (with desensitization)
+    ├── smart-cloud-starter-method-log      #   Method aspect logging
+    ├── smart-cloud-starter-mock            #   Mock (utilities, strategies, interceptors)
+    ├── smart-cloud-starter-mp-shardingjdbc #   MyBatis-Plus + sharding
+    ├── smart-cloud-starter-mybatis-plus    #   MyBatis-Plus + multi-datasource
+    ├── smart-cloud-starter-rabbitmq        #   RabbitMQ (auto-retry on failure)
+    ├── smart-cloud-starter-rate-limit      #   Rate limiting (Sentinel)
+    ├── smart-cloud-starter-redis           #   Redis + distributed lock
+    ├── smart-cloud-starter-static-discovery    # Static service discovery
+    ├── smart-cloud-starter-trace-debug     #   Request tracing (I/O + timing)
+    ├── smart-cloud-starter-web             #   Web (logging aspect, exception handling, validation)
+    └── smart-cloud-starter-monitor         #   📊 Monitoring
+        ├── smart-cloud-monitor-common      #     Common monitoring code
+        ├── smart-cloud-starter-monitor-api #     Slow API / error API monitoring
+        └── smart-cloud-starter-monitor-admin   # Spring Boot Admin + WeCom alerts
 ```
 
-# technology stack
+---
 
-name | role description
----|---
-[spring boot](https://spring.io/projects/spring-boot/) | scaffolding
-[spring cloud gateway](https://spring.io/projects/spring-cloud-gateway) | service gateway
-[nacos](https://nacos.io/zh-cn/docs/what-is-nacos.html) | Service registration and configuration center
-[spring boot admin](https://github.com/codecentric/spring-boot-admin) | service monitoring
-[openfeign](https://spring.io/projects/spring-cloud-openfeign)| Declarative service invocation(RPC)
-[sleuth](https://spring.io/projects/spring-cloud-sleuth)、[log4j2](https://logging.apache.org/log4j/2.x/) | Link tracking, logs
-[mybatis](http://www.mybatis.org/mybatis-3/zh/index.html) 、[mybatis plus](https://github.com/baomidou/mybatis-plus)| ORM
-[dynamic-datasource](https://mp.baomidou.com/guide/dynamic-datasource.html)| Multiple data sources
-[sharding jdbc](https://github.com/apache/incubator-shardingsphere) | Sub-library and sub-table
-[redis](https://redis.io/)、[embedded-redis](https://github.com/kstyrc/embedded-redis) | Caching, Integration Testing
-[sentinel](https://github.com/alibaba/Sentinel) | Current limit, fuse, downgrade
-[rabbitmq](https://www.rabbitmq.com/) | message queue
-[fastdfs](https://github.com/happyfish100/fastdfs) | Distributed file storage
-[xxl-job](https://github.com/xuxueli/xxl-job)| Distributed timing tasks
-[easyexcel](https://github.com/alibaba/easyexcel) | excel import and export
-[Hibernator-Validator](http://hibernate.org/validator/) | parameter verification
-[mockito](https://site.mockito.org/)、[podam](https://github.com/mtedone/podam) | Unit testing, data mocking
-[h2](http://www.h2database.com/html/tutorial.html) | database integration test
-[embedded-redis](https://github.com/ozimov/embedded-redis) | redis integration test
-[rabbitmq-mock](https://github.com/fridujo/rabbitmq-mock) | rabbitmq integration test
-[embedded-elasticsearch](https://github.com/allegro/embedded-elasticsearch) | elasticsearch integration test
-[freemarker](https://freemarker.apache.org/) | code template generation
-[yapi](https://github.com/YMFE/yapi)、[idea yapi upload plugin](https://github.com/smart-cloud/yapi_upload) | api documentation
-[jasypt-spring-boot](https://github.com/ulisesbocchio/jasypt-spring-boot) | Encryption and decryption of sensitive data in configuration files
-[Lombok](https://www.projectlombok.org/) | Simplified code
+## 🛠️ Tech Stack
 
-# Principles of Service Merger
+| Category | Technology | Purpose |
+|----------|-----------|---------|
+| **Framework** | [Spring Boot](https://spring.io/projects/spring-boot/) | Scaffolding |
+| | [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway) | API Gateway |
+| | [Nacos](https://nacos.io/en/docs/what-is-nacos.html) | Service Registry & Config Center |
+| **Service Calls** | [OpenFeign](https://spring.io/projects/spring-cloud-openfeign) | Declarative RPC |
+| | [Sentinel](https://github.com/alibaba/Sentinel) | Rate Limiting & Circuit Breaking |
+| **Data Layer** | [MyBatis](http://www.mybatis.org/mybatis-3/en/index.html) + [MyBatis-Plus](https://github.com/baomidou/mybatis-plus) | ORM |
+| | [Dynamic-DataSource](https://mp.baomidou.com/guide/dynamic-datasource.html) | Multi-DataSource |
+| | [ShardingSphere](https://github.com/apache/incubator-shardingsphere) | Sharding |
+| | [Redis](https://redis.io/) | Cache & Distributed Lock |
+| **Messaging** | [RabbitMQ](https://www.rabbitmq.com/) | Async Messaging |
+| **Monitoring** | [Spring Boot Admin](https://github.com/codecentric/spring-boot-admin) | Service Monitoring |
+| | [Sleuth](https://spring.io/projects/spring-cloud-sleuth) | Distributed Tracing |
+| **Tools** | [XXL-Job](https://github.com/xuxueli/xxl-job) | Distributed Task Scheduling |
+| | [EasyExcel](https://github.com/alibaba/easyexcel) | Excel Import/Export |
+| | [FastDFS](https://github.com/happyfish100/fastdfs) | Distributed File Storage |
+| | [Jasypt](https://github.com/ulisesbocchio/jasypt-spring-boot) | Config Encryption |
+| | [Lombok](https://www.projectlombok.org/) | Code Simplification |
+| **Testing** | [Mockito](https://site.mockito.org/) + [Podam](https://github.com/mtedone/podam) | Unit Tests & Data Mock |
+| | [H2](http://www.h2database.com/html/tutorial.html) | DB Integration Tests |
+| | [Embedded Redis](https://github.com/ozimov/embedded-redis) | Redis Integration Tests |
+| | [RabbitMQ Mock](https://github.com/fridujo/rabbitmq-mock) | MQ Integration Tests |
+| **Docs** | [YAPI](https://github.com/YMFE/yapi) + [IDEA Plugin](https://github.com/smart-cloud/yapi_upload) | Auto API Documentation |
+| **Code Gen** | [FreeMarker](https://freemarker.apache.org/) | Template Engine |
+
+---
+
+## 🔄 Service Merge & Split
+
+Smart Cloud's most distinctive feature: **services can be merged or split at will**.
+
+> In the early stage of a new project, multiple services can be merged by business domain to save infrastructure costs. As the business grows with increasing users and higher QPS, services can be split for independent deployment and elastic scaling.
 
 ![](docs/images/service_merge.png)
 
-- To merge services, you only need to modify pom.xml and import the services to be merged.
-- rpc interface through custom annotation[SmartFeignClient](https://github.com/smart-cloud/smart-cloud/blob/dev/smart-cloud-starter/smart-cloud-starter-feign/src/main/java/org/smartframework/cloud/starter/rpc/feign/annotation/SmartFeignClient.java)accomplish. When a single service is deployed alone, FeignClient will take effect; when the service provider and service consumer are deployed together, the FeignClient annotation will be invalid, and the rpc interface will be called directly through the implementation class object. For specific logic, see[SmartFeignClientCondition](https://github.com/smart-cloud/smart-cloud/blob/463cc09b6c2f8a0b947f0a2fcc157ee037ba419d/smart-cloud-starter/smart-cloud-starter-feign/src/main/java/org/smartframework/cloud/starter/rpc/feign/condition/SmartFeignClientCondition.java#L32)。
+- **Merged deployment**: add service dependencies in `pom.xml` — calls automatically switch to in-process
+- **Split deployment**: each service runs independently — communicates via Feign RPC
+- **Auto switching**: via [SmartFeignClient](https://github.com/smart-cloud/smart-cloud/blob/dev/smart-cloud-starter/smart-cloud-starter-feign/src/main/java/org/smartframework/cloud/starter/rpc/feign/annotation/SmartFeignClient.java) annotation + [condition check](https://github.com/smart-cloud/smart-cloud/blob/463cc09b6c2f8a0b947f0a2fcc157ee037ba419d/smart-cloud-starter/smart-cloud-starter-feign/src/main/java/org/smartframework/cloud/starter/rpc/feign/condition/SmartFeignClientCondition.java#L32) — no code changes needed
 
-# Related instructions
+### Key Problems Solved in Merged Deployment
 
-## Problems encountered with service mergers
+| Problem | Solution |
+|---------|---------|
+| Bean name conflicts | Custom bean name generation rules |
+| RPC interface vs implementation conflicts | `SmartFeignClient` conditional annotation — uses in-process calls when merged |
+| YAML config auto-loading | `@YamlScan` annotation + `EnvironmentPostProcessor` SPI |
+| Startup class annotation conflicts | `SmartSpringCloudApplicationCondition` conditional annotation |
+| Maven packaging issues | Maven Profiles to control dependency scope |
 
-A single service is introduced into the merged service through maven in the form of a jar. In a single service, the feign interface requests through http; after the services are merged, the feign interface communicates through internal processes.
+---
 
-### Bean name conflict
+## 📊 Monitoring & Alerts
 
-````
-After different services are merged together, there will be a problem of bean name conflict. Resolved by custom bean name generation rules.
-````
+Monitor service status via Spring Boot Admin, extend Actuator endpoints to track API health, and send WeCom notifications.
 
-### rpc conflicts with rpc implementation class
+- **Service offline**: check GitLab job history; if no tag jobs in the last 30 minutes (configurable), send notification and @mention
+- **API errors**: sliding window failure rate calculation; health check fails when threshold exceeded
+- **Consecutive failure circuit breaking**: trigger alert on consecutive API failures
 
-```
-Custom conditional annotations encapsulate FeignClient. When it is used as a single service, rpc uses feign; when it is combined service, rpc uses internal process communication.
-```
+| Service Offline | Health Check Failed | Service Online |
+|:---:|:---:|:---:|
+| ![](docs/images/monitor/off_line.png) | ![](docs/images/monitor/down.png) | ![](docs/images/monitor/up.png) |
 
-### Automatic loading of yaml files
+---
 
-```
-Custom annotation YamlScan, used to load the configured yaml file (supports regular matching). Through the SPI mechanism, the implementation class of EnvironmentPostProcessor is added to the spring.factories file, and the information of the startup class is obtained through its method parameter SpringApplication, thereby obtaining the information of the yaml file configured by the YamlScan annotation. Then add the yaml file to the ConfigurableEnvironment.
-```
-
-### Startup class annotation conflict
-
-```
-The custom condition annotation SmartSpringCloudApplicationCondition will only make the startup annotation marked by the startup class take effect.
-```
-
-### maven packaging exception
+## 🔒 Log Desensitization
 
 ```
-When the combined service is packaged, the packages that the single service depends on are also entered into the single service jar. Solved by maven profiles
+1. Custom desensitization tags — auto-trigger masking when logging
+2. Custom Jackson serializer — dedicated serializer for log output
+3. Reflect @MaskRule annotations — mask strings per annotation rules
 ```
 
-## Desensitization of log data
+---
 
-```
-1. Cut in from the log side, customize the label, and perform desensitization processing when printing the log;
-2. Customize the serializer of jackson; when printing the log, use the customized serializer;
-3. Obtain the MaskRule annotation information of the log incoming parameters through reflection, and finally intercept and replace the string according to the annotation rules.
-```
+## 📄 API Documentation
 
-## Service monitor
-Monitoring the service status through springboot admin, monitoring the interface abnormality in the service through extending the actuator interface, and notifying the WXWork.
-- When the service is offline, check the gitlab job record. If there is no tag job running record in the last half hour (configurable), the enterprise WeChat will be notified by @ the specified reminder person.
-- Customize the interface aspect, calculate the interface failure rate within a simple sliding window time. When springboot admin queries through actuator/health, if some interfaces exceed the failure rate threshold, the service health check will be returned.
-### 1.Service Offline Notification
-![](docs/images/monitor/off_line.png)
-### 2.Service Health Check Failed
-![](docs/images/monitor/down.png)
-### 3.Service up
-![](docs/images/monitor/up.png)
+Upload to [YAPI Server](https://github.com/YMFE/yapi) with one click via [IDEA YAPI Upload Plugin](https://github.com/smart-cloud/yapi_upload).
 
-## Interface mock data
+| Overview | Detail |
+|:---:|:---:|
+| ![](docs/images/yapi_docs.png) | ![](docs/images/yapi_docs_detail.png) |
 
-The interface can obtain all the information of the returned object through reflection, and then randomly generate data according to the attribute type of the object; for the data required by specific requirements, you can formulate mock rules to generate data in a specified format.
+---
 
-## Test
+## 📖 Error Codes
 
-### Unit Test
+| Module | Code | Description |
+|--------|:----:|-------------|
+| smart-constants | 200 | Success |
+| | 101 | Validation failed |
+| | 102 | Data not found |
+| | 103 | Data already exists |
+| | 400 | Signature error |
+| | 401 | Unauthorized access |
+| | 404 | Request URL error |
+| | 408 | Request timeout |
+| | 409 | Duplicate submission |
+| | 412 | Incomplete parameters |
+| | 413 | Attribute not configured |
+| | 415 | Request method not supported |
+| | 416 | Request type not supported |
+| | 417 | Failed to acquire lock |
+| | 418 | Upload file size exceeds limit |
+| | 419 | Session expired, please log in again |
+| | 420 | Request JSON parse error |
+| | 421 | Rate limit exceeded |
+| | 500 | Server error |
+| | 501 | Failed to get Request |
+| | 502 | Failed to get Response |
+| | 503 | RPC request failed |
+| smart-cloud-starter-web | 2001 | Validation target cannot be null |
+| smart-cloud-starter-elasticsearch-dynamic-datasource | 3001 | ES DS key not found |
+| | 3002 | ES data source not found |
+| | 3003 | ES dynamic datasource properties not configured |
 
-Improve test coverage with unit testing.
+---
 
-### Integration Testing
+## 🤝 Contributing
 
->- Under integration tests, turn off nacos to reduce dependencies.
->- Depends on the service rpc interface, go baffle through mockito.
->- The redis layer uses embedded-redis for integration testing.
->- rabbitmq layer uses rabbitmq-mock for integration testing
->- The database layer uses h2 for integration testing (there are two other schemes: scheme 1 restores the modification of the DB by the test case through transaction rollback; scheme 2 deletes the relevant table before the test case is executed).
+Star ⭐, Fork 🍴, and PR 🔧 are welcome!
 
-### System Test
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## api documentation
+---
 
-### The interface documentation is automatically generated by the following steps:
+## ⭐ Star History
 
-Through the [idea yapi upload plugin](https://github.com/smart-cloud/yapi_upload) plugin, upload to [yapi server](https://github.com/YMFE/yapi)
+[![Star History Chart](https://api.star-history.com/svg?repos=smart-cloud/smart-cloud&type=Date)](https://star-history.com/#smart-cloud/smart-cloud&Date)
 
-### Interface document renderings
+---
 
-#### summary
+## 📜 License
 
-![](docs/images/yapi_docs.png)
-
-#### Details
-
-![](docs/images/yapi_docs_detail.png)
-
-# Error code description
-
-module | code  | message
----|-------|---
-smart-constants | 200 | success
-smart-constants | 101 | Verification failed
-smart-constants | 102 | Data does not exist
-smart-constants | 103 | Data already exists
-smart-constants | 400 | Signature error
-smart-constants | 401 | Unauthorized access
-smart-constants | 404 | request url error
-smart-constants | 408 | Request timed out
-smart-constants | 409 | duplicate commit
-smart-constants | 412 | Incomplete parameters
-smart-constants | 413 | Attribute not configured
-smart-constants | 415 | Request method not supported
-smart-constants | 416 | Request type not supported
-smart-constants | 417 | Failed to acquire lock
-smart-constants | 418 | Upload file size exceeds limit
-smart-constants | 419 | The current session has expired, please log in again
-smart-constants | 420 | json parsing of the input parameter is abnormal
-smart-constants | 421 | Interface access is too frequent, please try again later
-smart-constants | 500 | Server exception
-smart-constants | 501 | Failed to get Request
-smart-constants | 502 | Failed to get Response
-smart-constants | 503 | rpc request failed
-smart-cloud-starter-web | 2001  | The parameter object to be verified cannot be null
-smart-cloud-starter-elasticsearch-dynamic-datasource | 3001  | elasticsearch ds key does not exist
-smart-cloud-starter-elasticsearch-dynamic-datasource | 3002  | elasticsearch data source not found
-smart-cloud-starter-elasticsearch-dynamic-datasource | 3003  | elasticsearch dynamic data source properties are not configured
+This project is licensed under the [Apache License 2.0](LICENSE).
