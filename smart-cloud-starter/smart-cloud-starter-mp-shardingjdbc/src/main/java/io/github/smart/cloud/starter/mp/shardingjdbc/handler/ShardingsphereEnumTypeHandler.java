@@ -61,23 +61,17 @@ public class ShardingsphereEnumTypeHandler<E extends Enum<E>> extends MybatisEnu
                 Object value = null;
                 if (Byte.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getByte(columnName);
-                }
-                if (Short.class.equals(propertyType)) {
+                } else if (Short.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getShort(columnName);
-                }
-                if (Integer.class.equals(propertyType)) {
+                } else if (Integer.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getInt(columnName);
-                }
-                if (Long.class.equals(propertyType)) {
+                } else if (Long.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getLong(columnName);
-                }
-                if (Double.class.equals(propertyType)) {
+                } else if (Double.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getDouble(columnName);
-                }
-                if (Float.class.equals(propertyType)) {
+                } else if (Float.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getFloat(columnName);
-                }
-                if (String.class.equals(propertyType)) {
+                } else if (String.class.equals(propertyType)) {
                     value = shardingSphereResultSet.getString(columnName);
                 }
                 return (E) valueOfMethod.invoke(this, value);

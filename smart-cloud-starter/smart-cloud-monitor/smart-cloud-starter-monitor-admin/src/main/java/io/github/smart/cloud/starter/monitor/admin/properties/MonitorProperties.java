@@ -15,10 +15,14 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.properties;
 
+import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
+import io.github.smart.cloud.monitor.common.properties.ProxyProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
@@ -54,18 +58,26 @@ public class MonitorProperties implements InitializingBean {
     /**
      * 工程信息
      */
+    @NestedConfigurationProperty
     private ProxyProperties proxy = new ProxyProperties();
     /**
      * gitlab配置
      */
+    @NestedConfigurationProperty
     private GitlabProperties gitlab = new GitlabProperties();
     /**
      * 默认的机器人key
      */
     private String robotKey;
     /**
+     * 消息类型
+     */
+    @NestedConfigurationProperty
+    private WeworkRobotMessageType messageType = WeworkRobotMessageType.MARKDOWN;
+    /**
      * 服务配置
      */
+    @NestedConfigurationProperty
     private Map<String, ServiceInfoProperties> serviceInfos = new HashMap<>();
     /**
      * 不监听的服务
@@ -99,6 +111,7 @@ public class MonitorProperties implements InitializingBean {
     /**
      * 默认指标监控阈值
      */
+    @NestedConfigurationProperty
     private MetricAlertProperties metric = new MetricAlertProperties();
 
     @Override
@@ -196,6 +209,21 @@ public class MonitorProperties implements InitializingBean {
         if (gc.getThreshold() == null) {
             gc.setThreshold(BigDecimal.valueOf(0.85D));
         }
+    }
+
+    /**
+     * 获取机器人key
+     *
+     * @param serviceName
+     * @return
+     */
+    public String getRobotKey(String serviceName) {
+        ServiceInfoProperties serviceInfoProperties = serviceInfos.get(serviceName);
+        if (serviceInfoProperties != null && StringUtils.hasText(serviceInfoProperties.getRobotKey())) {
+            return serviceInfoProperties.getRobotKey();
+        }
+
+        return robotKey;
     }
 
 }

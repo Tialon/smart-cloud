@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.starter.log4j2.plugin;
 
+import io.github.smart.cloud.starter.log.mask.pattern.util.LogMaskUtil;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
@@ -22,9 +23,7 @@ import org.apache.logging.log4j.core.pattern.ConverterKeys;
 import org.apache.logging.log4j.core.pattern.LogEventPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.message.Message;
-import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.logging.log4j.util.PerformanceSensitive;
-import io.github.smart.cloud.mask.util.MaskUtil;
 
 /**
  * 自定义log4j2模式匹配符
@@ -58,14 +57,8 @@ public class MaskMessagePatternConverter extends LogEventPatternConverter {
     @Override
     public void format(final LogEvent event, final StringBuilder toAppendTo) {
         Message message = event.getMessage();
-        // 参数脱敏处理
-        Object[] params = message.getParameters();
-        if (params != null && params.length > 0) {
-            for (int i = 0; i < params.length; i++) {
-                params[i] = MaskUtil.mask(params[i]);
-            }
-        }
-        toAppendTo.append(ParameterizedMessage.format(message.getFormat(), params));
+        String maskText = LogMaskUtil.mask(message.getFormattedMessage());
+        toAppendTo.append(maskText);
     }
 
 }

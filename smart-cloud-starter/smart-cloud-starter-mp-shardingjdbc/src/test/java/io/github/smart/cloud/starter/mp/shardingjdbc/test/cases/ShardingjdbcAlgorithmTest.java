@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.ShardingJdbcAlgorithmApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.biz.OrderBillBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.repository.OrderBillRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcalgorithm.util.OrderUtil;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
@@ -39,11 +39,11 @@ import java.util.Date;
 class ShardingjdbcAlgorithmTest {
 
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillRepository;
 
     @BeforeEach
     void cleanData() {
-        orderBillBiz.truncate();
+        orderBillRepository.truncate();
     }
 
     @Test
@@ -59,13 +59,13 @@ class ShardingjdbcAlgorithmTest {
         orderBillEntity.setPayState((byte) 1);
         orderBillEntity.setBuyer(uid);
         orderBillEntity.setInsertUser(1L);
-        boolean saveResult = orderBillBiz.save(orderBillEntity);
+        boolean saveResult = orderBillRepository.save(orderBillEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        OrderBillEntity entity1 = orderBillBiz.getByOrderNo(orderBillEntity.getOrderNo());
+        OrderBillEntity entity1 = orderBillRepository.getByOrderNo(orderBillEntity.getOrderNo());
         Assertions.assertThat(entity1).isNotNull();
 
-        OrderBillEntity entity2 = orderBillBiz.getByBuyer(orderBillEntity.getBuyer());
+        OrderBillEntity entity2 = orderBillRepository.getByBuyer(orderBillEntity.getBuyer());
         Assertions.assertThat(entity2).isNotNull();
     }
 

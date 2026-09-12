@@ -16,7 +16,7 @@
 package io.github.smart.cloud.api.core.user.context.filter;
 
 import io.github.smart.cloud.api.core.user.context.AbstractUserContext;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
+import io.github.smart.cloud.constants.OrderConstant;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,8 +41,11 @@ public class CleanUserContextServletFilter extends OncePerRequestFilter implemen
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
-        AbstractUserContext.remove();
+        try {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        } finally {
+            AbstractUserContext.remove();
+        }
     }
 
 }

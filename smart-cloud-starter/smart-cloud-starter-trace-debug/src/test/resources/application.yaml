@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: smart-cloud-starter-trace-debug
+
+server:
+  port: 41000
+
+smart:
+  trace-debug:
+    enable: true
+    open: true
+    point-cut:
+      matchClassSet:
+        - org.springframework.data.redis.core.RedisTemplate
+        - org.springframework.data.redis.core.StringRedisTemplate
+        - org.redisson.Redisson
+        - org.springframework.amqp.rabbit.core.RabbitTemplate

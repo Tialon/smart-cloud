@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.ShardingJdbcMasterSlaveApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.biz.OrderBillBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.repository.OrderBillRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.shardingjdbcmasterslave.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mybatis.plus.enums.DeleteState;
 import io.github.smart.cloud.utility.NonceUtil;
@@ -40,16 +40,16 @@ import java.util.Date;
 class ShardingJdbcMasterSlaveTest {
 
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillRepository;
 
     @BeforeEach
     void cleanData() {
         // truncate从库
-        orderBillBiz.truncate();
+        orderBillRepository.truncate();
         // truncate主库
         try (HintManager hintManager = HintManager.getInstance();) {
             hintManager.setWriteRouteOnly();
-            orderBillBiz.truncate();
+            orderBillRepository.truncate();
         }
     }
 
@@ -65,17 +65,17 @@ class ShardingJdbcMasterSlaveTest {
         orderBillEntity.setPayState((byte) 1);
         orderBillEntity.setBuyer(1L);
         orderBillEntity.setInsertUser(1L);
-        boolean saveResult = orderBillBiz.save(orderBillEntity);
+        boolean saveResult = orderBillRepository.save(orderBillEntity);
         Assertions.assertThat(saveResult).isTrue();
 
         // 默认查从库
-        OrderBillEntity slaveEntity = orderBillBiz.getById(orderBillEntity.getId());
+        OrderBillEntity slaveEntity = orderBillRepository.getById(orderBillEntity.getId());
         Assertions.assertThat(slaveEntity).isNull();
 
         // 强制查主库
         try (HintManager hintManager = HintManager.getInstance();) {
             hintManager.setWriteRouteOnly();
-            OrderBillEntity masterEntity = orderBillBiz.getById(orderBillEntity.getId());
+            OrderBillEntity masterEntity = orderBillRepository.getById(orderBillEntity.getId());
             Assertions.assertThat(masterEntity).isNotNull();
         }
     }

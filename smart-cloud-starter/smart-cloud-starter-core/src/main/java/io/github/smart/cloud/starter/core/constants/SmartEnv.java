@@ -31,7 +31,7 @@ public class SmartEnv {
      */
     @Getter
     @Setter
-    private static boolean unitTest = false;
+    private static volatile boolean unitTest = false;
 
     private SmartEnv() {
     }

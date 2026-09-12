@@ -15,12 +15,12 @@
  */
 package io.github.smart.cloud.starter.configure.properties;
 
-import io.github.smart.cloud.constants.LogLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * api日志切面配置
@@ -40,20 +40,18 @@ public class ApiLogProperties implements Serializable {
      */
     private boolean enable = true;
 
-    /**
-     * api日志级别（默认DEBUG）
-     *
-     * @see LogLevel
-     */
-    private String level = LogLevel.DEBUG;
 
     /**
      * 慢接口时间（单位：毫秒，默认3000毫秒）
      */
     private int slowApiMinCost = 3000;
     /**
-     * feign切面日志打印最大长度
+     * 切面日志打印最大长度
      */
     private Integer logMaxLength;
+    /**
+     * 忽略的接口地址（不打印日志）
+     */
+    private Set<String> ignoreUrls;
 
 }

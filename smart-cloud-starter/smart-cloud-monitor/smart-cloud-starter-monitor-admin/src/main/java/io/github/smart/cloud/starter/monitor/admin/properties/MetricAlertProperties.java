@@ -18,6 +18,7 @@ package io.github.smart.cloud.starter.monitor.admin.properties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.unit.DataSize;
 
 import java.math.BigDecimal;
@@ -36,26 +37,32 @@ public class MetricAlertProperties {
     /**
      * 堆内存指标监控配置
      */
+    @NestedConfigurationProperty
     private MetricItemAlertProperties<DataSize> heap = new MetricItemAlertProperties<>();
     /**
      * 非堆内存指标监控配置
      */
+    @NestedConfigurationProperty
     private MetricItemAlertProperties<DataSize> nonHeap = new MetricItemAlertProperties<>();
     /**
      * cpu指标监控配置
      */
+    @NestedConfigurationProperty
     private MetricItemAlertProperties<Double> cpu = new MetricItemAlertProperties<>();
     /**
      * 线程指标监控配置
      */
+    @NestedConfigurationProperty
     private MetricItemAlertProperties<Integer> thread = new MetricItemAlertProperties<>();
     /**
      * gc指标监控配置
      */
+    @NestedConfigurationProperty
     private MetricItemAlertProperties<Double> gc = new MetricItemAlertProperties<>();
     /**
      * tomcat指标监控配置
      */
+    @NestedConfigurationProperty
     private MetricItemAlertProperties<BigDecimal> tomcat = new MetricItemAlertProperties<>();
 
 }

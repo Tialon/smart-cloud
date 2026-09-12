@@ -16,10 +16,10 @@
 package io.github.smart.cloud.starter.mp.shardingjdbc.test.cases;
 
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.ShardingJdbcFullFunctionsApp;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.ApiLogBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.OrderBillBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.ProductInfoBiz;
-import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.biz.RpcLogBiz;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.repository.ApiLogRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.repository.OrderBillRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.repository.ProductInfoRepository;
+import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.repository.RpcLogRepository;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ApiLogEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.OrderBillEntity;
 import io.github.smart.cloud.starter.mp.shardingjdbc.test.prepare.fullfunctions.entity.ProductInfoEntity;
@@ -45,13 +45,13 @@ import java.util.Date;
 class FullFunctionsTest {
 
     @Autowired
-    private ApiLogBiz apiLogBiz;
+    private ApiLogRepository apiLogRepository;
     @Autowired
-    private OrderBillBiz orderBillBiz;
+    private OrderBillRepository orderBillRepository;
     @Autowired
-    private RpcLogBiz rpcLogBiz;
+    private RpcLogRepository rpcLogRepository;
     @Autowired
-    private ProductInfoBiz productInfoBiz;
+    private ProductInfoRepository productInfoRepository;
 
     /**
      * 普通数据源
@@ -63,10 +63,10 @@ class FullFunctionsTest {
         apiLogEntity.setApiDesc("test");
         apiLogEntity.setInsertTime(new Date());
         apiLogEntity.setDelState(DeleteState.NORMAL);
-        boolean saveResult = apiLogBiz.save(apiLogEntity);
+        boolean saveResult = apiLogRepository.save(apiLogEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        ApiLogEntity entity = apiLogBiz.getById(apiLogEntity.getId());
+        ApiLogEntity entity = apiLogRepository.getById(apiLogEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 
@@ -82,17 +82,17 @@ class FullFunctionsTest {
         orderBillEntity.setPayState((byte) 1);
         orderBillEntity.setBuyer(1L);
         orderBillEntity.setInsertUser(1L);
-        boolean saveResult = orderBillBiz.save(orderBillEntity);
+        boolean saveResult = orderBillRepository.save(orderBillEntity);
         Assertions.assertThat(saveResult).isTrue();
 
         // 默认查从库
-        OrderBillEntity slaveEntity = orderBillBiz.getById(orderBillEntity.getId());
+        OrderBillEntity slaveEntity = orderBillRepository.getById(orderBillEntity.getId());
         Assertions.assertThat(slaveEntity).isNull();
 
         // 强制查主库
         try (HintManager hintManager = HintManager.getInstance();) {
             hintManager.setWriteRouteOnly();
-            OrderBillEntity masterEntity = orderBillBiz.getById(orderBillEntity.getId());
+            OrderBillEntity masterEntity = orderBillRepository.getById(orderBillEntity.getId());
             Assertions.assertThat(masterEntity).isNotNull();
         }
     }
@@ -102,14 +102,14 @@ class FullFunctionsTest {
      */
     @Test
     void testShardingJdbcRpcLog() {
-        RpcLogEntity rpcLogEntity = rpcLogBiz.insert("test");
+        RpcLogEntity rpcLogEntity = rpcLogRepository.insert("test");
 
         // 默认查从库
-        RpcLogEntity slaveEntity = rpcLogBiz.getFromSlave(rpcLogEntity.getId());
+        RpcLogEntity slaveEntity = rpcLogRepository.getFromSlave(rpcLogEntity.getId());
         Assertions.assertThat(slaveEntity).isNull();
 
         // 强制查主库
-        RpcLogEntity masterEntity = rpcLogBiz.getFromMaster(rpcLogEntity.getId());
+        RpcLogEntity masterEntity = rpcLogRepository.getFromMaster(rpcLogEntity.getId());
         Assertions.assertThat(masterEntity).isNotNull();
     }
 
@@ -123,10 +123,10 @@ class FullFunctionsTest {
         productInfoEntity.setSellPrice(100L);
         productInfoEntity.setStock(100L);
         productInfoEntity.setInsertUser(1L);
-        boolean saveResult = productInfoBiz.save(productInfoEntity);
+        boolean saveResult = productInfoRepository.save(productInfoEntity);
         Assertions.assertThat(saveResult).isTrue();
 
-        ProductInfoEntity entity = productInfoBiz.getById(productInfoEntity.getId());
+        ProductInfoEntity entity = productInfoRepository.getById(productInfoEntity.getId());
         Assertions.assertThat(entity).isNotNull();
     }
 

@@ -24,7 +24,7 @@ import io.github.smart.cloud.starter.monitor.admin.enums.InstanceMetric;
 import io.github.smart.cloud.starter.monitor.admin.enums.MetricCheckStatus;
 import io.github.smart.cloud.starter.monitor.admin.properties.MetricItemAlertProperties;
 import io.github.smart.cloud.starter.monitor.admin.properties.ServiceInfoProperties;
-import io.github.smart.cloud.starter.monitor.admin.util.ActuatorUtil;
+import io.github.smart.cloud.starter.monitor.admin.component.ActuatorAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -49,7 +49,7 @@ public class GcSpeedMonitorComponent extends AbstractInstanceMetricsMonitorCompo
 
     @Override
     public MetricCheckResultDTO check(Instance instance) throws IOException {
-        String response = ActuatorUtil.sendGetRequest(instance, getInstanceMetric().getValue());
+        String response = ActuatorAgent.sendGetRequest(instance, getInstanceMetric().getValue());
         if (!StringUtils.hasText(response)) {
             return MetricCheckResultDTO.ok();
         }
@@ -64,7 +64,7 @@ public class GcSpeedMonitorComponent extends AbstractInstanceMetricsMonitorCompo
                 return MetricCheckResultDTO.ok();
             }
 
-            JsonNode valueNode = ActuatorUtil.parseValueNode(measurementsNodes, "COUNT");
+            JsonNode valueNode = ActuatorAgent.parseValueNode(measurementsNodes, "COUNT");
             if (valueNode == null) {
                 return MetricCheckResultDTO.ok();
             }
@@ -77,7 +77,7 @@ public class GcSpeedMonitorComponent extends AbstractInstanceMetricsMonitorCompo
             if (matchIncreaseResult.getMatch()) {
                 String alertDesc = String.format("gc速度[%.2f次/分钟]超过预警值[%.2f次/分钟]",
                         matchIncreaseResult.getIncreaseValue(), getKeepIncreasingSpeedThreshold(name));
-                return MetricCheckResultDTO.error(MetricCheckStatus.GC_SPEED_TOO_FAST, alertDesc);
+                return MetricCheckResultDTO.alert(MetricCheckStatus.GC_SPEED_TOO_FAST, alertDesc);
             }
         } catch (JsonProcessingException e) {
             log.error("parse json error|response={}", response, e);
@@ -96,9 +96,11 @@ public class GcSpeedMonitorComponent extends AbstractInstanceMetricsMonitorCompo
     private MatchIncreaseResultDTO matchIncreaseTooFast(String serviceName, String instanceId, Long metricValue) {
         List<Long> instanceData = HISTORY_DATA.computeIfAbsent(instanceId, (key) -> new CopyOnWriteArrayList<>());
         instanceData.add(metricValue);
+
+        final int minDataMatchSize = 2;
         int historyCount = instanceData.size();
         Integer keepIncreasingCount = getKeepIncreasingCount(serviceName);
-        if (historyCount < keepIncreasingCount) {
+        if (historyCount < minDataMatchSize || historyCount < keepIncreasingCount) {
             return MatchIncreaseResultDTO.normal();
         }
 

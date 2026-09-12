@@ -16,7 +16,7 @@
 package io.github.smart.cloud.api.core.user.context.filter;
 
 import io.github.smart.cloud.api.core.user.context.AbstractUserContext;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
+import io.github.smart.cloud.constants.OrderConstant;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;

@@ -20,7 +20,7 @@ import feign.RequestTemplate;
 import io.github.smart.cloud.common.web.constants.SmartHttpHeaders;
 import io.github.smart.cloud.common.web.filter.ReactiveRequestContextHolder;
 import io.github.smart.cloud.common.web.util.WebUtil;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
+import io.github.smart.cloud.constants.OrderConstant;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;

@@ -15,23 +15,24 @@
  */
 package io.github.smart.cloud.starter.monitor.api.properties;
 
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 接口健康检测配置属性
  * <p/>
  * <b>配置样例：</b>
  * <pre>
- * api-monitor:
- *   unhealthMatchMinCount: 10
- *   defaultFailRateThreshold: 0.3
- *   failRateThresholds:
- *     '[LoginController#login]': 0
- *     '[OrderController#query]': 0
+ * smart:
+ *   api-monitor:
+ *     exception-api-monitor:
+ *       unhealthMatchMinCount: 10
+ *       defaultFailRateThreshold: 0.3
+ *       failRateThresholds:
+ *         '[LoginController#login]': 0
+ *         '[OrderController#query]': 0
  * </pre>
  *
  * @author collin
@@ -44,63 +45,63 @@ public class ApiMonitorProperties {
     public static final String PREFIX = "smart.api-monitor";
 
     /**
-     * 不健康匹配最小数量
+     * 应用名（不配置，则取spring.application.name的值）
      */
-    private int unhealthMatchMinCount = 5;
+    private String appName;
     /**
-     * 不健康接口最大上报数
+     * 接口监控事件队列大小
      */
-    private int unhealthApiReportMaxCount = 10;
+    private int apiMonitorEventQueueSize = 4096;
     /**
-     * 默认失败阈值（默认0.5）
+     * 接口请求汇总缓存最大数量
      */
-    private BigDecimal defaultFailRateThreshold = BigDecimal.valueOf(0.5);
-    /**
-     * 特定接口失败阈值
-     */
-    private Map<String, BigDecimal> failRateThresholds = new LinkedHashMap<>();
-    /**
-     * 接口白名单（不监听异常）
-     */
-    private Set<String> apiWhiteList = new HashSet<>();
+    private int apiRequestSummaryCacheMaxSize = 2048;
 
-    // -------企业微信通知配置 start
     /**
      * 清理间隔时间（单位：秒）
      */
     private long cleanIntervalSeconds = 60 * 3L;
     /**
-     * 异常接口通知间隔时间（单位：秒）
-     */
-    private long apiExceptionNoticeIntervalSeconds = 60L;
-    /**
-     * 发送消息时的代理host
-     */
-    private String proxyHost;
-    /**
-     * 发送消息时的代理端口
-     */
-    private int port;
-    /**
-     * 企业微信机器人key
+     * 默认的机器人key
      */
     private String robotKey;
     /**
-     * 异常提醒人
+     * 接口监控切面是否支持mapping注解
+     * <li>true-支持</li>
+     * <li>false-不支持，仅支持@ApiMonitor注解</li>
      */
-    private Set<String> mentionedList = new LinkedHashSet<>();
+    private boolean pointCutSupportMappingAnnotation = true;
     /**
-     * “需要提醒的异常类名列表”中命中时，需要提醒
+     * 异常接口监控配置
      */
-    private Boolean alertExceptionMarked = true;
+    private ExceptionApiMonitorProperties exceptionApiMonitor = new ExceptionApiMonitorProperties();
     /**
-     * 需要提醒的异常类名列表
+     * 慢接口监控配置
      */
-    private Set<String> needAlertExceptionClassNames = new HashSet<>();
+    private SlowApiMonitorProperties slowApiMonitor = new SlowApiMonitorProperties();
+
     /**
-     * 需要提醒的异常码列表
+     * 获取异常接口通知机器人key
+     *
+     * @return
      */
-    private Set<String> needAlertExceptionCodes = new HashSet<>();
-    // -------企业微信通知配置 end
+    public String getExceptionApiRobotKey() {
+        if (StringUtils.isBlank(exceptionApiMonitor.getRobotKey())) {
+            return robotKey;
+        }
+        return exceptionApiMonitor.getRobotKey();
+    }
+
+    /**
+     * 获取慢接口通知机器人key
+     *
+     * @return
+     */
+    public String getSlowApiRobotKey() {
+        if (StringUtils.isBlank(slowApiMonitor.getRobotKey())) {
+            return robotKey;
+        }
+        return slowApiMonitor.getRobotKey();
+    }
 
 }

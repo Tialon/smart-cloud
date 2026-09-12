@@ -15,11 +15,9 @@
  */
 package io.github.smart.cloud.starter.mybatis.plus.plugin;
 
-import io.github.smart.cloud.constants.LogLevel;
-import io.github.smart.cloud.mask.util.LogUtil;
-import io.github.smart.cloud.mask.util.MaskUtil;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
 import io.github.smart.cloud.utility.DateUtil;
+import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.CacheKey;
@@ -34,6 +32,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -56,6 +55,10 @@ public class MybatisSqlLogInterceptor implements Interceptor {
      */
     private static final int ARGS_LENGTH = 6;
     /**
+     * 默认日志最大长度
+     */
+    private static final int DEFAULT_LOG_MAX_LENGTH = 2048;
+    /**
      * 日志级别
      */
     private final SmartProperties smartProperties;
@@ -66,23 +69,26 @@ public class MybatisSqlLogInterceptor implements Interceptor {
         long start = System.currentTimeMillis();
         try {
             returnValue = invocation.proceed();
-        } finally {
-            if (log.isWarnEnabled()) {
-                long end = System.currentTimeMillis();
-                long time = (end - start);
-                MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
-                BoundSql boundSql = null;
-                if (invocation.getArgs().length == ARGS_LENGTH) {
-                    boundSql = (BoundSql) invocation.getArgs()[ARGS_LENGTH - 1];
-                } else {
-                    Object parameter = invocation.getArgs()[1];
-                    boundSql = mappedStatement.getBoundSql(parameter);
+            } finally {
+                if (log.isWarnEnabled()) {
+                    try {
+                        long end = System.currentTimeMillis();
+                        long time = (end - start);
+                        MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
+                        BoundSql boundSql;
+                        if (invocation.getArgs().length == ARGS_LENGTH) {
+                            boundSql = (BoundSql) invocation.getArgs()[ARGS_LENGTH - 1];
+                        } else {
+                            Object parameter = invocation.getArgs()[1];
+                            boundSql = mappedStatement.getBoundSql(parameter);
+                        }
+                        showSql(mappedStatement.getConfiguration(), boundSql, mappedStatement.getId(), time, returnValue);
+                    } catch (Throwable logException) {
+                        // 日志格式化失败不能覆盖原始 SQL 业务异常。
+                        log.warn("mybatis sql log failed", logException);
+                    }
                 }
-                String sqlId = mappedStatement.getId();
-                Configuration configuration = mappedStatement.getConfiguration();
-                showSql(configuration, boundSql, sqlId, time, returnValue);
             }
-        }
         return returnValue;
     }
 
@@ -124,7 +130,7 @@ public class MybatisSqlLogInterceptor implements Interceptor {
             String sql = cleanSql(boundSql.getSql());
             str.append(sql)
                     .append(separator)
-                    .append(MaskUtil.mask(parameterObject));
+                    .append(JacksonUtil.toJson(parameterObject));
         } else {
             String sql = getSql(configuration, boundSql);
             str.append(sql);
@@ -136,15 +142,11 @@ public class MybatisSqlLogInterceptor implements Interceptor {
                 .append(separator)
                 .append("result")
                 .append(separator)
-                .append(MaskUtil.mask(returnValue));
+                .append(JacksonUtil.toJson(returnValue));
 
-        String logLevel = smartProperties.getMybatis().getLogLevel();
-        if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
-            log.debug(LogUtil.truncate(str.toString()));
-        } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
-            log.info(LogUtil.truncate(str.toString()));
-        } else if (LogLevel.WARN.equals(logLevel)) {
-            log.warn(LogUtil.truncate(str.toString()));
+        if (log.isInfoEnabled()) {
+            int maxLength = smartProperties.getMybatis().getLogMaxLength() == null ? DEFAULT_LOG_MAX_LENGTH : smartProperties.getMybatis().getLogMaxLength();
+            log.info(StringUtils.truncate(str.toString(), maxLength));
         }
     }
 
@@ -200,11 +202,11 @@ public class MybatisSqlLogInterceptor implements Interceptor {
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
             for (ParameterMapping parameterMapping : parameterMappings) {
                 String propertyName = parameterMapping.getProperty();
-                if (metaObject.hasGetter(propertyName)) {
-                    Object obj = metaObject.getValue(propertyName);
-                    sql = sql.replaceFirst(QUOTE, getParameterValue(obj));
-                } else if (boundSql.hasAdditionalParameter(propertyName)) {
+                if (boundSql.hasAdditionalParameter(propertyName)) {
                     Object obj = boundSql.getAdditionalParameter(propertyName);
+                    sql = sql.replaceFirst(QUOTE, getParameterValue(obj));
+                } else if (metaObject.hasGetter(propertyName)) {
+                    Object obj = metaObject.getValue(propertyName);
                     sql = sql.replaceFirst(QUOTE, getParameterValue(obj));
                 }
             }

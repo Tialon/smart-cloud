@@ -16,6 +16,7 @@
 package io.github.smart.cloud.starter.web.test.prepare.vo;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
@@ -32,6 +33,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class ProductCreateReqVO implements Serializable {
 
     private static final long serialVersionUID = 1L;

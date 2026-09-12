@@ -126,7 +126,7 @@ public class MetricsMonitorSchedule implements InitializingBean, ApplicationList
 
         for (ScheduledExecutorService metricsMonitorSchedule : metricsMonitorSchedules) {
             try {
-                metricsMonitorSchedule.shutdown();
+                metricsMonitorSchedule.shutdownNow();
             } catch (Exception e) {
                 log.error("metricsMonitorSchedule shutdown error", metricsMonitorSchedule, e);
             }

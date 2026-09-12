@@ -16,7 +16,7 @@
 package io.github.smart.cloud.starter.locale.aspect;
 
 import io.github.smart.cloud.common.pojo.Response;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
+import io.github.smart.cloud.constants.OrderConstant;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;

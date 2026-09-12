@@ -17,15 +17,15 @@ package io.github.smart.cloud.starter.method.log.intercept;
 
 import io.github.smart.cloud.constants.LogLevel;
 import io.github.smart.cloud.constants.SymbolConstant;
-import io.github.smart.cloud.mask.util.LogUtil;
-import io.github.smart.cloud.mask.util.MaskUtil;
 import io.github.smart.cloud.starter.configure.properties.MethodLogProperties;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
 import io.github.smart.cloud.starter.method.log.annotation.MethodLog;
+import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 
@@ -41,6 +41,10 @@ public class MethodLogInterceptor implements MethodInterceptor {
 
     private final SmartProperties smartProperties;
     /**
+     * 默认日志最大长度
+     */
+    private static final int DEFAULT_LOG_MAX_LENGTH = 2048;
+    /**
      * 慢日志
      */
     private static final String SLOW_LOG_PATTERN = "method.slow=>{}({}ms)-->args={}, result={}";
@@ -51,32 +55,41 @@ public class MethodLogInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
+        MethodLogProperties methodLogProperties = smartProperties.getMethodLog();
         long startTime = System.currentTimeMillis();
         Object result = null;
         try {
             result = invocation.proceed();
 
             if (log.isWarnEnabled()) {
-                MethodLogProperties methodLogProperties = smartProperties.getMethodLog();
                 long cost = System.currentTimeMillis() - startTime;
                 if (cost >= methodLogProperties.getSlowApiMinCost()) {
-                    String mastResult = (result instanceof String) ? (String) result : MaskUtil.mask(result);
-                    log.warn(SLOW_LOG_PATTERN, getTag(invocation.getMethod()), cost, LogUtil.truncate(MaskUtil.mask(invocation.getArguments())), LogUtil.truncate(mastResult));
+                    log.warn(SLOW_LOG_PATTERN, getTag(invocation.getMethod()), cost,
+                            getArgs(invocation.getArguments(), methodLogProperties.getLogMaxLength()),
+                            getResult(result, methodLogProperties.getLogMaxLength()));
                 } else {
                     MethodLog methodLog = invocation.getMethod().getAnnotation(MethodLog.class);
-                    String logLevel = LogLevel.getFinalLevel(methodLog.level(), methodLogProperties.getLevel());
-                    if (LogLevel.DEBUG.equals(logLevel) && log.isDebugEnabled()) {
-                        log.debug(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result));
-                    } else if (LogLevel.INFO.equals(logLevel) && log.isInfoEnabled()) {
-                        log.info(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result));
-                    } else if (LogLevel.WARN.equals(logLevel)) {
-                        log.warn(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result));
+                    LogLevel logLevel = methodLog.level();
+                    if (LogLevel.DEBUG == logLevel && log.isDebugEnabled()) {
+                        log.debug(LOG_PATTERN, getTag(invocation.getMethod()), cost,
+                                getArgs(invocation.getArguments(), methodLogProperties.getLogMaxLength()),
+                                getResult(result, methodLogProperties.getLogMaxLength()));
+                    } else if (LogLevel.INFO == logLevel && log.isInfoEnabled()) {
+                        log.info(LOG_PATTERN, getTag(invocation.getMethod()), cost,
+                                getArgs(invocation.getArguments(), methodLogProperties.getLogMaxLength()),
+                                getResult(result, methodLogProperties.getLogMaxLength()));
+                    } else if (LogLevel.WARN == logLevel) {
+                        log.warn(LOG_PATTERN, getTag(invocation.getMethod()), cost,
+                                getArgs(invocation.getArguments(), methodLogProperties.getLogMaxLength()),
+                                getResult(result, methodLogProperties.getLogMaxLength()));
                     }
                 }
             }
         } catch (Exception e) {
             long cost = System.currentTimeMillis() - startTime;
-            log.error(LOG_PATTERN, getTag(invocation.getMethod()), cost, getArgs(invocation.getArguments()), getResult(result), e);
+            log.error(LOG_PATTERN, getTag(invocation.getMethod()), cost,
+                    getArgs(invocation.getArguments(), methodLogProperties.getLogMaxLength()),
+                    getResult(result, methodLogProperties.getLogMaxLength()), e);
             throw e;
         }
         return result;
@@ -96,21 +109,25 @@ public class MethodLogInterceptor implements MethodInterceptor {
      * 获取参数
      *
      * @param arguments
+     * @param logMaxLength
      * @return
      */
-    private final String getArgs(Object[] arguments) {
-        return LogUtil.truncate(MaskUtil.mask(arguments));
+    private String getArgs(Object[] arguments, Integer logMaxLength) {
+        logMaxLength = (logMaxLength == null) ? DEFAULT_LOG_MAX_LENGTH : logMaxLength;
+        return StringUtils.truncate(JacksonUtil.toJson(arguments), logMaxLength);
     }
 
     /**
      * 获取返回结果
      *
      * @param result
+     * @param logMaxLength
      * @return
      */
-    private final String getResult(Object result) {
-        String mastResult = (result instanceof String) ? (String) result : MaskUtil.mask(result);
-        return LogUtil.truncate(mastResult);
+    private String getResult(Object result, Integer logMaxLength) {
+        String mastResult = (result instanceof String) ? (String) result : JacksonUtil.toJson(result);
+        logMaxLength = (logMaxLength == null) ? DEFAULT_LOG_MAX_LENGTH : logMaxLength;
+        return StringUtils.truncate(mastResult, logMaxLength);
     }
 
 }

@@ -36,18 +36,19 @@ public class SmartApplicationConfig {
      */
     @Getter
     @Setter
-    private static Class<?> mainApplicationClass;
+    private static volatile Class<?> mainApplicationClass;
 
     /**
      * 应用基础包名
      */
     @Setter
-    private static String[] basePackages;
+    private static volatile String[] basePackages;
 
     public static String[] getBasePackages() {
         Assert.isTrue(ArrayUtils.isNotEmpty(SmartApplicationConfig.basePackages), "basePackages未配置！！！");
 
-        return basePackages;
+        // 返回数组副本，防止外部修改
+        return basePackages.clone();
     }
 
 }

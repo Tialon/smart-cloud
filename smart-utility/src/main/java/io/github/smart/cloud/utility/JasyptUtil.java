@@ -37,7 +37,11 @@ public class JasyptUtil {
      * @return
      */
     public static String encrypt(String salt, String message) {
-        return JasyptUtilHolder.encrypt(salt, message);
+        // 每次创建新的encryptor实例，避免多线程密钥冲突
+        StandardEnvironment environment = new StandardEnvironment();
+        environment.getSystemProperties().put("jasypt.encryptor.password", salt);
+        DefaultLazyEncryptor encryptor = new DefaultLazyEncryptor(environment);
+        return encryptor.encrypt(message);
     }
 
     /**
@@ -48,37 +52,11 @@ public class JasyptUtil {
      * @return
      */
     public static String decrypt(String salt, String message) {
-        return JasyptUtilHolder.decrypt(salt, message);
-    }
-
-    private static class JasyptUtilHolder {
-
-        private static StandardEnvironment environment = new StandardEnvironment();
-        private static DefaultLazyEncryptor encryptor = new DefaultLazyEncryptor(environment);
-
-        /**
-         * 加密
-         *
-         * @param salt
-         * @param message
-         * @return
-         */
-        public static String encrypt(String salt, String message) {
-            environment.getSystemProperties().put("jasypt.encryptor.password", salt);
-            return encryptor.encrypt(message);
-        }
-
-        /**
-         * 解密
-         *
-         * @param salt
-         * @param message
-         * @return
-         */
-        public static String decrypt(String salt, String message) {
-            environment.getSystemProperties().put("jasypt.encryptor.password", salt);
-            return encryptor.decrypt(message);
-        }
+        // 每次创建新的encryptor实例，避免多线程密钥冲突
+        StandardEnvironment environment = new StandardEnvironment();
+        environment.getSystemProperties().put("jasypt.encryptor.password", salt);
+        DefaultLazyEncryptor encryptor = new DefaultLazyEncryptor(environment);
+        return encryptor.decrypt(message);
     }
 
 }

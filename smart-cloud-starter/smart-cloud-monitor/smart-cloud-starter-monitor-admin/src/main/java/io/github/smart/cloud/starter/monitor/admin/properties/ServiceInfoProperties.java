@@ -18,6 +18,7 @@ package io.github.smart.cloud.starter.monitor.admin.properties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -41,7 +42,7 @@ public class ServiceInfoProperties implements Serializable {
      */
     private Long id;
     /**
-     * 企业微信提醒人（账号）
+     * 异常提醒人（markdown类型消息为userid；text类型消息为手机号）
      */
     private Set<String> reminders = new LinkedHashSet<>();
     /**
@@ -59,6 +60,7 @@ public class ServiceInfoProperties implements Serializable {
     /**
      * 指标监控阈值
      */
+    @NestedConfigurationProperty
     private MetricAlertProperties metric = new MetricAlertProperties();
 
 }

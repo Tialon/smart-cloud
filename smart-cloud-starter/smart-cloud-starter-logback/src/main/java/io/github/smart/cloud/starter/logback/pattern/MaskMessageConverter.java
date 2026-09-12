@@ -17,8 +17,7 @@ package io.github.smart.cloud.starter.logback.pattern;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import io.github.smart.cloud.mask.util.MaskUtil;
-import org.slf4j.helpers.MessageFormatter;
+import io.github.smart.cloud.starter.log.mask.pattern.util.LogMaskUtil;
 
 /**
  * logback日志脱敏
@@ -30,16 +29,7 @@ public class MaskMessageConverter extends ClassicConverter {
 
     @Override
     public String convert(ILoggingEvent event) {
-        Object[] args = event.getArgumentArray();
-        if (args != null && args.length > 0) {
-            for (int i = 0; i < args.length; i++) {
-                args[i] = MaskUtil.mask(args[i]);
-            }
-
-            return MessageFormatter.arrayFormat(event.getMessage(), args).getMessage();
-        }
-
-        return event.getFormattedMessage();
+        return LogMaskUtil.mask(event.getFormattedMessage());
     }
 
 }

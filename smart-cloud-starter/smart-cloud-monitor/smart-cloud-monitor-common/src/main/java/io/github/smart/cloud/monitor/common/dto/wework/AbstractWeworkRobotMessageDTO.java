@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.monitor.common.dto.wework;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.smart.cloud.monitor.common.enums.WeworkRobotMessageType;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +39,7 @@ public class AbstractWeworkRobotMessageDTO implements Serializable {
     /**
      * 消息类型{@link WeworkRobotMessageType}
      */
+    @JsonProperty("msgtype")
     private String msgtype;
 
 }

@@ -31,6 +31,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.github.smart-cloud</groupId>
+            <artifactId>smart-cloud-starter-log-mask</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
@@ -38,11 +43,6 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.smart-cloud</groupId>
-            <artifactId>smart-mask</artifactId>
         </dependency>
 
         <dependency>

@@ -15,13 +15,13 @@
  */
 package io.github.smart.cloud.starter.monitor.api.test.prepare.service;
 
-import io.github.smart.cloud.starter.monitor.api.annotation.ApiHealthMonitor;
+import io.github.smart.cloud.starter.monitor.api.annotation.ApiMonitor;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
 
-    @ApiHealthMonitor
+    @ApiMonitor
     public int query(int id) {
         if (id % 5 > 0) {
             throw new UnsupportedOperationException();

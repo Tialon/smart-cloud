@@ -6,15 +6,16 @@
     <property name="log_format" value="%d{MM-dd HH:mm:ss.SSS} %level [%X{X-B3-SpanId}|%X{X-B3-ParentSpanId}|%X{X-B3-TraceId}] %thread [%logger{36} %method %line] %mm%n"/>
 
     <!-- 开发环境使用 打印在控制台-->
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
+    <appender name="MEMORY" class="ch.qos.logback.core.OutputStreamAppender">
+        <encoder charset="UTF-8">
             <pattern>${log_format}</pattern>
         </encoder>
+        <outputStream class="java.io.ByteArrayOutputStream"/>
     </appender>
 
     <root>
         <level value="INFO"/>
-        <appender-ref ref="console"/>
+        <appender-ref ref="MEMORY"/>
     </root>
 
 </configuration>

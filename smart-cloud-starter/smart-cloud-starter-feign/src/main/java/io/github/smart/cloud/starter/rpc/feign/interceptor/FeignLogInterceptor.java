@@ -18,17 +18,17 @@ package io.github.smart.cloud.starter.rpc.feign.interceptor;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import io.github.smart.cloud.common.web.util.WebUtil;
-import io.github.smart.cloud.constants.LogLevel;
+import io.github.smart.cloud.constants.OrderConstant;
 import io.github.smart.cloud.constants.SymbolConstant;
-import io.github.smart.cloud.mask.util.LogUtil;
-import io.github.smart.cloud.starter.configure.constants.OrderConstant;
 import io.github.smart.cloud.starter.configure.properties.FeignLogProperties;
 import io.github.smart.cloud.starter.configure.properties.SmartProperties;
-import io.github.smart.cloud.starter.rpc.feign.pojo.FeignLogAspectDO;
+import io.github.smart.cloud.starter.rpc.feign.pojo.FeignLogAspectDTO;
+import io.github.smart.cloud.utility.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 
 import java.lang.reflect.Method;
@@ -46,6 +46,10 @@ import java.util.Map;
 public class FeignLogInterceptor implements MethodInterceptor, RequestInterceptor, Ordered {
 
     private final SmartProperties smartProperties;
+    /**
+     * 默认日志最大长度
+     */
+    private static final int DEFAULT_LOG_MAX_LENGTH = 2048;
     private static final ThreadLocal<Map<String, Collection<String>>> FEIGN_HEADER_THREAD_LOCAL = new ThreadLocal<>();
 
     @Override
@@ -60,22 +64,15 @@ public class FeignLogInterceptor implements MethodInterceptor, RequestIntercepto
                 FeignLogProperties feignLogProperties = smartProperties.getFeign().getLog();
                 long cost = System.currentTimeMillis() - startTime;
                 if (cost >= feignLogProperties.getSlowApiMinCost()) {
-                    log.warn(LogUtil.truncate("rpc.slow=>{}", feignLogProperties.getLogMaxLength(), buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost)));
+                    log.warn("rpc.slow=>{}", truncate(buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost), feignLogProperties.getLogMaxLength()));
                 } else {
-                    String level = feignLogProperties.getLevel();
-                    if (LogLevel.DEBUG.equals(level) && log.isDebugEnabled()) {
-                        log.debug(LogUtil.truncate("rpc.info=>{}", feignLogProperties.getLogMaxLength(), buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost)));
-                    } else if (LogLevel.INFO.equals(level) && log.isInfoEnabled()) {
-                        log.info(LogUtil.truncate("rpc.info=>{}", feignLogProperties.getLogMaxLength(), buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost)));
-                    } else if (LogLevel.WARN.equals(level)) {
-                        log.warn(LogUtil.truncate("rpc.info=>{}", feignLogProperties.getLogMaxLength(), buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost)));
-                    }
+                    log.info("rpc.info=>{}", truncate(buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost), feignLogProperties.getLogMaxLength()));
                 }
             }
         } catch (Exception e) {
             long cost = System.currentTimeMillis() - startTime;
             FeignLogProperties feignLogProperties = smartProperties.getFeign().getLog();
-            log.error(LogUtil.truncate("rpc.error=>{}", feignLogProperties.getLogMaxLength(), buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost)), e);
+            log.error("rpc.error=>{}", truncate(buildFeignLogAspectDO(invocation.getMethod(), invocation.getArguments(), result, cost), feignLogProperties.getLogMaxLength()), e);
             throw e;
         } finally {
             // 方法调用顺序：apply（初始化值） ——> invoke（获取值，并清除）
@@ -86,10 +83,23 @@ public class FeignLogInterceptor implements MethodInterceptor, RequestIntercepto
         return result;
     }
 
-    private FeignLogAspectDO buildFeignLogAspectDO(Method method, Object[] args, Object result, long cost) {
+    /**
+     * 日志超长截取
+     *
+     * @param feignLogAspectDTO
+     * @param logMaxLength
+     * @return
+     */
+    private String truncate(FeignLogAspectDTO feignLogAspectDTO, Integer logMaxLength) {
+        logMaxLength = logMaxLength == null ? DEFAULT_LOG_MAX_LENGTH : logMaxLength;
+        String content = JacksonUtil.toJson(feignLogAspectDTO);
+        return StringUtils.truncate(content, logMaxLength);
+    }
+
+    private FeignLogAspectDTO buildFeignLogAspectDO(Method method, Object[] args, Object result, long cost) {
         String classMethod = method.getDeclaringClass().getSimpleName() + SymbolConstant.DOT + method.getName();
 
-        FeignLogAspectDO logDO = new FeignLogAspectDO();
+        FeignLogAspectDTO logDO = new FeignLogAspectDTO();
         logDO.setClassMethod(classMethod);
         logDO.setParams(WebUtil.getRequestArgs(args));
         logDO.setResult(result);

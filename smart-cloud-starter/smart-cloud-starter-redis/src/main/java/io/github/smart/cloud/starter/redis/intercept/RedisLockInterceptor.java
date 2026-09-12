@@ -15,6 +15,7 @@
  */
 package io.github.smart.cloud.starter.redis.intercept;
 
+import io.github.smart.cloud.constants.OrderConstant;
 import io.github.smart.cloud.exception.AcquiredLockFailException;
 import io.github.smart.cloud.starter.redis.annotation.RedisLock;
 import io.github.smart.cloud.starter.redis.constants.RedisLockConstants;
@@ -44,7 +45,7 @@ public class RedisLockInterceptor extends AbstractRedisInterceptor implements Or
     @Override
     public int getOrder() {
         // 将优先级设置为最高，以便与数据库事务注解同时使用时，redis锁拦截器能先执行
-        return Ordered.HIGHEST_PRECEDENCE;
+        return OrderConstant.REDIS_LOCK;
     }
 
     @Nullable

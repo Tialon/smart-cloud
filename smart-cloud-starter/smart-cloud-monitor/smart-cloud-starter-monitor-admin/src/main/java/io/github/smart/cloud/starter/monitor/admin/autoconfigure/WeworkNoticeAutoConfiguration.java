@@ -15,9 +15,9 @@
  */
 package io.github.smart.cloud.starter.monitor.admin.autoconfigure;
 
+import io.github.smart.cloud.monitor.common.WeworkRobotAgent;
 import io.github.smart.cloud.starter.monitor.admin.component.GitLabComponent;
 import io.github.smart.cloud.starter.monitor.admin.component.ReminderComponent;
-import io.github.smart.cloud.starter.monitor.admin.component.RobotComponent;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.AppChangeWeworkNotice;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.MetricsAlertListener;
 import io.github.smart.cloud.starter.monitor.admin.listener.wework.OfflineNotice;
@@ -25,7 +25,6 @@ import io.github.smart.cloud.starter.monitor.admin.listener.wework.ServiceNodeCo
 import io.github.smart.cloud.starter.monitor.admin.properties.MonitorProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,15 +35,8 @@ import org.springframework.context.annotation.Configuration;
  * @date 2024-05-06
  */
 @Configuration
-@ConditionalOnProperty(name = "smart.monitor.wework.enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "smart.admin-monitor.wework.enable", havingValue = "true", matchIfMissing = true)
 public class WeworkNoticeAutoConfiguration {
-
-    @Bean
-    @RefreshScope
-    @ConditionalOnMissingBean
-    public RobotComponent robotComponent(final MonitorProperties monitorProperties) {
-        return new RobotComponent(monitorProperties);
-    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -54,25 +46,25 @@ public class WeworkNoticeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OfflineNotice offlineWeworkNotice(final RobotComponent robotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new OfflineNotice(robotComponent, monitorProperties, reminderComponent);
+    public OfflineNotice offlineWeworkNotice(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new OfflineNotice(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceNodeCountCheckNotice serviceNodeCountCheckNotice(final RobotComponent robotComponent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
-        return new ServiceNodeCountCheckNotice(robotComponent, monitorProperties, reminderComponent);
+    public ServiceNodeCountCheckNotice serviceNodeCountCheckNotice(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new ServiceNodeCountCheckNotice(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppChangeWeworkNotice appChangeWeworkNotice(final RobotComponent robotComponent, final ReminderComponent reminderComponent) {
-        return new AppChangeWeworkNotice(robotComponent, reminderComponent);
+    public AppChangeWeworkNotice appChangeWeworkNotice(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new AppChangeWeworkNotice(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
     @Bean
-    public MetricsAlertListener metricsAlertListener(final RobotComponent robotComponent) {
-        return new MetricsAlertListener(robotComponent);
+    public MetricsAlertListener metricsAlertListener(final WeworkRobotAgent weworkRobotAgent, final MonitorProperties monitorProperties, final ReminderComponent reminderComponent) {
+        return new MetricsAlertListener(weworkRobotAgent, monitorProperties, reminderComponent);
     }
 
 }

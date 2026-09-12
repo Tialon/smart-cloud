@@ -19,10 +19,6 @@ import io.github.smart.cloud.code.generate.enums.GenerateTypeEnum;
 import io.github.smart.cloud.code.generate.properties.CodeProperties;
 import io.github.smart.cloud.code.generate.properties.DbProperties;
 import io.github.smart.cloud.code.generate.properties.YamlProperties;
-import io.github.smart.cloud.mask.MaskRule;
-import org.springframework.util.StringUtils;
-
-import java.util.Map;
 
 /**
  * @author collin
@@ -93,9 +89,6 @@ public class YamlPropertiesCheckUtil {
             throw new IllegalArgumentException("code.specifiedTables未配置");
         }
 
-        // mask
-        checkMask(codeProperties.getMask());
-
         // mainClassPackage
         if (isBlank(codeProperties.getMainClassPackage())) {
             throw new IllegalArgumentException("code.mainClassPackage未配置");
@@ -123,35 +116,6 @@ public class YamlPropertiesCheckUtil {
         throw new IllegalArgumentException("code.type值不合法");
     }
 
-    private static void checkMask(Map<String, Map<String, String>> mask) {
-        if (mask == null) {
-            return;
-        }
-
-        mask.forEach((tableName, maskRuleMap) -> {
-            if (maskRuleMap == null || maskRuleMap.isEmpty()) {
-                throw new IllegalArgumentException("code.mask表字段mask规则未配置");
-            }
-            maskRuleMap.forEach((column, maskRule) -> checkMaskRule(maskRule));
-        });
-    }
-
-    /**
-     * 校验mask规则是否合法
-     *
-     * @param maskRule
-     */
-    private static void checkMaskRule(String maskRule) {
-        MaskRule[] maskRules = MaskRule.values();
-        for (MaskRule maskRuleTemp : maskRules) {
-            if (maskRuleTemp.toString().equals(maskRule)) {
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException(String.format("不支持的mask规则【%s】", maskRule));
-    }
-
     /**
      * 判断字符串是否为空
      *
@@ -161,4 +125,5 @@ public class YamlPropertiesCheckUtil {
     private static boolean isBlank(String s) {
         return s == null || s.trim().length() == 0;
     }
+
 }

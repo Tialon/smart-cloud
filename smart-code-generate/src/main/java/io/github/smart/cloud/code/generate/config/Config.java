@@ -15,9 +15,6 @@
  */
 package io.github.smart.cloud.code.generate.config;
 
-import io.github.smart.cloud.mask.MaskLog;
-import io.github.smart.cloud.mask.MaskRule;
-
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -53,58 +50,20 @@ public class Config {
      */
     public static final String TEMPLATE_PATH = "/template";
     /**
+     * maven工程源码目录
+     */
+    public static final String SRC_MAIN_JAVA = "src/main/java/";
+    /**
+     * java文件名后缀
+     */
+    public static final String JAVA_FILE_SUFFIX = ".java";
+    /**
+     * @date注释标记
+     */
+    public static final String DATE_ANNOTATION_TAG = "@date";
+    /**
      * 多个表用隔开的分隔符
      */
     public static final String TABLES_SEPARATOR = ",";
-
-    public static final String ENTITY_CLASS_SUFFIX = "Entity";
-    public static final String MAPPER_CLASS_SUFFIX = "BaseMapper";
-    public static final String BASE_RESPVO_CLASS_SUFFIX = "BaseRespVO";
-
-    public static final String ENTITY_PACKAGE_SUFFIX = ".entity";
-    public static final String MAPPER_PACKAGE_SUFFIX = ".mapper.base";
-    public static final String BASE_RESPVO_PACKAGE_SUFFIX = ".response.base";
-
-    private Config() {
-    }
-
-    /**
-     * 模板文件名
-     */
-    public static class Template {
-        /**
-         * mapper
-         */
-        public static final String BASE_MAPPER = "BaseMapper.ftl";
-        /**
-         * respbody
-         */
-        public static final String BASE_RESPBODY = "BaseRespVO.ftl";
-        /**
-         * entity
-         */
-        public static final String ENTITY = "Entity.ftl";
-
-        private Template() {
-        }
-
-    }
-
-    /**
-     * mask相关包名
-     */
-    public static class MaskPackage {
-        /**
-         * MaskRule包名
-         */
-        public static final String MASK_RULE = MaskRule.class.getTypeName();
-        /**
-         * MaskLog包名
-         */
-        public static final String MASK_LOG = MaskLog.class.getTypeName();
-
-        private MaskPackage() {
-        }
-    }
 
 }

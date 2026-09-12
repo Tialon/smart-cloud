@@ -15,15 +15,12 @@
  */
 package io.github.smart.cloud.code.generate.util;
 
-import io.github.smart.cloud.code.generate.bo.ColumnMetaDataBO;
-import io.github.smart.cloud.code.generate.bo.TableMetaDataBO;
-import io.github.smart.cloud.code.generate.bo.template.*;
-import io.github.smart.cloud.code.generate.config.ClassConstants;
+import io.github.smart.cloud.code.generate.bo.template.param.ClassCommentBO;
 import io.github.smart.cloud.code.generate.config.Config;
-import io.github.smart.cloud.code.generate.enums.DefaultColumnEnum;
+import io.github.smart.cloud.code.generate.enums.FileType;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
 /**
  * 模板BO工具类
@@ -50,150 +47,75 @@ public class TemplateUtil {
     }
 
     /**
-     * 获取生成Entity所需的参数信息
+     * 构建entity包名
      *
-     * @param tableMetaData
-     * @param columnMetaDatas
-     * @param classComment
      * @param mainClassPackage
-     * @param mask
-     * @param encryptFields
      * @return
      */
-    public static EntityBO getEntityBO(TableMetaDataBO tableMetaData, List<ColumnMetaDataBO> columnMetaDatas, ClassCommentBO classComment, String mainClassPackage, Map<String, Map<String, String>> mask, Set<String> encryptFields) {
-        EntityBO entityBO = new EntityBO();
-        entityBO.setClassComment(classComment);
-        entityBO.setTableName(TableUtil.getTableName(tableMetaData.getName()));
-        entityBO.setTableComment(tableMetaData.getComment());
-        entityBO.setPackageName(mainClassPackage + Config.ENTITY_PACKAGE_SUFFIX);
-        entityBO.setClassName(JavaTypeUtil.getEntityName(tableMetaData.getName()));
-
-        List<FieldAttributeBO> attributes = new ArrayList<>();
-        entityBO.setAttributes(attributes);
-        Set<String> importPackages = new HashSet<>(2);
-        entityBO.setImportPackages(importPackages);
-        for (ColumnMetaDataBO columnMetaData : columnMetaDatas) {
-            if (DefaultColumnEnum.contains(columnMetaData.getName())) {
-                continue;
-            }
-            FieldAttributeBO entityAttribute = new FieldAttributeBO();
-            entityAttribute.setName(TableUtil.getAttibuteName(columnMetaData.getName()));
-            entityAttribute.setColumnName(columnMetaData.getName());
-            entityAttribute.setComment(columnMetaData.getComment());
-
-            // 主键
-            entityAttribute.setPrimaryKey(columnMetaData.getPrimaryKey());
-            if (columnMetaData.getPrimaryKey()) {
-                importPackages.add(ClassConstants.TABLEID_PACKAGE);
-            }
-
-            // mask信息
-            entityAttribute.setMaskRule(getMaskRule(mask, tableMetaData.getName(), columnMetaData.getName()));
-            if (entityAttribute.getMaskRule() != null && !importPackages.contains(Config.MaskPackage.MASK_RULE)) {
-                importPackages.add(Config.MaskPackage.MASK_RULE);
-                importPackages.add(Config.MaskPackage.MASK_LOG);
-            }
-
-            // 加密字段
-            if (encryptFields.contains(columnMetaData.getName())) {
-                entityAttribute.setJavaType(ClassConstants.CRYPT_FIELD_CLASS_NAME);
-                importPackages.add(ClassConstants.CRYPT_FIELD_PACKAGE);
-            } else {
-                entityAttribute.setJavaType(JavaTypeUtil.getByJdbcType(columnMetaData.getJdbcType(), columnMetaData.getLength()));
-                String importPackage = JavaTypeUtil.getImportPackage(columnMetaData.getJdbcType());
-                if (importPackage != null) {
-                    importPackages.add(importPackage);
-                }
-            }
-
-            attributes.add(entityAttribute);
-        }
-        return entityBO;
-    }
-
-    private static String getMaskRule(Map<String, Map<String, String>> mask, String tableName, String column) {
-        if (mask == null) {
-            return null;
-        }
-        Map<String, String> maskRuleMap = mask.get(tableName);
-        if (maskRuleMap == null) {
-            return null;
-        }
-        return maskRuleMap.get(column);
+    public static String buildEntityPackageName(String mainClassPackage) {
+        return mainClassPackage + FileType.ENTITY.getPackageSuffix();
     }
 
     /**
-     * 获取生成BaseRespBody所需的参数信息
+     * 构建entity类名
      *
-     * @param tableMetaData
-     * @param columnMetaDatas
-     * @param classComment
-     * @param mainClassPackage
-     * @param importPackages
-     * @param mask
+     * @param tableName
      * @return
      */
-    public static BaseRespBO getBaseRespBodyBO(TableMetaDataBO tableMetaData, List<ColumnMetaDataBO> columnMetaDatas, ClassCommentBO classComment, String mainClassPackage, Set<String> importPackages, Map<String, Map<String, String>> mask) {
-        BaseRespBO baseResp = new BaseRespBO();
-        baseResp.setClassComment(classComment);
-        baseResp.setTableComment(tableMetaData.getComment());
-        baseResp.setPackageName(getBaseRespBodyPackage(mainClassPackage));
-        baseResp.setClassName(JavaTypeUtil.getBaseRespBodyName(tableMetaData.getName()));
-        baseResp.setImportPackages(importPackages);
-
-        List<FieldAttributeBO> attributes = new ArrayList<>();
-        baseResp.setAttributes(attributes);
-        for (ColumnMetaDataBO columnMetaData : columnMetaDatas) {
-            if (DefaultColumnEnum.contains(columnMetaData.getName())) {
-                continue;
-            }
-            FieldAttributeBO entityAttribute = new FieldAttributeBO();
-            entityAttribute.setComment(columnMetaData.getComment());
-            entityAttribute.setMaskRule(getMaskRule(mask, tableMetaData.getName(), columnMetaData.getName()));
-
-            entityAttribute.setName(TableUtil.getAttibuteName(columnMetaData.getName()));
-            entityAttribute.setJavaType(JavaTypeUtil.getByJdbcType(columnMetaData.getJdbcType(), columnMetaData.getLength()));
-
-            attributes.add(entityAttribute);
-        }
-        return baseResp;
+    public static String buildEntityClassName(String tableName) {
+        return TableUtil.getEntityClassName(tableName) + FileType.ENTITY.getClassSuffix();
     }
 
     /**
-     * 获取BaseRespBody包名
+     * 构建依赖entity类的包名
      *
      * @param mainClassPackage
+     * @param entityClassName
      * @return
      */
-    private static String getBaseRespBodyPackage(String mainClassPackage) {
-        int index = mainClassPackage.lastIndexOf('.');
-
-        return mainClassPackage.subSequence(0, index) + ".rpc" + mainClassPackage.substring(index) + Config.BASE_RESPVO_PACKAGE_SUFFIX;
+    public static String buildImportEntityClassPackage(String mainClassPackage, String entityClassName) {
+        return mainClassPackage + FileType.ENTITY.getPackageSuffix() + "." + entityClassName;
     }
 
     /**
-     * 获取生成BaesMapper所需的参数信息
+     * 构建mapper类名
      *
-     * @param tableMetaData
-     * @param entityBO
-     * @param classComment
-     * @param mainClassPackage
+     * @param tableName
      * @return
      */
-    public static BaseMapperBO getBaseMapperBO(TableMetaDataBO tableMetaData, EntityBO entityBO, ClassCommentBO classComment, String mainClassPackage) {
-        BaseMapperBO baseMapperBO = new BaseMapperBO();
-        baseMapperBO.setClassComment(classComment);
-        baseMapperBO.setTableComment(tableMetaData.getComment());
-        baseMapperBO.setPackageName(mainClassPackage + Config.MAPPER_PACKAGE_SUFFIX);
-        baseMapperBO.setClassName(JavaTypeUtil.getMapperName(tableMetaData.getName()));
+    public static String buildMapperClassName(String tableName) {
+        return TableUtil.getEntityClassName(tableName) + FileType.MAPPER.getClassSuffix();
+    }
 
-        Set<String> importPackages = new HashSet<>(2);
-        // entity package
-        importPackages.add(entityBO.getPackageName() + "." + entityBO.getClassName());
-        baseMapperBO.setImportPackages(importPackages);
+    /**
+     * 构建依赖mapper类的包名
+     *
+     * @param mainClassPackage
+     * @param mapperClassName
+     * @return
+     */
+    public static String buildImportMapperClassPackage(String mainClassPackage, String mapperClassName) {
+        return mainClassPackage + FileType.MAPPER.getPackageSuffix() + "." + mapperClassName;
+    }
 
-        baseMapperBO.setEntityClassName(entityBO.getClassName());
-        return baseMapperBO;
+    /**
+     * 构建repository类名
+     *
+     * @param tableName
+     * @return
+     */
+    public static String buildRepositoryClassName(String tableName) {
+        return TableUtil.getEntityClassName(tableName) + FileType.REPOSITORY.getClassSuffix();
+    }
+
+    /**
+     * 构建RespBody类名
+     *
+     * @param tableName
+     * @return
+     */
+    public static String buildBaseRespBodyClassName(String tableName) {
+        return TableUtil.getEntityClassName(tableName) + FileType.ENTITY_RESP_VO.getClassSuffix();
     }
 
 }

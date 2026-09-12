@@ -41,7 +41,7 @@ public class MonitorAutoConfiguration {
 
     @Bean
     @RefreshScope
-    @ConfigurationProperties(prefix = "smart.monitor")
+    @ConfigurationProperties(prefix = "smart.admin-monitor")
     public MonitorProperties monitorProperties() {
         return new MonitorProperties();
     }
@@ -49,7 +49,7 @@ public class MonitorAutoConfiguration {
     @Bean
     @RefreshScope
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "smart.cloud.monitor", value = "gitlab.enabled", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "smart.admin-monitor", value = "gitlab.enabled", havingValue = "true", matchIfMissing = true)
     public GitLabComponent gitLabComponent(final MonitorProperties monitorProperties) {
         return new GitLabComponent(monitorProperties);
     }

@@ -15,7 +15,6 @@
  */
 package io.github.smart.cloud.starter.configure.properties;
 
-import io.github.smart.cloud.constants.LogLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,16 +40,12 @@ public class MethodLogProperties implements Serializable {
     private boolean enable = true;
 
     /**
-     * 日志级别（默认DEBUG）
-     *
-     * @see LogLevel
-     */
-    private String level = LogLevel.DEBUG;
-
-
-    /**
      * 慢接口时间（单位：毫秒，默认3000毫秒）
      */
     private int slowApiMinCost = 3000;
+    /**
+     * 切面日志打印最大长度
+     */
+    private Integer logMaxLength;
 
 }
